@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { getSubjectList } from '../../redux/sclassRelated/sclassHandle';
-import { BottomNavigation, BottomNavigationAction, Container, Paper, Table, TableBody, TableHead, Typography } from '@mui/material';
+import { BottomNavigation, BottomNavigationAction, Container, Paper, Table, TableBody, TableHead, Typography, Box, Chip } from '@mui/material';
 import { getUserDetails } from '../../redux/userRelated/userHandle';
 import CustomBarChart from '../../components/CustomBarChart'
+import styled from 'styled-components';
 
 import InsertChartIcon from '@mui/icons-material/InsertChart';
 import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
@@ -45,59 +46,75 @@ const StudentSubjects = () => {
 
     const renderTableSection = () => {
         return (
-            <>
-                <Typography variant="h4" align="center" gutterBottom>
+            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+                <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold', color: 'var(--text-primary)' }}>
                     Subject Marks
                 </Typography>
-                <Table>
-                    <TableHead>
-                        <StyledTableRow>
-                            <StyledTableCell>Subject</StyledTableCell>
-                            <StyledTableCell>Marks</StyledTableCell>
-                        </StyledTableRow>
-                    </TableHead>
-                    <TableBody>
-                        {subjectMarks.map((result, index) => {
-                            if (!result.subName || !result.marksObtained) {
-                                return null;
-                            }
-                            return (
-                                <StyledTableRow key={index}>
-                                    <StyledTableCell>{result.subName.subName}</StyledTableCell>
-                                    <StyledTableCell>{result.marksObtained}</StyledTableCell>
-                                </StyledTableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Table>
-            </>
+                <StyledPaper>
+                    <Table>
+                        <TableHead>
+                            <StyledTableRow>
+                                <StyledTableCell>Subject</StyledTableCell>
+                                <StyledTableCell>Marks</StyledTableCell>
+                            </StyledTableRow>
+                        </TableHead>
+                        <TableBody>
+                            {subjectMarks.map((result, index) => {
+                                if (!result.subName || !result.marksObtained) {
+                                    return null;
+                                }
+                                return (
+                                    <StyledTableRow key={index}>
+                                        <StyledTableCell>{result.subName.subName}</StyledTableCell>
+                                        <StyledTableCell>
+                                            <MarksBadge>{result.marksObtained}</MarksBadge>
+                                        </StyledTableCell>
+                                    </StyledTableRow>
+                                );
+                            })}
+                        </TableBody>
+                    </Table>
+                </StyledPaper>
+            </Container>
         );
     };
 
     const renderChartSection = () => {
-        return <CustomBarChart chartData={subjectMarks} dataKey="marksObtained" />;
+        return (
+            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+                <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                    Marks Chart
+                </Typography>
+                <CustomBarChart chartData={subjectMarks} dataKey="marksObtained" />
+            </Container>
+        );
     };
 
     const renderClassDetailsSection = () => {
         return (
-            <Container>
-                <Typography variant="h4" align="center" gutterBottom>
-                    Class Details
-                </Typography>
-                <Typography variant="h5" gutterBottom>
-                    You are currently in Class {sclassDetails && sclassDetails.sclassName}
-                </Typography>
-                <Typography variant="h6" gutterBottom>
-                    And these are the subjects:
-                </Typography>
-                {subjectsList &&
-                    subjectsList.map((subject, index) => (
-                        <div key={index}>
-                            <Typography variant="subtitle1">
-                                {subject.subName} ({subject.subCode})
-                            </Typography>
-                        </div>
-                    ))}
+            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+                <ClassDetailsCard>
+                    <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold', color: 'var(--text-primary)', textAlign: 'center' }}>
+                        Class Details
+                    </Typography>
+                    <Typography variant="h5" sx={{ mb: 3, textAlign: 'center', color: 'var(--text-secondary)' }}>
+                        You are currently in Class <strong>{sclassDetails && sclassDetails.sclassName}</strong>
+                    </Typography>
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'var(--text-primary)', mb: 2 }}>
+                        Your Subjects:
+                    </Typography>
+                    <SubjectsGrid>
+                        {subjectsList &&
+                            subjectsList.map((subject, index) => (
+                                <SubjectCard key={index}>
+                                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                                        {subject.subName}
+                                    </Typography>
+                                    <Chip label={subject.subCode} size="small" sx={{ mt: 1 }} />
+                                </SubjectCard>
+                            ))}
+                    </SubjectsGrid>
+                </ClassDetailsCard>
             </Container>
         );
     };
@@ -105,7 +122,9 @@ const StudentSubjects = () => {
     return (
         <>
             {loading ? (
-                <div>Loading...</div>
+                <Container maxWidth="lg" sx={{ mt: 4, textAlign: 'center' }}>
+                    <Typography variant="h6">Loading...</Typography>
+                </Container>
             ) : (
                 <div>
                     {subjectMarks && Array.isArray(subjectMarks) && subjectMarks.length > 0
@@ -141,3 +160,48 @@ const StudentSubjects = () => {
 };
 
 export default StudentSubjects;
+
+const StyledPaper = styled(Paper)`
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+`;
+
+const MarksBadge = styled.span`
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-sm);
+    font-weight: 700;
+    font-size: 1.125rem;
+    background: var(--color-primary-100);
+    color: var(--color-primary-700);
+`;
+
+const ClassDetailsCard = styled(Paper)`
+    padding: 3rem;
+    border-radius: var(--border-radius-xl);
+    background: var(--bg-paper);
+    border: 1px solid var(--border-color);
+`;
+
+const SubjectsGrid = styled(Box)`
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+`;
+
+const SubjectCard = styled(Box)`
+    padding: 1.5rem;
+    background: var(--bg-default);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-color);
+    text-align: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+        border-color: var(--color-primary-300);
+        box-shadow: var(--shadow-sm);
+        transform: translateY(-4px);
+    }
+`;

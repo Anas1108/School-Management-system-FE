@@ -5,9 +5,10 @@ import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import {
-    Paper, Box, IconButton,
+    Paper, Box, IconButton, Container, Typography, TextField, InputAdornment
 } from '@mui/material';
 import DeleteIcon from "@mui/icons-material/Delete";
+import SearchIcon from '@mui/icons-material/Search';
 import TableTemplate from '../../../components/TableTemplate';
 import { BlueButton, GreenButton } from '../../../components/buttonStyles';
 import SpeedDialTemplate from '../../../components/SpeedDialTemplate';
@@ -18,6 +19,8 @@ const ShowSubjects = () => {
     const dispatch = useDispatch();
     const { subjectsList, loading, error, response } = useSelector((state) => state.sclass);
     const { currentUser } = useSelector(state => state.user)
+
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         dispatch(getSubjectList(currentUser._id, "AllSubjects"));
@@ -58,6 +61,11 @@ const ShowSubjects = () => {
         };
     })
 
+    const filteredRows = subjectRows.filter((row) => {
+        return row.subName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            row.sclassName.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+
     const SubjectsButtonHaver = ({ row }) => {
         return (
             <>
@@ -84,7 +92,7 @@ const ShowSubjects = () => {
     ];
 
     return (
-        <>
+        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             {loading ?
                 <div>Loading...</div>
                 :
@@ -97,18 +105,43 @@ const ShowSubjects = () => {
                             </GreenButton>
                         </Box>
                         :
-                        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-                            {Array.isArray(subjectsList) && subjectsList.length > 0 &&
-                                <TableTemplate buttonHaver={SubjectsButtonHaver} columns={subjectColumns} rows={subjectRows} />
-                            }
+                        <>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                                <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                                    Subjects
+                                </Typography>
+                                <TextField
+                                    placeholder="Search subjects..."
+                                    variant="outlined"
+                                    size="small"
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <SearchIcon />
+                                            </InputAdornment>
+                                        ),
+                                        style: {
+                                            borderRadius: 'var(--border-radius-md)',
+                                            backgroundColor: 'var(--bg-paper)',
+                                        }
+                                    }}
+                                    sx={{ width: '300px' }}
+                                />
+                            </Box>
+                            <Paper sx={{ borderRadius: 'var(--border-radius-lg)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
+                                {Array.isArray(filteredRows) && filteredRows.length > 0 &&
+                                    <TableTemplate buttonHaver={SubjectsButtonHaver} columns={subjectColumns} rows={filteredRows} />
+                                }
+                            </Paper>
                             <SpeedDialTemplate actions={actions} />
-                        </Paper>
+                        </>
                     }
                 </>
             }
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
 
-        </>
+        </Container>
     );
 };
 

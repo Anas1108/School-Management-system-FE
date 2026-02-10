@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Button, TextField, Grid, Box, Typography, CircularProgress } from "@mui/material";
+import { Button, TextField, Grid, Box, Typography, CircularProgress, Container, Paper } from "@mui/material";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addStuff } from '../../../redux/userRelated/userHandle';
 import { underControl } from '../../../redux/userRelated/userSlice';
 import Popup from '../../../components/Popup';
+import styled from 'styled-components';
 
 const SubjectForm = () => {
     const [subjects, setSubjects] = useState([{ subName: "", subCode: "", sessions: "" }]);
@@ -87,97 +88,120 @@ const SubjectForm = () => {
     }, [status, navigate, error, response, dispatch]);
 
     return (
-        <form onSubmit={submitHandler}>
-            <Box mb={2}>
-                <Typography variant="h6" >Add Subjects</Typography>
-            </Box>
-            <Grid container spacing={2}>
-                {subjects.map((subject, index) => (
-                    <React.Fragment key={index}>
-                        <Grid item xs={6}>
-                            <TextField
-                                fullWidth
-                                label="Subject Name"
-                                variant="outlined"
-                                value={subject.subName}
-                                onChange={handleSubjectNameChange(index)}
-                                sx={styles.inputField}
-                                required
-                            />
-                        </Grid>
-                        <Grid item xs={4}>
-                            <TextField
-                                fullWidth
-                                label="Subject Code"
-                                variant="outlined"
-                                value={subject.subCode}
-                                onChange={handleSubjectCodeChange(index)}
-                                sx={styles.inputField}
-                                required
-                            />
-                        </Grid>
-                        <Grid item xs={4}>
-                            <TextField
-                                fullWidth
-                                label="Sessions"
-                                variant="outlined"
-                                type="number"
-                                inputProps={{ min: 0 }}
-                                value={subject.sessions}
-                                onChange={handleSessionsChange(index)}
-                                sx={styles.inputField}
-                                required
-                            />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Box display="flex" alignItems="flex-end">
-                                {index === 0 ? (
-                                    <Button
+        <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+            <StyledPaper elevation={3}>
+                <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                    Add Subjects
+                </Typography>
+                <form onSubmit={submitHandler}>
+                    <Grid container spacing={2}>
+                        {subjects.map((subject, index) => (
+                            <React.Fragment key={index}>
+                                <Grid item xs={12} sm={5}>
+                                    <TextField
+                                        fullWidth
+                                        label="Subject Name"
                                         variant="outlined"
-                                        color="primary"
-                                        onClick={handleAddSubject}
-                                    >
-                                        Add Subject
-                                    </Button>
-                                ) : (
-                                    <Button
+                                        value={subject.subName}
+                                        onChange={handleSubjectNameChange(index)}
+                                        required
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={3}>
+                                    <TextField
+                                        fullWidth
+                                        label="Subject Code"
                                         variant="outlined"
-                                        color="error"
-                                        onClick={handleRemoveSubject(index)}
-                                    >
-                                        Remove
-                                    </Button>
-                                )}
+                                        value={subject.subCode}
+                                        onChange={handleSubjectCodeChange(index)}
+                                        required
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={2}>
+                                    <TextField
+                                        fullWidth
+                                        label="Sessions"
+                                        variant="outlined"
+                                        type="number"
+                                        inputProps={{ min: 0 }}
+                                        value={subject.sessions}
+                                        onChange={handleSessionsChange(index)}
+                                        required
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={2}>
+                                    <Box display="flex" alignItems="center" height="100%">
+                                        {index === 0 ? (
+                                            <Button
+                                                variant="outlined"
+                                                color="primary"
+                                                onClick={handleAddSubject}
+                                                fullWidth
+                                            >
+                                                Add
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                variant="outlined"
+                                                color="error"
+                                                onClick={handleRemoveSubject(index)}
+                                                fullWidth
+                                            >
+                                                Remove
+                                            </Button>
+                                        )}
+                                    </Box>
+                                </Grid>
+                            </React.Fragment>
+                        ))}
+                        <Grid item xs={12}>
+                            <Box display="flex" justifyContent="flex-end" gap={2} mt={2}>
+                                <Button variant="outlined" onClick={() => navigate(-1)}>
+                                    Cancel
+                                </Button>
+                                <SubmitButton variant="contained" type="submit" disabled={loader}>
+                                    {loader ? (
+                                        <CircularProgress size={24} color="inherit" />
+                                    ) : (
+                                        'Save Subjects'
+                                    )}
+                                </SubmitButton>
                             </Box>
                         </Grid>
-                    </React.Fragment>
-                ))}
-                <Grid item xs={12}>
-                    <Box display="flex" justifyContent="flex-end">
-                        <Button variant="contained" color="primary" type="submit" disabled={loader}>
-                            {loader ? (
-                                <CircularProgress size={24} color="inherit" />
-                            ) : (
-                                'Save'
-                            )}
-                        </Button>
-                    </Box>
-                </Grid>
-                <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
-            </Grid>
-        </form>
+                        <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
+                    </Grid>
+                </form>
+            </StyledPaper>
+        </Container>
     );
 }
 
 export default SubjectForm
 
-const styles = {
-    inputField: {
-        '& .MuiInputLabel-root': {
-            color: '#838080',
-        },
-        '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#838080',
-        },
-    },
-};
+const StyledPaper = styled(Paper)`
+    padding: 2.5rem;
+    border-radius: var(--border-radius-xl);
+    background: var(--bg-paper);
+    border: 1px solid var(--border-color);
+`;
+
+const SubmitButton = styled(Button)`
+    && {
+        background: var(--gradient-primary);
+        color: white;
+        font-weight: bold;
+        padding: 10px 24px;
+        border-radius: var(--border-radius-md);
+        text-transform: none;
+        font-size: 1rem;
+        box-shadow: var(--shadow-md);
+        transition: all 0.3s ease;
+
+        &:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+            background: var(--gradient-primary);
+            filter: brightness(1.1);
+        }
+    }
+`;

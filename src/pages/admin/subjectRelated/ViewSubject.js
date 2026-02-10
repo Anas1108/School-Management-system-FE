@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { getClassStudents, getSubjectDetails } from '../../../redux/sclassRelated/sclassHandle';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, Tab, Container, Typography, BottomNavigation, BottomNavigationAction, Paper } from '@mui/material';
+import { Box, Tab, Container, Typography, BottomNavigation, BottomNavigationAction, Paper, Grid } from '@mui/material';
 import { BlueButton, GreenButton, PurpleButton } from '../../../components/buttonStyles';
 import TableTemplate from '../../../components/TableTemplate';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
+import styled from 'styled-components';
 
 import InsertChartIcon from '@mui/icons-material/InsertChart';
 import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
@@ -145,67 +146,102 @@ const ViewSubject = () => {
     const numberOfStudents = sclassStudents.length;
 
     return (
-      <>
-        <Typography variant="h4" align="center" gutterBottom>
-          Subject Details
+      <DetailsCard>
+        <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 'bold', textAlign: 'center' }}>
+          {subjectDetails && subjectDetails.subName}
         </Typography>
-        <Typography variant="h6" gutterBottom>
-          Subject Name : {subjectDetails && subjectDetails.subName}
-        </Typography>
-        <Typography variant="h6" gutterBottom>
-          Subject Code : {subjectDetails && subjectDetails.subCode}
-        </Typography>
-        <Typography variant="h6" gutterBottom>
-          Subject Sessions : {subjectDetails && subjectDetails.sessions}
-        </Typography>
-        <Typography variant="h6" gutterBottom>
-          Number of Students: {numberOfStudents}
-        </Typography>
-        <Typography variant="h6" gutterBottom>
-          Class Name : {subjectDetails && subjectDetails.sclassName && subjectDetails.sclassName.sclassName}
-        </Typography>
-        {subjectDetails && subjectDetails.teacher ?
-          <Typography variant="h6" gutterBottom>
-            Teacher Name : {subjectDetails.teacher.name}
-          </Typography>
-          :
-          <GreenButton variant="contained"
-            onClick={() => navigate("/Admin/teachers/addteacher/" + subjectDetails._id)}>
-            Add Subject Teacher
-          </GreenButton>
-        }
-      </>
+        <Grid container spacing={3} sx={{ mt: 2 }}>
+          <Grid item xs={12} sm={6}>
+            <InfoBox>
+              <Typography variant="subtitle2" color="textSecondary">Subject Code</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                {subjectDetails && subjectDetails.subCode}
+              </Typography>
+            </InfoBox>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <InfoBox>
+              <Typography variant="subtitle2" color="textSecondary">Sessions</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                {subjectDetails && subjectDetails.sessions}
+              </Typography>
+            </InfoBox>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <InfoBox>
+              <Typography variant="subtitle2" color="textSecondary">Class Name</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                {subjectDetails && subjectDetails.sclassName && subjectDetails.sclassName.sclassName}
+              </Typography>
+            </InfoBox>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <InfoBox>
+              <Typography variant="subtitle2" color="textSecondary">Number of Students</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'var(--color-success-600)' }}>
+                {numberOfStudents}
+              </Typography>
+            </InfoBox>
+          </Grid>
+        </Grid>
+        <Box sx={{ mt: 4, textAlign: 'center' }}>
+          {subjectDetails && subjectDetails.teacher ?
+            <InfoBox>
+              <Typography variant="subtitle2" color="textSecondary">Teacher Assigned</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                {subjectDetails.teacher.name}
+              </Typography>
+            </InfoBox>
+            :
+            <GreenButton variant="contained"
+              onClick={() => navigate("/Admin/teachers/addteacher/" + subjectDetails._id)}>
+              Add Subject Teacher
+            </GreenButton>
+          }
+        </Box>
+      </DetailsCard>
     );
   }
 
   return (
-    <>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       {subloading ?
         < div > Loading...</div >
         :
         <>
-          <Box sx={{ width: '100%', typography: 'body1', }} >
-            <TabContext value={value}>
-              <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <TabList onChange={handleChange} sx={{ position: 'fixed', width: '100%', bgcolor: 'background.paper', zIndex: 1 }}>
+          <TabContext value={value}>
+            <Paper sx={{ borderRadius: 'var(--border-radius-xl)', overflow: 'hidden' }}>
+              <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'var(--bg-paper)' }}>
+                <TabList onChange={handleChange} centered textColor="primary" indicatorColor="primary">
                   <Tab label="Details" value="1" />
                   <Tab label="Students" value="2" />
                 </TabList>
               </Box>
-              <Container sx={{ marginTop: "3rem", marginBottom: "4rem" }}>
-                <TabPanel value="1">
-                  <SubjectDetailsSection />
-                </TabPanel>
-                <TabPanel value="2">
-                  <SubjectStudentsSection />
-                </TabPanel>
-              </Container>
-            </TabContext>
-          </Box>
+              <TabPanel value="1" sx={{ p: 4 }}>
+                <SubjectDetailsSection />
+              </TabPanel>
+              <TabPanel value="2" sx={{ p: 4 }}>
+                <SubjectStudentsSection />
+              </TabPanel>
+            </Paper>
+          </TabContext>
         </>
       }
-    </>
+    </Container>
   )
 }
 
 export default ViewSubject
+
+const DetailsCard = styled(Box)`
+    background: var(--bg-paper);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
+`;
+
+const InfoBox = styled(Box)`
+    padding: 1.5rem;
+    background: var(--bg-default);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-color);
+`;

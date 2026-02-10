@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { IconButton, Box, Menu, MenuItem, ListItemIcon, Tooltip } from '@mui/material';
+import { IconButton, Box, Menu, MenuItem, ListItemIcon, Tooltip, TextField, InputAdornment, Typography, Container, Paper } from '@mui/material';
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +12,7 @@ import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import AddCardIcon from '@mui/icons-material/AddCard';
+import SearchIcon from '@mui/icons-material/Search';
 import styled from 'styled-components';
 import SpeedDialTemplate from '../../../components/SpeedDialTemplate';
 import Popup from '../../../components/Popup';
@@ -35,12 +36,12 @@ const ShowClasses = () => {
 
   const [showPopup, setShowPopup] = useState(false);
   const [message, setMessage] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const deleteHandler = (deleteID, address) => {
     console.log(deleteID);
     console.log(address);
     setMessage("Sorry the delete function has been disabled for now.")
-    setShowPopup(true)
     // dispatch(deleteUser(deleteID, address))
     //   .then(() => {
     //     dispatch(getAllSclasses(adminID, "Sclass"));
@@ -57,6 +58,10 @@ const ShowClasses = () => {
       id: sclass._id,
     };
   })
+
+  const filteredRows = sclassRows && sclassRows.filter((row) => {
+    return row.name.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   const SclassButtonHaver = ({ row }) => {
     const actions = [
@@ -143,7 +148,7 @@ const ShowClasses = () => {
   ];
 
   return (
-    <>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       {loading ?
         <div>Loading...</div>
         :
@@ -156,8 +161,33 @@ const ShowClasses = () => {
             </Box>
             :
             <>
-              {Array.isArray(sclassesList) && sclassesList.length > 0 &&
-                <TableTemplate buttonHaver={SclassButtonHaver} columns={sclassColumns} rows={sclassRows} />
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                  Classes
+                </Typography>
+                <TextField
+                  placeholder="Search classes..."
+                  variant="outlined"
+                  size="small"
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                    style: {
+                      borderRadius: 'var(--border-radius-md)',
+                      backgroundColor: 'var(--bg-paper)',
+                    }
+                  }}
+                  sx={{ width: '300px' }}
+                />
+              </Box>
+              {Array.isArray(filteredRows) && filteredRows.length > 0 &&
+                <Paper sx={{ borderRadius: 'var(--border-radius-lg)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
+                  <TableTemplate buttonHaver={SclassButtonHaver} columns={sclassColumns} rows={filteredRows} />
+                </Paper>
               }
               <SpeedDialTemplate actions={actions} />
             </>}
@@ -165,7 +195,7 @@ const ShowClasses = () => {
       }
       <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
 
-    </>
+    </Container>
   );
 };
 
