@@ -7,12 +7,14 @@ import {
     AppBar as MuiAppBar,
 } from "@mui/material";
 
-const drawerWidth = 240
+const drawerWidth = 260; // Increased width for better whitespace
 
 export const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
-        backgroundColor: theme.palette.common.black,
+        backgroundColor: theme.palette.primary.main,
         color: theme.palette.common.white,
+        fontWeight: 'bold',
+        fontSize: '0.95rem',
     },
     [`&.${tableCellClasses.body}`]: {
         fontSize: 14,
@@ -21,7 +23,11 @@ export const StyledTableCell = styled(TableCell)(({ theme }) => ({
 
 export const StyledTableRow = styled(TableRow)(({ theme }) => ({
     '&:nth-of-type(odd)': {
-        backgroundColor: theme.palette.action.hover,
+        backgroundColor: 'var(--bg-paper)',
+    },
+    '&:hover': {
+        backgroundColor: 'var(--color-primary-50)',
+        transition: 'background-color 0.2s',
     },
     // hide last border
     '&:last-child td, &:last-child th': {
@@ -33,6 +39,11 @@ export const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
     zIndex: theme.zIndex.drawer + 1,
+    background: 'var(--bg-glass)',
+    backdropFilter: 'var(--backdrop-blur)',
+    boxShadow: 'none',
+    borderBottom: '1px solid var(--border-color)',
+    color: 'var(--text-primary)',
     transition: theme.transitions.create(['width', 'margin'], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
@@ -53,6 +64,8 @@ export const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 
             position: 'relative',
             whiteSpace: 'nowrap',
             width: drawerWidth,
+            backgroundColor: 'var(--bg-paper)',
+            borderRight: '1px solid var(--border-color)',
             transition: theme.transitions.create('width', {
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.enteringScreen,

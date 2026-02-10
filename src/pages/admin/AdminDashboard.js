@@ -43,54 +43,70 @@ import ShowClasses from './classRelated/ShowClasses';
 import AccountMenu from '../../components/AccountMenu';
 
 const AdminDashboard = () => {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
     const toggleDrawer = () => {
         setOpen(!open);
     };
 
     return (
-        <>
-            <Box sx={{ display: 'flex' }}>
-                <CssBaseline />
-                <AppBar open={open} position='absolute'>
-                    <Toolbar sx={{ pr: '24px' }}>
-                        <IconButton
-                            edge="start"
-                            color="inherit"
-                            aria-label="open drawer"
-                            onClick={toggleDrawer}
-                            sx={{
-                                marginRight: '36px',
-                                ...(open && { display: 'none' }),
-                            }}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Typography
-                            component="h1"
-                            variant="h6"
-                            color="inherit"
-                            noWrap
-                            sx={{ flexGrow: 1 }}
-                        >
-                            Admin Dashboard
-                        </Typography>
-                        <AccountMenu />
-                    </Toolbar>
-                </AppBar>
-                <Drawer variant="permanent" open={open} sx={open ? styles.drawerStyled : styles.hideDrawer}>
-                    <Toolbar sx={styles.toolBarStyled}>
-                        <IconButton onClick={toggleDrawer}>
-                            <ChevronLeftIcon />
-                        </IconButton>
-                    </Toolbar>
-                    <Divider />
-                    <List component="nav">
-                        <SideBar />
-                    </List>
-                </Drawer>
-                <Box component="main" sx={styles.boxStyled}>
-                    <Toolbar />
+        <Box sx={{ display: 'flex' }}>
+            <CssBaseline />
+            <AppBar open={open} position='absolute'>
+                <Toolbar sx={{ pr: '24px' }}>
+                    <IconButton
+                        edge="start"
+                        color="inherit"
+                        aria-label="open drawer"
+                        onClick={toggleDrawer}
+                        sx={{
+                            marginRight: '36px',
+                            ...(open && { display: 'none' }),
+                            color: 'var(--color-primary-600)'
+                        }}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                    <Typography
+                        component="h1"
+                        variant="h6"
+                        color="var(--text-primary)"
+                        noWrap
+                        sx={{ flexGrow: 1, fontWeight: 700, letterSpacing: '-0.5px' }}
+                    >
+                        Admin Dashboard
+                    </Typography>
+                    <AccountMenu />
+                </Toolbar>
+            </AppBar>
+            <Drawer variant="permanent" open={open} sx={open ? styles.drawerStyled : styles.hideDrawer}>
+                <Toolbar sx={styles.toolBarStyled}>
+                    <Typography
+                        variant="h5"
+                        color="primary"
+                        sx={{
+                            fontWeight: 'bold',
+                            flexGrow: 1,
+                            ml: 2,
+                            background: 'var(--gradient-primary)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            letterSpacing: '-1px'
+                        }}
+                    >
+                        School Admin
+                    </Typography>
+                    <IconButton onClick={toggleDrawer} sx={{ color: 'var(--text-secondary)' }}>
+                        <ChevronLeftIcon />
+                    </IconButton>
+                </Toolbar>
+                <Divider />
+                <List component="nav">
+                    <SideBar open={open} />
+                </List>
+            </Drawer>
+            <Box component="main" sx={styles.boxStyled}>
+                <Toolbar />
+                <Box sx={{ p: 4, minHeight: '100%', background: 'var(--bg-body)' }}>
                     <Routes>
                         <Route path="/" element={<AdminHomePage />} />
                         <Route path='*' element={<Navigate to="/" />} />
@@ -138,7 +154,7 @@ const AdminDashboard = () => {
                     </Routes>
                 </Box>
             </Box>
-        </>
+        </Box>
     );
 }
 

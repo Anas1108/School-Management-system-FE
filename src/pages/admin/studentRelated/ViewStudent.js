@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteUser, getUserDetails, updateUser } from '../../../redux/userRelated/userHandle';
+import { getUserDetails, updateUser } from '../../../redux/userRelated/userHandle';
 import { useNavigate, useParams } from 'react-router-dom'
 import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
-import { Box, Button, Collapse, IconButton, Table, TableBody, TableHead, Typography, Tab, Paper, BottomNavigation, BottomNavigationAction, Container } from '@mui/material';
+import { Box, Button, Collapse, IconButton, Table, TableBody, TableHead, Typography, Tab, Paper, BottomNavigation, BottomNavigationAction, Container, Grid, Avatar } from '@mui/material';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
@@ -19,10 +19,9 @@ import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
 import TableChartIcon from '@mui/icons-material/TableChart';
 import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
 import Popup from '../../../components/Popup';
+import styled from 'styled-components';
 
 const ViewStudent = () => {
-    const [showTab, setShowTab] = useState(false);
-
     const navigate = useNavigate()
     const params = useParams()
     const dispatch = useDispatch()
@@ -46,7 +45,6 @@ const ViewStudent = () => {
 
     const [name, setName] = useState('');
     const [rollNum, setRollNum] = useState('');
-    const [password, setPassword] = useState('');
     const [sclassName, setSclassName] = useState('');
     const [studentSchool, setStudentSchool] = useState('');
     const [subjectMarks, setSubjectMarks] = useState('');
@@ -75,10 +73,6 @@ const ViewStudent = () => {
         setSelectedSection(newSection);
     };
 
-    const fields = password === ""
-        ? { name, rollNum }
-        : { name, rollNum, password }
-
     useEffect(() => {
         if (userDetails) {
             setName(userDetails.name || '');
@@ -89,17 +83,6 @@ const ViewStudent = () => {
             setSubjectAttendance(userDetails.attendance || []);
         }
     }, [userDetails]);
-
-    const submitHandler = (event) => {
-        event.preventDefault()
-        dispatch(updateUser(fields, studentID, address))
-            .then(() => {
-                dispatch(getUserDetails(studentID, address));
-            })
-            .catch((error) => {
-                console.error(error)
-            })
-    }
 
     const deleteHandler = () => {
         setMessage("Sorry the delete function has been disabled for now.")
@@ -147,7 +130,7 @@ const ViewStudent = () => {
         const renderTableSection = () => {
             return (
                 <>
-                    <h3>Attendance:</h3>
+                    <Typography variant="h5" gutterBottom>Attendance</Typography>
                     <Table>
                         <TableHead>
                             <StyledTableRow>
@@ -219,13 +202,15 @@ const ViewStudent = () => {
                         }
                         )}
                     </Table>
-                    <div>
-                        Overall Attendance Percentage: {overallAttendancePercentage.toFixed(2)}%
-                    </div>
-                    <Button variant="contained" color="error" startIcon={<DeleteIcon />} onClick={() => removeHandler(studentID, "RemoveStudentAtten")}>Delete All</Button>
-                    <Button variant="contained" sx={styles.styledButton} onClick={() => navigate("/Admin/students/student/attendance/" + studentID)}>
-                        Add Attendance
-                    </Button>
+                    <Box sx={{ mt: 2 }}>
+                        <Typography variant="subtitle1">Overall Attendance Percentage: {overallAttendancePercentage.toFixed(2)}%</Typography>
+                    </Box>
+                    <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+                        <Button variant="outlined" color="error" startIcon={<DeleteIcon />} onClick={() => removeHandler(studentID, "RemoveStudentAtten")}>Delete All</Button>
+                        <Button variant="contained" sx={styles.styledButton} onClick={() => navigate("/Admin/students/student/attendance/" + studentID)}>
+                            Add Attendance
+                        </Button>
+                    </Box>
                 </>
             )
         }
@@ -272,7 +257,7 @@ const ViewStudent = () => {
         const renderTableSection = () => {
             return (
                 <>
-                    <h3>Subject Marks:</h3>
+                    <Typography variant="h5" gutterBottom>Subject Marks</Typography>
                     <Table>
                         <TableHead>
                             <StyledTableRow>
@@ -294,7 +279,7 @@ const ViewStudent = () => {
                             })}
                         </TableBody>
                     </Table>
-                    <Button variant="contained" sx={styles.styledButton} onClick={() => navigate("/Admin/students/student/marks/" + studentID)}>
+                    <Button variant="contained" sx={{ mt: 2, ...styles.styledButton }} onClick={() => navigate("/Admin/students/student/marks/" + studentID)}>
                         Add Marks
                     </Button>
                 </>
@@ -341,97 +326,77 @@ const ViewStudent = () => {
 
     const StudentDetailsSection = () => {
         return (
-            <div>
-                Name: {userDetails.name}
-                <br />
-                Roll Number: {userDetails.rollNum}
-                <br />
-                Class: {sclassName.sclassName}
-                <br />
-                School: {studentSchool.schoolName}
-                {
-                    subjectAttendance && Array.isArray(subjectAttendance) && subjectAttendance.length > 0 && (
-                        <CustomPieChart data={chartData} />
-                    )
-                }
-                <Button variant="contained" sx={styles.styledButton} onClick={deleteHandler}>
-                    Delete
-                </Button>
-                <br />
-                {/* <Button variant="contained" sx={styles.styledButton} className="show-tab" onClick={() => { setShowTab(!showTab) }}>
-                    {
-                        showTab
-                            ? <KeyboardArrowUp />
-                            : <KeyboardArrowDown />
-                    }
-                    Edit Student
-                </Button>
-                <Collapse in={showTab} timeout="auto" unmountOnExit>
-                    <div className="register">
-                        <form className="registerForm" onSubmit={submitHandler}>
-                            <span className="registerTitle">Edit Details</span>
-                            <label>Name</label>
-                            <input className="registerInput" type="text" placeholder="Enter user's name..."
-                                value={name}
-                                onChange={(event) => setName(event.target.value)}
-                                autoComplete="name" required />
+            <ProfileCard>
+                <Grid container spacing={2} alignItems="center" justifyContent="center">
+                    <Grid item xs={12} sm={4} sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Avatar sx={{ width: 120, height: 120, fontSize: '3rem', bgcolor: 'var(--color-primary-600)' }}>
+                            {name.charAt(0)}
+                        </Avatar>
+                    </Grid>
+                    <Grid item xs={12} sm={8}>
+                        <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 'bold' }}>
+                            {name}
+                        </Typography>
+                        <Typography variant="subtitle1" color="textSecondary" gutterBottom>
+                            Roll Number: {rollNum}
+                        </Typography>
+                        <Typography variant="subtitle1" color="textSecondary" gutterBottom>
+                            Class: {sclassName.sclassName}
+                        </Typography>
+                        <Typography variant="subtitle1" color="textSecondary" gutterBottom>
+                            School: {studentSchool.schoolName}
+                        </Typography>
 
-                            <label>Roll Number</label>
-                            <input className="registerInput" type="number" placeholder="Enter user's Roll Number..."
-                                value={rollNum}
-                                onChange={(event) => setRollNum(event.target.value)}
-                                required />
+                        {
+                            subjectAttendance && Array.isArray(subjectAttendance) && subjectAttendance.length > 0 && (
+                                <Box sx={{ mt: 2, mb: 2, height: 200 }}>
+                                    <CustomPieChart data={chartData} />
+                                </Box>
+                            )
+                        }
 
-                            <label>Password</label>
-                            <input className="registerInput" type="password" placeholder="Enter user's password..."
-                                value={password}
-                                onChange={(event) => setPassword(event.target.value)}
-                                autoComplete="new-password" />
-
-                            <button className="registerButton" type="submit" >Update</button>
-                        </form>
-                    </div>
-                </Collapse> */}
-            </div>
+                        <Button variant="outlined" color="error" sx={{ mt: 2 }} onClick={deleteHandler}>
+                            Delete Student
+                        </Button>
+                    </Grid>
+                </Grid>
+            </ProfileCard>
         )
     }
 
     return (
-        <>
+        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             {loading
                 ?
-                <>
-                    <div>Loading...</div>
-                </>
+                <div>Loading...</div>
                 :
                 <>
-                    <Box sx={{ width: '100%', typography: 'body1', }} >
-                        <TabContext value={value}>
-                            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                                <TabList onChange={handleChange} sx={{ position: 'fixed', width: '100%', bgcolor: 'background.paper', zIndex: 1 }}>
+                    <TabContext value={value}>
+                        <Paper sx={{ borderRadius: 'var(--border-radius-xl)', overflow: 'hidden' }}>
+                            <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'var(--bg-paper)' }}>
+                                <TabList onChange={handleChange} centered textColor="primary" indicatorColor="primary">
                                     <Tab label="Details" value="1" />
                                     <Tab label="Attendance" value="2" />
                                     <Tab label="Marks" value="3" />
                                 </TabList>
                             </Box>
-                            <Container sx={{ marginTop: "3rem", marginBottom: "4rem" }}>
-                                <TabPanel value="1">
-                                    <StudentDetailsSection />
-                                </TabPanel>
-                                <TabPanel value="2">
-                                    <StudentAttendanceSection />
-                                </TabPanel>
-                                <TabPanel value="3">
-                                    <StudentMarksSection />
-                                </TabPanel>
-                            </Container>
-                        </TabContext>
-                    </Box>
+
+                            <TabPanel value="1" sx={{ p: 4 }}>
+                                <StudentDetailsSection />
+                            </TabPanel>
+                            <TabPanel value="2" sx={{ p: 4 }}>
+                                <StudentAttendanceSection />
+                            </TabPanel>
+                            <TabPanel value="3" sx={{ p: 4 }}>
+                                <StudentMarksSection />
+                            </TabPanel>
+                        </Paper>
+                    </TabContext>
                 </>
             }
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
 
-        </>
+        </Container>
     )
 }
 
@@ -439,17 +404,23 @@ export default ViewStudent
 
 const styles = {
     attendanceButton: {
-        marginLeft: "20px",
-        backgroundColor: "#270843",
+        marginLeft: "10px",
+        backgroundColor: "var(--color-primary-600)",
         "&:hover": {
-            backgroundColor: "#3f1068",
+            backgroundColor: "var(--color-primary-700)",
         }
     },
     styledButton: {
-        margin: "20px",
-        backgroundColor: "#02250b",
+        backgroundColor: "var(--color-success-600)",
         "&:hover": {
-            backgroundColor: "#106312",
+            backgroundColor: "var(--color-success-700)",
         }
     }
 }
+
+const ProfileCard = styled(Box)`
+    background: var(--bg-paper);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+`;

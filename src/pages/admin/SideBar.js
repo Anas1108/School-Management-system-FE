@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Divider, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from '@mui/material';
+import { Divider, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Box } from '@mui/material';
 import { Link, useLocation } from 'react-router-dom';
+import styled from 'styled-components';
 
 import HomeIcon from "@mui/icons-material/Home";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
@@ -12,74 +13,146 @@ import SupervisorAccountOutlinedIcon from '@mui/icons-material/SupervisorAccount
 import ReportIcon from '@mui/icons-material/Report';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 
-const SideBar = () => {
+const SideBar = ({ open }) => {
     const location = useLocation();
+
+    // Helper to check active path
+    const isActive = (path) => {
+        if (path === "/") {
+            return location.pathname === "/" || location.pathname === "/Admin/dashboard";
+        }
+        return location.pathname.startsWith(path);
+    };
+
+    const mainMenuItems = [
+        { text: 'Home', icon: <HomeIcon />, link: '/' },
+        { text: 'Classes', icon: <ClassOutlinedIcon />, link: '/Admin/classes' },
+        { text: 'Subjects', icon: <AssignmentIcon />, link: '/Admin/subjects' },
+        { text: 'Teachers', icon: <SupervisorAccountOutlinedIcon />, link: '/Admin/teachers' },
+        { text: 'Students', icon: <PersonOutlineIcon />, link: '/Admin/students' },
+        { text: 'Notices', icon: <AnnouncementOutlinedIcon />, link: '/Admin/notices' },
+        { text: 'Complains', icon: <ReportIcon />, link: '/Admin/complains' },
+    ];
+
+    const userMenuItems = [
+        { text: 'Profile', icon: <AccountCircleOutlinedIcon />, link: '/Admin/profile' },
+        { text: 'Logout', icon: <ExitToAppIcon />, link: '/logout' },
+    ];
+
+    const renderMenuItem = (item) => (
+        <StyledListItemButton
+            key={item.text}
+            component={Link}
+            to={item.link}
+            selected={isActive(item.link)}
+            sx={{
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+            }}
+        >
+            <ListItemIcon sx={{
+                minWidth: 0,
+                mr: open ? 3 : 'auto',
+                justifyContent: 'center',
+                color: isActive(item.link) ? 'var(--color-primary-600)' : 'inherit'
+            }}>
+                {React.cloneElement(item.icon, {
+                    color: isActive(item.link) ? 'primary' : 'inherit'
+                })}
+            </ListItemIcon>
+            <ListItemText
+                primary={item.text}
+                sx={{
+                    opacity: open ? 1 : 0,
+                    display: open ? 'block' : 'none',
+                    whiteSpace: 'nowrap'
+                }}
+            />
+        </StyledListItemButton>
+    );
+
     return (
-        <>
+        <Box sx={{ px: open ? 2 : 1, pt: 2 }}>
             <React.Fragment>
-                <ListItemButton component={Link} to="/">
-                    <ListItemIcon>
-                        <HomeIcon color={location.pathname === ("/" || "/Admin/dashboard") ? 'primary' : 'inherit'} />
-                    </ListItemIcon>
-                    <ListItemText primary="Home" />
-                </ListItemButton>
-                <ListItemButton component={Link} to="/Admin/classes">
-                    <ListItemIcon>
-                        <ClassOutlinedIcon color={location.pathname.startsWith('/Admin/classes') ? 'primary' : 'inherit'} />
-                    </ListItemIcon>
-                    <ListItemText primary="Classes" />
-                </ListItemButton>
-                <ListItemButton component={Link} to="/Admin/subjects">
-                    <ListItemIcon>
-                        <AssignmentIcon color={location.pathname.startsWith("/Admin/subjects") ? 'primary' : 'inherit'} />
-                    </ListItemIcon>
-                    <ListItemText primary="Subjects" />
-                </ListItemButton>
-                <ListItemButton component={Link} to="/Admin/teachers">
-                    <ListItemIcon>
-                        <SupervisorAccountOutlinedIcon color={location.pathname.startsWith("/Admin/teachers") ? 'primary' : 'inherit'} />
-                    </ListItemIcon>
-                    <ListItemText primary="Teachers" />
-                </ListItemButton>
-                <ListItemButton component={Link} to="/Admin/students">
-                    <ListItemIcon>
-                        <PersonOutlineIcon color={location.pathname.startsWith("/Admin/students") ? 'primary' : 'inherit'} />
-                    </ListItemIcon>
-                    <ListItemText primary="Students" />
-                </ListItemButton>
-                <ListItemButton component={Link} to="/Admin/notices">
-                    <ListItemIcon>
-                        <AnnouncementOutlinedIcon color={location.pathname.startsWith("/Admin/notices") ? 'primary' : 'inherit'} />
-                    </ListItemIcon>
-                    <ListItemText primary="Notices" />
-                </ListItemButton>
-                <ListItemButton component={Link} to="/Admin/complains">
-                    <ListItemIcon>
-                        <ReportIcon color={location.pathname.startsWith("/Admin/complains") ? 'primary' : 'inherit'} />
-                    </ListItemIcon>
-                    <ListItemText primary="Complains" />
-                </ListItemButton>
+                {open && (
+                    <ListSubheader component="div" inset sx={{
+                        bgcolor: 'transparent',
+                        color: 'var(--text-tertiary)',
+                        fontWeight: 600,
+                        fontSize: '0.75rem',
+                        textTransform: 'uppercase',
+                        letterSpacing: '1px',
+                        mb: 1,
+                        pl: 1
+                    }}>
+                        Menu
+                    </ListSubheader>
+                )}
+
+                {mainMenuItems.map(renderMenuItem)}
             </React.Fragment>
-            <Divider sx={{ my: 1 }} />
+
+            <Divider sx={{ my: 2, borderColor: 'var(--border-color)' }} />
+
             <React.Fragment>
-                <ListSubheader component="div" inset>
-                    User
-                </ListSubheader>
-                <ListItemButton component={Link} to="/Admin/profile">
-                    <ListItemIcon>
-                        <AccountCircleOutlinedIcon color={location.pathname.startsWith("/Admin/profile") ? 'primary' : 'inherit'} />
-                    </ListItemIcon>
-                    <ListItemText primary="Profile" />
-                </ListItemButton>
-                <ListItemButton component={Link} to="/logout">
-                    <ListItemIcon>
-                        <ExitToAppIcon color={location.pathname.startsWith("/logout") ? 'primary' : 'inherit'} />
-                    </ListItemIcon>
-                    <ListItemText primary="Logout" />
-                </ListItemButton>
+                {open && (
+                    <ListSubheader component="div" inset sx={{
+                        bgcolor: 'transparent',
+                        color: 'var(--text-tertiary)',
+                        fontWeight: 600,
+                        fontSize: '0.75rem',
+                        textTransform: 'uppercase',
+                        letterSpacing: '1px',
+                        mb: 1,
+                        pl: 1
+                    }}>
+                        User
+                    </ListSubheader>
+                )}
+
+                {userMenuItems.map(renderMenuItem)}
             </React.Fragment>
-        </>
+        </Box>
     )
 }
 
-export default SideBar
+export default SideBar;
+
+const StyledListItemButton = styled(ListItemButton)`
+  && {
+    border-radius: var(--border-radius-lg);
+    margin-bottom: 4px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    transition: all 0.2s ease-in-out;
+    color: var(--text-secondary);
+    min-height: 48px;
+
+    &:hover {
+      background-color: var(--color-primary-50);
+      color: var(--color-primary-700);
+      
+      .MuiListItemIcon-root {
+        color: var(--color-primary-600);
+      }
+    }
+
+    &.Mui-selected {
+      background-color: var(--color-primary-100);
+      color: var(--color-primary-800);
+      font-weight: 600;
+
+      &:hover {
+        background-color: var(--color-primary-200);
+      }
+      
+      .MuiListItemIcon-root {
+        color: var(--color-primary-700);
+      }
+      
+      .MuiTypography-root {
+        font-weight: 600;
+      }
+    }
+  }
+`;

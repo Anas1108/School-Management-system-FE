@@ -5,7 +5,8 @@ import { registerUser } from '../../../redux/userRelated/userHandle';
 import Popup from '../../../components/Popup';
 import { underControl } from '../../../redux/userRelated/userSlice';
 import { getAllSclasses } from '../../../redux/sclassRelated/sclassHandle';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, Container, Paper, Typography, TextField, MenuItem, Button, Box, Grid } from '@mui/material';
+import styled from 'styled-components';
 
 const AddStudent = ({ situation }) => {
     const dispatch = useDispatch()
@@ -85,58 +86,115 @@ const AddStudent = ({ situation }) => {
     }, [status, navigate, error, response, dispatch]);
 
     return (
-        <>
-            <div className="register">
-                <form className="registerForm" onSubmit={submitHandler}>
-                    <span className="registerTitle">Add Student</span>
-                    <label>Name</label>
-                    <input className="registerInput" type="text" placeholder="Enter student's name..."
-                        value={name}
-                        onChange={(event) => setName(event.target.value)}
-                        autoComplete="name" required />
+        <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
+            <StyledPaper elevation={3}>
+                <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold', color: 'var(--text-primary)', textAlign: 'center' }}>
+                    Add Student
+                </Typography>
+                <form onSubmit={submitHandler}>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                label="Name"
+                                variant="outlined"
+                                value={name}
+                                onChange={(event) => setName(event.target.value)}
+                                autoComplete="name"
+                                required
+                            />
+                        </Grid>
 
-                    {
-                        situation === "Student" &&
-                        <>
-                            <label>Class</label>
-                            <select
-                                className="registerInput"
-                                value={className}
-                                onChange={changeHandler} required>
-                                <option value='Select Class'>Select Class</option>
-                                {sclassesList.map((classItem, index) => (
-                                    <option key={index} value={classItem.sclassName}>
-                                        {classItem.sclassName}
-                                    </option>
-                                ))}
-                            </select>
-                        </>
-                    }
-
-                    <label>Roll Number</label>
-                    <input className="registerInput" type="number" placeholder="Enter student's Roll Number..."
-                        value={rollNum}
-                        onChange={(event) => setRollNum(event.target.value)}
-                        required />
-
-                    <label>Password</label>
-                    <input className="registerInput" type="password" placeholder="Enter student's password..."
-                        value={password}
-                        onChange={(event) => setPassword(event.target.value)}
-                        autoComplete="new-password" required />
-
-                    <button className="registerButton" type="submit" disabled={loader}>
-                        {loader ? (
-                            <CircularProgress size={24} color="inherit" />
-                        ) : (
-                            'Add'
+                        {situation === "Student" && (
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    select
+                                    label="Class"
+                                    value={className}
+                                    onChange={changeHandler}
+                                    required
+                                >
+                                    <MenuItem value='Select Class'>Select Class</MenuItem>
+                                    {sclassesList.map((classItem, index) => (
+                                        <MenuItem key={index} value={classItem.sclassName}>
+                                            {classItem.sclassName}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            </Grid>
                         )}
-                    </button>
+
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                label="Roll Number"
+                                type="number"
+                                variant="outlined"
+                                value={rollNum}
+                                onChange={(event) => setRollNum(event.target.value)}
+                                required
+                            />
+                        </Grid>
+
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                label="Password"
+                                type="password"
+                                variant="outlined"
+                                value={password}
+                                onChange={(event) => setPassword(event.target.value)}
+                                autoComplete="new-password"
+                                required
+                            />
+                        </Grid>
+
+                        <Grid item xs={12}>
+                            <SubmitButton
+                                fullWidth
+                                size="large"
+                                type="submit"
+                                variant="contained"
+                                disabled={loader}
+                            >
+                                {loader ? <CircularProgress size={24} color="inherit" /> : 'Add Student'}
+                            </SubmitButton>
+                        </Grid>
+                    </Grid>
                 </form>
-            </div>
+            </StyledPaper>
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
-        </>
+        </Container>
     )
 }
 
 export default AddStudent
+
+const StyledPaper = styled(Paper)`
+    padding: 2rem;
+    border-radius: var(--border-radius-xl);
+    background: var(--bg-paper);
+    border: 1px solid var(--border-color);
+`;
+
+const SubmitButton = styled(Button)`
+    && {
+        background: var(--gradient-primary);
+        color: white;
+        font-weight: bold;
+        padding: 12px;
+        border-radius: var(--border-radius-md);
+        text-transform: none;
+        font-size: 1rem;
+        box-shadow: var(--shadow-md);
+        transition: all 0.3s ease;
+
+        &:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+            background: var(--gradient-primary);
+            filter: brightness(1.1);
+        }
+    }
+`;

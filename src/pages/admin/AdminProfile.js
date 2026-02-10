@@ -1,105 +1,90 @@
-// import React, { useState } from 'react';
-// import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material'
-// import { useDispatch, useSelector } from 'react-redux';
-// import { deleteUser, updateUser } from '../../redux/userRelated/userHandle';
-// import { useNavigate } from 'react-router-dom'
-// import { authLogout } from '../../redux/userRelated/userSlice';
-// import { Button, Collapse } from '@mui/material';
-
 import { useSelector } from 'react-redux';
+import { Paper, Box, Typography, Avatar, Container, Grid } from '@mui/material';
+import styled from 'styled-components';
 
 const AdminProfile = () => {
-    // const [showTab, setShowTab] = useState(false);
-    // const buttonText = showTab ? 'Cancel' : 'Edit profile';
-
-    // const navigate = useNavigate()
-    // const dispatch = useDispatch();
-        const { currentUser } = useSelector((state) => state.user);
-    // const { currentUser, response, error } = useSelector((state) => state.user);
-    // const address = "Admin"
-
-    // if (response) { console.log(response) }
-    // else if (error) { console.log(error) }
-
-    // const [name, setName] = useState(currentUser.name);
-    // const [email, setEmail] = useState(currentUser.email);
-    // const [password, setPassword] = useState("");
-    // const [schoolName, setSchoolName] = useState(currentUser.schoolName);
-
-    // const fields = password === "" ? { name, email, schoolName } : { name, email, password, schoolName }
-
-    // const submitHandler = (event) => {
-    //     event.preventDefault()
-    //     dispatch(updateUser(fields, currentUser._id, address))
-    // }
-
-    // const deleteHandler = () => {
-    //     try {
-    //         dispatch(deleteUser(currentUser._id, "Students"));
-    //         dispatch(deleteUser(currentUser._id, address));
-    //         dispatch(authLogout());
-    //         navigate('/');
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    // }
+    const { currentUser } = useSelector((state) => state.user);
 
     return (
-        <div>
-            Name: {currentUser.name}
-            <br />
-            Email: {currentUser.email}
-            <br />
-            School: {currentUser.schoolName}
-            <br />
-            {/* <Button variant="contained" color="error" onClick={deleteHandler}>Delete</Button> */}
-            {/* <Button variant="contained" sx={styles.showButton}
-                onClick={() => setShowTab(!showTab)}>
-                {showTab ? <KeyboardArrowUp /> : <KeyboardArrowDown />}{buttonText}
-            </Button>
-            <Collapse in={showTab} timeout="auto" unmountOnExit>
-                <div className="register">
-                    <form className="registerForm" onSubmit={submitHandler}>
-                        <span className="registerTitle">Edit Details</span>
-                        <label>Name</label>
-                        <input className="registerInput" type="text" placeholder="Enter your name..."
-                            value={name}
-                            onChange={(event) => setName(event.target.value)}
-                            autoComplete="name" required />
+        <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+            <Paper elevation={3} sx={{
+                p: 4,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                borderRadius: 'var(--border-radius-xl)',
+                background: 'var(--bg-paper)',
+                border: '1px solid var(--border-color)'
+            }}>
+                <Avatar
+                    sx={{
+                        width: 120,
+                        height: 120,
+                        mb: 3,
+                        bgcolor: 'var(--color-primary-600)',
+                        fontSize: '3rem'
+                    }}
+                >
+                    {currentUser.name ? currentUser.name[0].toUpperCase() : 'A'}
+                </Avatar>
 
-                        <label>School</label>
-                        <input className="registerInput" type="text" placeholder="Enter your school name..."
-                            value={schoolName}
-                            onChange={(event) => setSchoolName(event.target.value)}
-                            autoComplete="name" required />
+                <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                    {currentUser.name}
+                </Typography>
 
-                        <label>Email</label>
-                        <input className="registerInput" type="email" placeholder="Enter your email..."
-                            value={email}
-                            onChange={(event) => setEmail(event.target.value)}
-                            autoComplete="email" required />
+                <Typography variant="h6" color="textSecondary" gutterBottom sx={{ mb: 4 }}>
+                    Admin
+                </Typography>
 
-                        <label>Password</label>
-                        <input className="registerInput" type="password" placeholder="Enter your password..."
-                            value={password}
-                            onChange={(event) => setPassword(event.target.value)}
-                            autoComplete="new-password" />
-
-                        <button className="registerButton" type="submit" >Update</button>
-                    </form>
-                </div>
-            </Collapse> */}
-        </div>
+                <Grid container spacing={3} justifyContent="center" sx={{ maxWidth: '600px' }}>
+                    <Grid item xs={12} sm={6}>
+                        <InfoItem>
+                            <Label>Email</Label>
+                            <Value>{currentUser.email}</Value>
+                        </InfoItem>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <InfoItem>
+                            <Label>School Name</Label>
+                            <Value>{currentUser.schoolName}</Value>
+                        </InfoItem>
+                    </Grid>
+                </Grid>
+            </Paper>
+        </Container>
     )
 }
 
-export default AdminProfile
+export default AdminProfile;
 
-// const styles = {
-//     attendanceButton: {
-//         backgroundColor: "#270843",
-//         "&:hover": {
-//             backgroundColor: "#3f1068",
-//         }
-//     }
-// }
+const InfoItem = styled(Box)`
+    background-color: var(--bg-body);
+    padding: 1.5rem;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--border-color);
+    height: 100%;
+    transition: transform 0.2s;
+    
+    &:hover {
+        transform: translateY(-2px);
+    }
+`;
+
+const Label = styled(Typography)`
+    && {
+        color: var(--text-tertiary);
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
+`;
+
+const Value = styled(Typography)`
+    && {
+        color: var(--text-primary);
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+`;

@@ -1,21 +1,21 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import { getAllStudents } from '../../../redux/studentRelated/studentHandle';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import {
-    Paper, Box, IconButton
+    Paper, Box, IconButton, TextField, InputAdornment, Typography, Container, Grid
 } from '@mui/material';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import { BlackButton, BlueButton, GreenButton } from '../../../components/buttonStyles';
 import TableTemplate from '../../../components/TableTemplate';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import SpeedDialTemplate from '../../../components/SpeedDialTemplate';
+import SearchIcon from '@mui/icons-material/Search';
 
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
-// import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Grow from '@mui/material/Grow';
@@ -25,7 +25,6 @@ import MenuList from '@mui/material/MenuList';
 import Popup from '../../../components/Popup';
 
 const ShowStudents = () => {
-
     const navigate = useNavigate()
     const dispatch = useDispatch();
     const { studentsList, loading, error, response } = useSelector((state) => state.student);
@@ -39,19 +38,13 @@ const ShowStudents = () => {
         console.log(error);
     }
 
-    const [showPopup, setShowPopup] = React.useState(false);
-    const [message, setMessage] = React.useState("");
+    const [showPopup, setShowPopup] = useState(false);
+    const [message, setMessage] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
 
     const deleteHandler = (deleteID, address) => {
-        console.log(deleteID);
-        console.log(address);
         setMessage("Sorry the delete function has been disabled for now.")
         setShowPopup(true)
-
-        // dispatch(deleteUser(deleteID, address))
-        //     .then(() => {
-        //         dispatch(getAllStudents(currentUser._id));
-        //     })
     }
 
     const studentColumns = [
@@ -69,6 +62,11 @@ const ShowStudents = () => {
         };
     })
 
+    const filteredRows = studentRows && studentRows.filter((row) => {
+        return row.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            row.rollNum.toString().includes(searchTerm);
+    });
+
     const StudentButtonHaver = ({ row }) => {
         const options = ['Take Attendance', 'Provide Marks'];
 
@@ -77,7 +75,6 @@ const ShowStudents = () => {
         const [selectedIndex, setSelectedIndex] = React.useState(0);
 
         const handleClick = () => {
-            console.info(`You clicked ${options[selectedIndex]}`);
             if (selectedIndex === 0) {
                 handleAttendance();
             } else if (selectedIndex === 1) {
@@ -185,21 +182,45 @@ const ShowStudents = () => {
     ];
 
     return (
-        <>
+        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             {loading ?
                 <div>Loading...</div>
                 :
                 <>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                            Students
+                        </Typography>
+                        <TextField
+                            placeholder="Search students..."
+                            variant="outlined"
+                            size="small"
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                ),
+                                style: {
+                                    borderRadius: 'var(--border-radius-md)',
+                                    backgroundColor: 'var(--bg-paper)',
+                                }
+                            }}
+                            sx={{ width: '300px' }}
+                        />
+                    </Box>
+
                     {response ?
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
                             <GreenButton variant="contained" onClick={() => navigate("/Admin/addstudents")}>
                                 Add Students
                             </GreenButton>
                         </Box>
                         :
-                        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+                        <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: 'var(--border-radius-lg)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
                             {Array.isArray(studentsList) && studentsList.length > 0 &&
-                                <TableTemplate buttonHaver={StudentButtonHaver} columns={studentColumns} rows={studentRows} />
+                                <TableTemplate buttonHaver={StudentButtonHaver} columns={studentColumns} rows={filteredRows} />
                             }
                             <SpeedDialTemplate actions={actions} />
                         </Paper>
@@ -207,7 +228,7 @@ const ShowStudents = () => {
                 </>
             }
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
-        </>
+        </Container>
     );
 };
 

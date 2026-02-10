@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllNotices } from '../redux/noticeRelated/noticeHandle';
-import { Paper } from '@mui/material';
+import { Paper, Typography } from '@mui/material';
 import TableViewTemplate from './TableViewTemplate';
 
 const SeeNotice = () => {
@@ -40,15 +40,17 @@ const SeeNotice = () => {
         };
     });
     return (
-        <div style={{ marginTop: '50px', marginRight: '20px' }}>
+        <div style={{ marginTop: '20px' }}>
             {loading ? (
-                <div style={{ fontSize: '20px' }}>Loading...</div>
+                <Typography variant="h5">Loading...</Typography>
             ) : response ? (
-                <div style={{ fontSize: '20px' }}>No Notices to Show Right Now</div>
+                <Typography variant="h5">No Notices to Show Right Now</Typography>
             ) : (
                 <>
-                    <h3 style={{ fontSize: '30px', marginBottom: '40px' }}>Notices</h3>
-                    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+                    <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                        Notices
+                    </Typography>
+                    <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: 'var(--border-radius-lg)', boxShadow: 'none' }}>
                         {Array.isArray(noticesList) && noticesList.length > 0 &&
                             <TableViewTemplate columns={noticeColumns} rows={noticeRows} />
                         }
