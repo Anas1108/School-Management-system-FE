@@ -11,25 +11,33 @@ const drawerWidth = 260; // Increased width for better whitespace
 
 export const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
-        backgroundColor: theme.palette.primary.main,
-        color: theme.palette.common.white,
-        fontWeight: 'bold',
-        fontSize: '0.95rem',
+        backgroundColor: 'var(--color-gray-50)',
+        color: 'var(--text-secondary)',
+        fontWeight: 600,
+        fontSize: '0.8rem',
+        letterSpacing: '0.05em',
+        textTransform: 'uppercase',
+        fontFamily: 'var(--font-family-sans)',
+        padding: '14px 20px',
+        borderBottom: '2px solid var(--color-primary-200)',
+        whiteSpace: 'nowrap',
     },
     [`&.${tableCellClasses.body}`]: {
-        fontSize: 14,
+        fontSize: '0.9rem',
+        fontFamily: 'var(--font-family-sans)',
+        color: 'var(--text-primary)',
+        padding: '16px 20px',
+        borderBottom: '1px solid var(--border-color)',
     },
 }));
 
 export const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    '&:nth-of-type(odd)': {
-        backgroundColor: 'var(--bg-paper)',
-    },
+    backgroundColor: 'var(--bg-paper)',
+    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
     '&:hover': {
         backgroundColor: 'var(--color-primary-50)',
-        transition: 'background-color 0.2s',
+        boxShadow: 'inset 3px 0 0 0 var(--color-primary-500)',
     },
-    // hide last border
     '&:last-child td, &:last-child th': {
         border: 0,
     },

@@ -4,24 +4,19 @@ import { useNavigate } from "react-router-dom";
 import { getAllStudents } from '../../../redux/studentRelated/studentHandle';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import {
-    Paper, Box, IconButton, TextField, InputAdornment, Typography, Container, Grid
+    Paper, Box, TextField, InputAdornment, Typography, Container, Tooltip, Button
 } from '@mui/material';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
-import { BlackButton, BlueButton, GreenButton } from '../../../components/buttonStyles';
+import { ActionIconButtonPrimary, ActionIconButtonError, ActionIconButtonSuccess, ActionIconButtonInfo } from '../../../components/buttonStyles';
+import { GreenButton } from '../../../components/buttonStyles';
 import TableTemplate from '../../../components/TableTemplate';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
-import SpeedDialTemplate from '../../../components/SpeedDialTemplate';
 import SearchIcon from '@mui/icons-material/Search';
-
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import { KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
-import Grow from '@mui/material/Grow';
-import Popper from '@mui/material/Popper';
-import MenuItem from '@mui/material/MenuItem';
-import MenuList from '@mui/material/MenuList';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
+import GradeOutlinedIcon from '@mui/icons-material/GradeOutlined';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import AddIcon from '@mui/icons-material/Add';
 import Popup from '../../../components/Popup';
 
 const ShowStudents = () => {
@@ -68,118 +63,36 @@ const ShowStudents = () => {
     });
 
     const StudentButtonHaver = ({ row }) => {
-        const options = ['Take Attendance', 'Provide Marks'];
-
-        const [open, setOpen] = React.useState(false);
-        const anchorRef = React.useRef(null);
-        const [selectedIndex, setSelectedIndex] = React.useState(0);
-
-        const handleClick = () => {
-            if (selectedIndex === 0) {
-                handleAttendance();
-            } else if (selectedIndex === 1) {
-                handleMarks();
-            }
-        };
-
-        const handleAttendance = () => {
-            navigate("/Admin/students/student/attendance/" + row.id)
-        }
-        const handleMarks = () => {
-            navigate("/Admin/students/student/marks/" + row.id)
-        };
-
-        const handleMenuItemClick = (event, index) => {
-            setSelectedIndex(index);
-            setOpen(false);
-        };
-
-        const handleToggle = () => {
-            setOpen((prevOpen) => !prevOpen);
-        };
-
-        const handleClose = (event) => {
-            if (anchorRef.current && anchorRef.current.contains(event.target)) {
-                return;
-            }
-
-            setOpen(false);
-        };
         return (
             <>
-                <IconButton onClick={() => deleteHandler(row.id, "Student")}>
-                    <PersonRemoveIcon color="error" />
-                </IconButton>
-                <BlueButton variant="contained"
-                    onClick={() => navigate("/Admin/students/student/" + row.id)}>
-                    View
-                </BlueButton>
-                <React.Fragment>
-                    <ButtonGroup variant="contained" ref={anchorRef} aria-label="split button">
-                        <Button onClick={handleClick}>{options[selectedIndex]}</Button>
-                        <BlackButton
-                            size="small"
-                            aria-controls={open ? 'split-button-menu' : undefined}
-                            aria-expanded={open ? 'true' : undefined}
-                            aria-label="select merge strategy"
-                            aria-haspopup="menu"
-                            onClick={handleToggle}
-                        >
-                            {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-                        </BlackButton>
-                    </ButtonGroup>
-                    <Popper
-                        sx={{
-                            zIndex: 1,
-                        }}
-                        open={open}
-                        anchorEl={anchorRef.current}
-                        role={undefined}
-                        transition
-                        disablePortal
-                    >
-                        {({ TransitionProps, placement }) => (
-                            <Grow
-                                {...TransitionProps}
-                                style={{
-                                    transformOrigin:
-                                        placement === 'bottom' ? 'center top' : 'center bottom',
-                                }}
-                            >
-                                <Paper>
-                                    <ClickAwayListener onClickAway={handleClose}>
-                                        <MenuList id="split-button-menu" autoFocusItem>
-                                            {options.map((option, index) => (
-                                                <MenuItem
-                                                    key={option}
-                                                    disabled={index === 2}
-                                                    selected={index === selectedIndex}
-                                                    onClick={(event) => handleMenuItemClick(event, index)}
-                                                >
-                                                    {option}
-                                                </MenuItem>
-                                            ))}
-                                        </MenuList>
-                                    </ClickAwayListener>
-                                </Paper>
-                            </Grow>
-                        )}
-                    </Popper>
-                </React.Fragment>
+                <Tooltip title="View" arrow>
+                    <ActionIconButtonPrimary
+                        onClick={() => navigate("/Admin/students/student/" + row.id)}>
+                        <VisibilityOutlinedIcon />
+                    </ActionIconButtonPrimary>
+                </Tooltip>
+                <Tooltip title="Take Attendance" arrow>
+                    <ActionIconButtonSuccess
+                        onClick={() => navigate("/Admin/students/student/attendance/" + row.id)}>
+                        <EventAvailableOutlinedIcon />
+                    </ActionIconButtonSuccess>
+                </Tooltip>
+                <Tooltip title="Provide Marks" arrow>
+                    <ActionIconButtonInfo
+                        onClick={() => navigate("/Admin/students/student/marks/" + row.id)}>
+                        <GradeOutlinedIcon />
+                    </ActionIconButtonInfo>
+                </Tooltip>
+                <Tooltip title="Delete" arrow>
+                    <ActionIconButtonError
+                        onClick={() => deleteHandler(row.id, "Student")}>
+                        <DeleteOutlineIcon />
+                    </ActionIconButtonError>
+                </Tooltip>
             </>
         );
     };
 
-    const actions = [
-        {
-            icon: <PersonAddAlt1Icon color="primary" />, name: 'Add New Student',
-            action: () => navigate("/Admin/addstudents")
-        },
-        {
-            icon: <PersonRemoveIcon color="error" />, name: 'Delete All Students',
-            action: () => deleteHandler(currentUser._id, "Students")
-        },
-    ];
 
     return (
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -191,24 +104,39 @@ const ShowStudents = () => {
                         <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
                             Students
                         </Typography>
-                        <TextField
-                            placeholder="Search students..."
-                            variant="outlined"
-                            size="small"
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                ),
-                                style: {
-                                    borderRadius: 'var(--border-radius-md)',
-                                    backgroundColor: 'var(--bg-paper)',
-                                }
-                            }}
-                            sx={{ width: '300px' }}
-                        />
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <TextField
+                                placeholder="Search students..."
+                                variant="outlined"
+                                size="small"
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon />
+                                        </InputAdornment>
+                                    ),
+                                    style: {
+                                        borderRadius: 'var(--border-radius-md)',
+                                        backgroundColor: 'var(--bg-paper)',
+                                    }
+                                }}
+                                sx={{ width: '260px' }}
+                            />
+                            <Button
+                                variant="contained"
+                                startIcon={<AddIcon />}
+                                onClick={() => navigate("/Admin/addstudents")}
+                                sx={{
+                                    textTransform: 'none', fontWeight: 600, fontFamily: 'var(--font-family-sans)',
+                                    borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--color-primary-600)',
+                                    boxShadow: 'none', px: 2.5, whiteSpace: 'nowrap',
+                                    '&:hover': { backgroundColor: 'var(--color-primary-700)', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
+                                }}
+                            >
+                                Add Student
+                            </Button>
+                        </Box>
                     </Box>
 
                     {response ?
@@ -222,7 +150,6 @@ const ShowStudents = () => {
                             {Array.isArray(studentsList) && studentsList.length > 0 &&
                                 <TableTemplate buttonHaver={StudentButtonHaver} columns={studentColumns} rows={filteredRows} />
                             }
-                            <SpeedDialTemplate actions={actions} />
                         </Paper>
                     }
                 </>

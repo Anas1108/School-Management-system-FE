@@ -1,104 +1,203 @@
 import styled from 'styled-components';
-import { Button } from '@mui/material';
+import { Button, IconButton } from '@mui/material';
+
+const baseButtonStyles = `
+  && {
+    border-radius: var(--border-radius-md);
+    padding: 6px 16px;
+    font-weight: 600;
+    font-family: var(--font-family-sans);
+    text-transform: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.01em;
+    box-shadow: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      transform: translateY(-1px);
+    }
+    &:active {
+      transform: translateY(0);
+    }
+  }
+`;
 
 export const RedButton = styled(Button)`
+  ${baseButtonStyles}
   && {
-    background-color: #f00;
+    background-color: var(--color-error);
     color: white;
-    margin-left: 4px;
     &:hover {
-      background-color: #eb7979;
-      border-color: #f26767;
-      box-shadow: none;
+      background-color: #dc2626;
     }
   }
 `;
 
 export const BlackButton = styled(Button)`
+  ${baseButtonStyles}
   && {
-    background-color: #000000;
+    background-color: var(--color-gray-800);
     color: white;
-    margin-left: 4px;
     &:hover {
-      background-color: #212020;
-      border-color: #212020;
-      box-shadow: none;
+      background-color: var(--color-gray-700);
     }
   }
 `;
 
 export const DarkRedButton = styled(Button)`
+  ${baseButtonStyles}
   && {
-    background-color: #650909;
+    background-color: #b91c1c;
     color: white;
     &:hover {
-      background-color: #eb7979;
-      border-color: #f26767;
-      box-shadow: none;
+      background-color: #991b1b;
     }
   }
 `;
 
 export const BlueButton = styled(Button)`
+  ${baseButtonStyles}
   && {
-    background-color: #080a43;
+    background-color: var(--color-primary-600);
     color: #fff;
     &:hover {
-      background-color: #0a1e82;
+      background-color: var(--color-primary-700);
     }
   }
 `;
 
 export const PurpleButton = styled(Button)`
+  ${baseButtonStyles}
   && {
-    background-color: #270843;
+    background-color: var(--color-primary-700);
     color: #fff;
     &:hover {
-      background-color: #3f1068;
+      background-color: var(--color-primary-800);
     }
   }
 `;
 
 export const LightPurpleButton = styled(Button)`
+  ${baseButtonStyles}
   && {
-    background-color: #7f56da;
+    background-color: var(--color-primary-500);
     color: #fff;
     &:hover {
-      background-color: #7a1ccb;
+      background-color: var(--color-primary-600);
     }
   }
 `;
 
 export const GreenButton = styled(Button)`
+  ${baseButtonStyles}
   && {
-    background-color: #133104;
+    background-color: var(--color-success);
     color: #fff;
     &:hover {
-      background-color: #266810;
+      background-color: #059669;
     }
   }
 `;
 
 export const BrownButton = styled(Button)`
+  ${baseButtonStyles}
   && {
-    background-color: #2c1006;
+    background-color: #92400e;
     color: white;
     &:hover {
-      background-color: #40220c;
-      border-color: #40220c;
-      box-shadow: none;
+      background-color: #78350f;
     }
   }
 `;
 
 export const IndigoButton = styled(Button)`
+  ${baseButtonStyles}
   && {
-    background-color: #2f2b80;
+    background-color: var(--color-info);
     color: white;
     &:hover {
-      background-color: #534ea6;
-      border-color: #473d90;
-      box-shadow: none;
+      background-color: #2563eb;
+    }
+  }
+`;
+
+// ==========================================
+// Compact Action Icon Buttons for Tables
+// ==========================================
+
+const baseIconBtnStyles = `
+  && {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--border-radius-md);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    .MuiSvgIcon-root {
+      font-size: 1.15rem;
+    }
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    }
+    &:active {
+      transform: translateY(0);
+    }
+  }
+`;
+
+export const ActionIconButtonPrimary = styled(IconButton)`
+  ${baseIconBtnStyles}
+  && {
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-700);
+    &:hover {
+      background-color: var(--color-primary-100);
+    }
+  }
+`;
+
+export const ActionIconButtonSuccess = styled(IconButton)`
+  ${baseIconBtnStyles}
+  && {
+    background-color: #ecfdf5;
+    color: var(--color-success);
+    &:hover {
+      background-color: #d1fae5;
+    }
+  }
+`;
+
+export const ActionIconButtonError = styled(IconButton)`
+  ${baseIconBtnStyles}
+  && {
+    background-color: #fef2f2;
+    color: var(--color-error);
+    &:hover {
+      background-color: #fee2e2;
+    }
+  }
+`;
+
+export const ActionIconButtonInfo = styled(IconButton)`
+  ${baseIconBtnStyles}
+  && {
+    background-color: #eff6ff;
+    color: var(--color-info);
+    &:hover {
+      background-color: #dbeafe;
+    }
+  }
+`;
+
+export const ActionIconButtonWarning = styled(IconButton)`
+  ${baseIconBtnStyles}
+  && {
+    background-color: #fffbeb;
+    color: var(--color-warning);
+    &:hover {
+      background-color: #fef3c7;
     }
   }
 `;

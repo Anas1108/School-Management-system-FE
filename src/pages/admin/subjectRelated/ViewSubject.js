@@ -2,13 +2,16 @@ import React, { useEffect, useState } from 'react'
 import { getClassStudents, getSubjectDetails } from '../../../redux/sclassRelated/sclassHandle';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, Tab, Container, Typography, BottomNavigation, BottomNavigationAction, Paper, Grid } from '@mui/material';
-import { BlueButton, GreenButton, PurpleButton } from '../../../components/buttonStyles';
+import { Box, Tab, Container, Typography, BottomNavigation, BottomNavigationAction, Paper, Grid, Tooltip } from '@mui/material';
+import { GreenButton, ActionIconButtonPrimary, ActionIconButtonSuccess, ActionIconButtonInfo } from '../../../components/buttonStyles';
 import TableTemplate from '../../../components/TableTemplate';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import styled from 'styled-components';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
+import GradeOutlinedIcon from '@mui/icons-material/GradeOutlined';
 
 import InsertChartIcon from '@mui/icons-material/InsertChart';
 import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
@@ -59,20 +62,18 @@ const ViewSubject = () => {
   const StudentsAttendanceButtonHaver = ({ row }) => {
     return (
       <>
-        <BlueButton
-          variant="contained"
-          onClick={() => navigate("/Admin/students/student/" + row.id)}
-        >
-          View
-        </BlueButton>
-        <PurpleButton
-          variant="contained"
-          onClick={() =>
-            navigate(`/Admin/subject/student/attendance/${row.id}/${subjectID}`)
-          }
-        >
-          Take Attendance
-        </PurpleButton>
+        <Tooltip title="View" arrow>
+          <ActionIconButtonPrimary
+            onClick={() => navigate("/Admin/students/student/" + row.id)}>
+            <VisibilityOutlinedIcon />
+          </ActionIconButtonPrimary>
+        </Tooltip>
+        <Tooltip title="Take Attendance" arrow>
+          <ActionIconButtonSuccess
+            onClick={() => navigate(`/Admin/subject/student/attendance/${row.id}/${subjectID}`)}>
+            <EventAvailableOutlinedIcon />
+          </ActionIconButtonSuccess>
+        </Tooltip>
       </>
     );
   };
@@ -80,16 +81,18 @@ const ViewSubject = () => {
   const StudentsMarksButtonHaver = ({ row }) => {
     return (
       <>
-        <BlueButton
-          variant="contained"
-          onClick={() => navigate("/Admin/students/student/" + row.id)}
-        >
-          View
-        </BlueButton>
-        <PurpleButton variant="contained"
-          onClick={() => navigate(`/Admin/subject/student/marks/${row.id}/${subjectID}`)}>
-          Provide Marks
-        </PurpleButton>
+        <Tooltip title="View" arrow>
+          <ActionIconButtonPrimary
+            onClick={() => navigate("/Admin/students/student/" + row.id)}>
+            <VisibilityOutlinedIcon />
+          </ActionIconButtonPrimary>
+        </Tooltip>
+        <Tooltip title="Provide Marks" arrow>
+          <ActionIconButtonInfo
+            onClick={() => navigate(`/Admin/subject/student/marks/${row.id}/${subjectID}`)}>
+            <GradeOutlinedIcon />
+          </ActionIconButtonInfo>
+        </Tooltip>
       </>
     );
   };
