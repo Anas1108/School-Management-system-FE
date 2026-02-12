@@ -49,7 +49,7 @@ const StudentComplain = () => {
 
     return (
         <>
-            <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
+            <Container maxWidth={false} sx={{ mt: 4, mb: 4 }}>
                 <FormCard elevation={3}>
                     <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold', color: 'var(--text-primary)', textAlign: 'center' }}>
                         Submit Complaint

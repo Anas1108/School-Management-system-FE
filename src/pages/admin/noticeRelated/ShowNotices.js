@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import {
-    Paper, Box, Tooltip, Button
+    Paper, Box, Tooltip, Button, Container, Typography
 } from '@mui/material';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -66,35 +66,37 @@ const ShowNotices = () => {
     };
 
     return (
-        <>
+        <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
             {loading ?
                 <div>Loading...</div>
                 :
                 <>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                            Notices
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <Button
+                                variant="contained"
+                                startIcon={<AddIcon />}
+                                onClick={() => navigate("/Admin/addnotice")}
+                                sx={{
+                                    textTransform: 'none', fontWeight: 600, fontFamily: 'var(--font-family-sans)',
+                                    borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--color-primary-600)',
+                                    boxShadow: 'none', px: 2.5, whiteSpace: 'nowrap',
+                                    '&:hover': { backgroundColor: 'var(--color-primary-700)', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
+                                }}
+                            >
+                                Add Notice
+                            </Button>
+                        </Box>
+                    </Box>
                     {response ?
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-                            <GreenButton variant="contained"
-                                onClick={() => navigate("/Admin/addnotice")}>
-                                Add Notice
-                            </GreenButton>
+                            {/* Response content if needed, currently reusing button above or handling empty state differently */}
                         </Box>
                         :
                         <>
-                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-                                <Button
-                                    variant="contained"
-                                    startIcon={<AddIcon />}
-                                    onClick={() => navigate("/Admin/addnotice")}
-                                    sx={{
-                                        textTransform: 'none', fontWeight: 600, fontFamily: 'var(--font-family-sans)',
-                                        borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--color-primary-600)',
-                                        boxShadow: 'none', px: 2.5, whiteSpace: 'nowrap',
-                                        '&:hover': { backgroundColor: 'var(--color-primary-700)', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
-                                    }}
-                                >
-                                    Add Notice
-                                </Button>
-                            </Box>
                             {Array.isArray(noticesList) && noticesList.length > 0 &&
                                 <TableTemplate buttonHaver={NoticeButtonHaver} columns={noticeColumns} rows={noticeRows} />
                             }
@@ -102,7 +104,7 @@ const ShowNotices = () => {
                     }
                 </>
             }
-        </>
+        </Container>
     );
 };
 
