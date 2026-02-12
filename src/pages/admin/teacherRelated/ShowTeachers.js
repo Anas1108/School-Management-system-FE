@@ -89,8 +89,8 @@ const ShowTeachers = () => {
     };
 
     return (
-        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
                     Teachers
                 </Typography>
@@ -128,9 +128,7 @@ const ShowTeachers = () => {
                     </Button>
                 </Box>
             </Box>
-            <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: 'var(--border-radius-lg)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
-                <TableTemplate buttonHaver={TeacherButtonHaver} columns={teacherColumns} rows={filteredRows} />
-            </Paper>
+            <TableTemplate buttonHaver={TeacherButtonHaver} columns={teacherColumns} rows={filteredRows} />
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
         </Container>
     );

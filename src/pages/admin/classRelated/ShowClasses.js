@@ -96,7 +96,7 @@ const ShowClasses = () => {
 
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+    <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
       {loading ?
         <div>Loading...</div>
         :
@@ -109,7 +109,7 @@ const ShowClasses = () => {
             </Box>
             :
             <>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
                   Classes
                 </Typography>
@@ -148,9 +148,7 @@ const ShowClasses = () => {
                 </Box>
               </Box>
               {Array.isArray(filteredRows) && filteredRows.length > 0 &&
-                <Paper sx={{ borderRadius: 'var(--border-radius-lg)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
-                  <TableTemplate buttonHaver={SclassButtonHaver} columns={sclassColumns} rows={filteredRows} />
-                </Paper>
+                <TableTemplate buttonHaver={SclassButtonHaver} columns={sclassColumns} rows={filteredRows} />
               }
             </>}
         </>

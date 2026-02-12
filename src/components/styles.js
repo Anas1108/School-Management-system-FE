@@ -79,6 +79,10 @@ export const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 
                 duration: theme.transitions.duration.enteringScreen,
             }),
             boxSizing: 'border-box',
+            height: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
             ...(!open && {
                 overflowX: 'hidden',
                 transition: theme.transitions.create('width', {

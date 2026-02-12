@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom'
 import { getClassStudents } from "../../redux/sclassRelated/sclassHandle";
-import { Paper, Box, Typography, Tooltip } from '@mui/material';
+import { Paper, Box, Typography, Tooltip, Container } from '@mui/material';
 import { ActionIconButtonPrimary, ActionIconButtonSuccess, ActionIconButtonInfo } from "../../components/buttonStyles";
 import TableTemplate from "../../components/TableTemplate";
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
@@ -80,7 +80,7 @@ const TeacherClassDetails = () => {
                             </Box>
                         </>
                     ) : (
-                        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+                        <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
                             <Typography variant="h5" gutterBottom>
                                 Students List:
                             </Typography>
@@ -88,7 +88,7 @@ const TeacherClassDetails = () => {
                             {Array.isArray(sclassStudents) && sclassStudents.length > 0 &&
                                 <TableTemplate buttonHaver={StudentsButtonHaver} columns={studentColumns} rows={studentRows} />
                             }
-                        </Paper>
+                        </Container>
                     )}
                 </>
             )}

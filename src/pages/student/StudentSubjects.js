@@ -46,7 +46,7 @@ const StudentSubjects = () => {
 
     const renderTableSection = () => {
         return (
-            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
                 <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold', color: 'var(--text-primary)' }}>
                     Subject Marks
                 </Typography>
@@ -81,7 +81,7 @@ const StudentSubjects = () => {
 
     const renderChartSection = () => {
         return (
-            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
                 <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold', color: 'var(--text-primary)' }}>
                     Marks Chart
                 </Typography>
@@ -92,7 +92,7 @@ const StudentSubjects = () => {
 
     const renderClassDetailsSection = () => {
         return (
-            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
                 <ClassDetailsCard>
                     <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold', color: 'var(--text-primary)', textAlign: 'center' }}>
                         Class Details

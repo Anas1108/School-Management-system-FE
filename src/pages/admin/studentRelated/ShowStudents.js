@@ -95,12 +95,12 @@ const ShowStudents = () => {
 
 
     return (
-        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
             {loading ?
                 <div>Loading...</div>
                 :
                 <>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                         <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
                             Students
                         </Typography>
@@ -146,11 +146,11 @@ const ShowStudents = () => {
                             </GreenButton>
                         </Box>
                         :
-                        <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: 'var(--border-radius-lg)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
+                        <>
                             {Array.isArray(studentsList) && studentsList.length > 0 &&
                                 <TableTemplate buttonHaver={StudentButtonHaver} columns={studentColumns} rows={filteredRows} />
                             }
-                        </Paper>
+                        </>
                     }
                 </>
             }

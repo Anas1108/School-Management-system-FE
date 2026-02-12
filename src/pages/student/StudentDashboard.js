@@ -29,7 +29,7 @@ const StudentDashboard = () => {
 
     return (
         <>
-            <Box sx={{ display: 'flex' }}>
+            <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
                 <CssBaseline />
                 <AppBar open={open} position='absolute'>
                     <Toolbar sx={{ pr: '24px' }}>
@@ -64,24 +64,26 @@ const StudentDashboard = () => {
                         </IconButton>
                     </Toolbar>
                     <Divider />
-                    <List component="nav">
+                    <List component="nav" sx={{ flex: 1, overflow: 'hidden' }}>
                         <StudentSideBar />
                     </List>
                 </Drawer>
                 <Box component="main" sx={styles.boxStyled}>
                     <Toolbar />
-                    <Routes>
-                        <Route path="/" element={<StudentHomePage />} />
-                        <Route path='*' element={<Navigate to="/" />} />
-                        <Route path="/Student/dashboard" element={<StudentHomePage />} />
-                        <Route path="/Student/profile" element={<StudentProfile />} />
+                    <Box sx={{ flex: 1, overflow: 'hidden', background: 'var(--bg-body)', p: 4 }}>
+                        <Routes>
+                            <Route path="/" element={<StudentHomePage />} />
+                            <Route path='*' element={<Navigate to="/" />} />
+                            <Route path="/Student/dashboard" element={<StudentHomePage />} />
+                            <Route path="/Student/profile" element={<StudentProfile />} />
 
-                        <Route path="/Student/subjects" element={<StudentSubjects />} />
-                        <Route path="/Student/attendance" element={<ViewStdAttendance />} />
-                        <Route path="/Student/complain" element={<StudentComplain />} />
+                            <Route path="/Student/subjects" element={<StudentSubjects />} />
+                            <Route path="/Student/attendance" element={<ViewStdAttendance />} />
+                            <Route path="/Student/complain" element={<StudentComplain />} />
 
-                        <Route path="/logout" element={<Logout />} />
-                    </Routes>
+                            <Route path="/logout" element={<Logout />} />
+                        </Routes>
+                    </Box>
                 </Box>
             </Box>
         </>
@@ -98,7 +100,9 @@ const styles = {
                 : theme.palette.grey[900],
         flexGrow: 1,
         height: '100vh',
-        overflow: 'auto',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
     },
     toolBarStyled: {
         display: 'flex',

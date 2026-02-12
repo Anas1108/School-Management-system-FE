@@ -64,7 +64,7 @@ const ViewStdAttendance = () => {
 
     const renderTableSection = () => {
         return (
-            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
                 <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold', color: 'var(--text-primary)' }}>
                     Attendance
                 </Typography>
@@ -154,7 +154,7 @@ const ViewStdAttendance = () => {
 
     const renderChartSection = () => {
         return (
-            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
                 <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold', color: 'var(--text-primary)' }}>
                     Attendance Chart
                 </Typography>

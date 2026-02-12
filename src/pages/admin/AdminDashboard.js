@@ -49,7 +49,7 @@ const AdminDashboard = () => {
     };
 
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
             <CssBaseline />
             <AppBar open={open} position='absolute'>
                 <Toolbar sx={{ pr: '24px' }}>
@@ -100,13 +100,13 @@ const AdminDashboard = () => {
                     </IconButton>
                 </Toolbar>
                 <Divider />
-                <List component="nav">
+                <List component="nav" sx={{ flex: 1, overflow: 'hidden' }}>
                     <SideBar open={open} />
                 </List>
             </Drawer>
             <Box component="main" sx={styles.boxStyled}>
                 <Toolbar />
-                <Box sx={{ p: 4, minHeight: '100%', background: 'var(--bg-body)' }}>
+                <Box sx={{ flex: 1, overflow: 'hidden', background: 'var(--bg-body)', p: 4 }}>
                     <Routes>
                         <Route path="/" element={<AdminHomePage />} />
                         <Route path='*' element={<Navigate to="/" />} />
@@ -168,7 +168,9 @@ const styles = {
                 : theme.palette.grey[900],
         flexGrow: 1,
         height: '100vh',
-        overflow: 'auto',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
     },
     toolBarStyled: {
         display: 'flex',

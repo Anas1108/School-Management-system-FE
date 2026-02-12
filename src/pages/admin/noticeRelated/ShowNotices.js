@@ -80,7 +80,7 @@ const ShowNotices = () => {
                         </Box>
                         :
                         <>
-                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 3 }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
                                 <Button
                                     variant="contained"
                                     startIcon={<AddIcon />}
@@ -95,11 +95,9 @@ const ShowNotices = () => {
                                     Add Notice
                                 </Button>
                             </Box>
-                            <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: 'var(--border-radius-lg)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
-                                {Array.isArray(noticesList) && noticesList.length > 0 &&
-                                    <TableTemplate buttonHaver={NoticeButtonHaver} columns={noticeColumns} rows={noticeRows} />
-                                }
-                            </Paper>
+                            {Array.isArray(noticesList) && noticesList.length > 0 &&
+                                <TableTemplate buttonHaver={NoticeButtonHaver} columns={noticeColumns} rows={noticeRows} />
+                            }
                         </>
                     }
                 </>

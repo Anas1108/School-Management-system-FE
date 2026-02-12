@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Divider, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from '@mui/material';
+import { Box, Divider, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from '@mui/material';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -21,52 +21,56 @@ const StudentSideBar = () => {
     };
 
     return (
-        <>
-            <React.Fragment>
-                <StyledListItemButton component={Link} to="/" $active={isActive('/')}>
-                    <ListItemIcon>
-                        <HomeIcon sx={{ color: isActive('/') ? 'var(--color-primary-600)' : 'inherit' }} />
-                    </ListItemIcon>
-                    <ListItemText primary="Home" />
-                </StyledListItemButton>
-                <StyledListItemButton component={Link} to="/Student/subjects" $active={isActive('/Student/subjects')}>
-                    <ListItemIcon>
-                        <AssignmentIcon sx={{ color: isActive('/Student/subjects') ? 'var(--color-primary-600)' : 'inherit' }} />
-                    </ListItemIcon>
-                    <ListItemText primary="Subjects" />
-                </StyledListItemButton>
-                <StyledListItemButton component={Link} to="/Student/attendance" $active={isActive('/Student/attendance')}>
-                    <ListItemIcon>
-                        <ClassOutlinedIcon sx={{ color: isActive('/Student/attendance') ? 'var(--color-primary-600)' : 'inherit' }} />
-                    </ListItemIcon>
-                    <ListItemText primary="Attendance" />
-                </StyledListItemButton>
-                <StyledListItemButton component={Link} to="/Student/complain" $active={isActive('/Student/complain')}>
-                    <ListItemIcon>
-                        <AnnouncementOutlinedIcon sx={{ color: isActive('/Student/complain') ? 'var(--color-primary-600)' : 'inherit' }} />
-                    </ListItemIcon>
-                    <ListItemText primary="Complain" />
-                </StyledListItemButton>
-            </React.Fragment>
-            <Divider sx={{ my: 1 }} />
-            <React.Fragment>
-                <StyledListSubheader component="div" inset>
-                    User
-                </StyledListSubheader>
-                <StyledListItemButton component={Link} to="/Student/profile" $active={isActive('/Student/profile')}>
-                    <ListItemIcon>
-                        <AccountCircleOutlinedIcon sx={{ color: isActive('/Student/profile') ? 'var(--color-primary-600)' : 'inherit' }} />
-                    </ListItemIcon>
-                    <ListItemText primary="Profile" />
-                </StyledListItemButton>
-                <StyledListItemButton component={Link} to="/logout" $active={isActive('/logout')}>
-                    <ListItemIcon>
-                        <ExitToAppIcon sx={{ color: isActive('/logout') ? 'var(--color-primary-600)' : 'inherit' }} />
-                    </ListItemIcon>
-                    <ListItemText primary="Logout" />
-                </StyledListItemButton>
-            </React.Fragment>
-        </>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', pt: 1 }}>
+            <Box sx={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', '&::-webkit-scrollbar': { width: '4px' }, '&::-webkit-scrollbar-thumb': { backgroundColor: 'var(--color-gray-300)', borderRadius: '4px' } }}>
+                <React.Fragment>
+                    <StyledListItemButton component={Link} to="/" $active={isActive('/')}>
+                        <ListItemIcon>
+                            <HomeIcon sx={{ color: isActive('/') ? 'var(--color-primary-600)' : 'inherit' }} />
+                        </ListItemIcon>
+                        <ListItemText primary="Home" />
+                    </StyledListItemButton>
+                    <StyledListItemButton component={Link} to="/Student/subjects" $active={isActive('/Student/subjects')}>
+                        <ListItemIcon>
+                            <AssignmentIcon sx={{ color: isActive('/Student/subjects') ? 'var(--color-primary-600)' : 'inherit' }} />
+                        </ListItemIcon>
+                        <ListItemText primary="Subjects" />
+                    </StyledListItemButton>
+                    <StyledListItemButton component={Link} to="/Student/attendance" $active={isActive('/Student/attendance')}>
+                        <ListItemIcon>
+                            <ClassOutlinedIcon sx={{ color: isActive('/Student/attendance') ? 'var(--color-primary-600)' : 'inherit' }} />
+                        </ListItemIcon>
+                        <ListItemText primary="Attendance" />
+                    </StyledListItemButton>
+                    <StyledListItemButton component={Link} to="/Student/complain" $active={isActive('/Student/complain')}>
+                        <ListItemIcon>
+                            <AnnouncementOutlinedIcon sx={{ color: isActive('/Student/complain') ? 'var(--color-primary-600)' : 'inherit' }} />
+                        </ListItemIcon>
+                        <ListItemText primary="Complain" />
+                    </StyledListItemButton>
+                </React.Fragment>
+            </Box>
+            <Box>
+                <Divider sx={{ my: 1 }} />
+                <React.Fragment>
+                    <StyledListSubheader component="div" inset>
+                        User
+                    </StyledListSubheader>
+                    <StyledListItemButton component={Link} to="/Student/profile" $active={isActive('/Student/profile')}>
+                        <ListItemIcon>
+                            <AccountCircleOutlinedIcon sx={{ color: isActive('/Student/profile') ? 'var(--color-primary-600)' : 'inherit' }} />
+                        </ListItemIcon>
+                        <ListItemText primary="Profile" />
+                    </StyledListItemButton>
+                    <StyledListItemButton component={Link} to="/logout" $active={isActive('/logout')}>
+                        <ListItemIcon>
+                            <ExitToAppIcon sx={{ color: isActive('/logout') ? 'var(--color-primary-600)' : 'inherit' }} />
+                        </ListItemIcon>
+                        <ListItemText primary="Logout" />
+                    </StyledListItemButton>
+                </React.Fragment>
+            </Box>
+        </Box>
     )
 }
 

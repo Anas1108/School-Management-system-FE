@@ -72,46 +72,50 @@ const SideBar = ({ open }) => {
     );
 
     return (
-        <Box sx={{ px: open ? 2 : 1, pt: 2 }}>
-            <React.Fragment>
-                {open && (
-                    <ListSubheader component="div" inset sx={{
-                        bgcolor: 'transparent',
-                        color: 'var(--text-tertiary)',
-                        fontWeight: 600,
-                        fontSize: '0.75rem',
-                        textTransform: 'uppercase',
-                        letterSpacing: '1px',
-                        mb: 1,
-                        pl: 1
-                    }}>
-                        Menu
-                    </ListSubheader>
-                )}
+        <Box sx={{ px: open ? 2 : 1, pt: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <Box sx={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', '&::-webkit-scrollbar': { width: '4px' }, '&::-webkit-scrollbar-thumb': { backgroundColor: 'var(--color-gray-300)', borderRadius: '4px' } }}>
+                <React.Fragment>
+                    {open && (
+                        <ListSubheader component="div" inset sx={{
+                            bgcolor: 'transparent',
+                            color: 'var(--text-tertiary)',
+                            fontWeight: 600,
+                            fontSize: '0.75rem',
+                            textTransform: 'uppercase',
+                            letterSpacing: '1px',
+                            mb: 1,
+                            pl: 1
+                        }}>
+                            Menu
+                        </ListSubheader>
+                    )}
 
-                {mainMenuItems.map(renderMenuItem)}
-            </React.Fragment>
+                    {mainMenuItems.map(renderMenuItem)}
+                </React.Fragment>
+            </Box>
 
-            <Divider sx={{ my: 2, borderColor: 'var(--border-color)' }} />
+            <Box>
+                <Divider sx={{ my: 2, borderColor: 'var(--border-color)' }} />
 
-            <React.Fragment>
-                {open && (
-                    <ListSubheader component="div" inset sx={{
-                        bgcolor: 'transparent',
-                        color: 'var(--text-tertiary)',
-                        fontWeight: 600,
-                        fontSize: '0.75rem',
-                        textTransform: 'uppercase',
-                        letterSpacing: '1px',
-                        mb: 1,
-                        pl: 1
-                    }}>
-                        User
-                    </ListSubheader>
-                )}
+                <React.Fragment>
+                    {open && (
+                        <ListSubheader component="div" inset sx={{
+                            bgcolor: 'transparent',
+                            color: 'var(--text-tertiary)',
+                            fontWeight: 600,
+                            fontSize: '0.75rem',
+                            textTransform: 'uppercase',
+                            letterSpacing: '1px',
+                            mb: 1,
+                            pl: 1
+                        }}>
+                            User
+                        </ListSubheader>
+                    )}
 
-                {userMenuItems.map(renderMenuItem)}
-            </React.Fragment>
+                    {userMenuItems.map(renderMenuItem)}
+                </React.Fragment>
+            </Box>
         </Box>
     )
 }

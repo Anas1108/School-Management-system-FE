@@ -12,7 +12,7 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
             border: '1px solid var(--border-color)',
             background: 'var(--bg-paper)',
         }}>
-            <TableContainer>
+            <TableContainer sx={{ maxHeight: '75vh' }}>
                 <Table stickyHeader aria-label="data table">
                     <TableHead>
                         <StyledTableRow>

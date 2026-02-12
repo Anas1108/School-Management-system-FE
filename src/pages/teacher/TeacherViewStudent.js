@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../redux/userRelated/userHandle';
 import { useNavigate, useParams } from 'react-router-dom'
-import { Box, Button, Collapse, Table, TableBody, TableHead, Typography } from '@mui/material';
+import { Box, Button, Collapse, Table, TableBody, TableHead, Typography, Container } from '@mui/material';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import { calculateOverallAttendancePercentage, calculateSubjectAttendancePercentage, groupAttendanceBySubject } from '../../components/attendanceCalculator';
 import CustomPieChart from '../../components/CustomPieChart'
@@ -67,7 +67,7 @@ const TeacherViewStudent = () => {
                     <div>Loading...</div>
                 </>
                 :
-                <div>
+                <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
                     Name: {userDetails.name}
                     <br />
                     Roll Number: {userDetails.rollNum}
@@ -207,7 +207,7 @@ const TeacherViewStudent = () => {
                         Add Marks
                     </PurpleButton>
                     <br /><br /><br />
-                </div>
+                </Container>
             }
         </>
     )
