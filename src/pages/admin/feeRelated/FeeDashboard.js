@@ -5,6 +5,7 @@ import {
     DialogContent, DialogActions, Menu, Checkbox, ListItemText, IconButton, Tooltip
 } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import SearchIcon from '@mui/icons-material/Search';
 import { useDispatch, useSelector } from 'react-redux';
 import CountUp from 'react-countup';
 import axios from 'axios';
@@ -312,9 +313,12 @@ const FeeDashboard = () => {
             </Paper>
 
             {/* Quick Links */}
-            <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
+            <Box sx={{ mt: 3, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                 <Button variant="outlined" href="/Admin/fees/defaulters">View Defaulters</Button>
                 <Button variant="outlined" href="/Admin/fees/structure">Configure Fees</Button>
+                <Button variant="contained" color="secondary" href="/Admin/fees/search" startIcon={<SearchIcon />}>
+                    Search Student Fees
+                </Button>
             </Box>
 
             <CustomModal

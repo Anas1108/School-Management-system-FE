@@ -45,6 +45,7 @@ import AccountMenu from '../../components/AccountMenu';
 import FeeDashboard from './feeRelated/FeeDashboard';
 import FeeDefaulters from './feeRelated/FeeDefaulters';
 import FeeStructure from './feeRelated/FeeStructure';
+import FeeSearch from './feeRelated/FeeSearch';
 
 const AdminDashboard = () => {
     const [open, setOpen] = useState(true);
@@ -160,6 +161,7 @@ const AdminDashboard = () => {
                         <Route path="/Admin/fees" element={<FeeDashboard />} />
                         <Route path="/Admin/fees/defaulters" element={<FeeDefaulters />} />
                         <Route path="/Admin/fees/structure" element={<FeeStructure />} />
+                        <Route path="/Admin/fees/search" element={<FeeSearch />} />
 
                         <Route path="/logout" element={<Logout />} />
                     </Routes>
