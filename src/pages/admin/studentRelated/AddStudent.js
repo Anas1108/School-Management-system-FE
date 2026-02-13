@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { registerUser } from '../../../redux/userRelated/userHandle';
+import { registerUser, getUserDetails, updateUser } from '../../../redux/userRelated/userHandle';
 import Popup from '../../../components/Popup';
 import { underControl } from '../../../redux/userRelated/userSlice';
 import { getAllSclasses } from '../../../redux/sclassRelated/sclassHandle';
@@ -23,6 +23,8 @@ const AddStudent = ({ situation }) => {
     const [className, setClassName] = useState('')
     const [sclassName, setSclassName] = useState('')
 
+    const studentID = params.id
+
     const adminID = currentUser._id
     const role = "Student"
     const attendance = []
@@ -39,7 +41,21 @@ const AddStudent = ({ situation }) => {
 
     useEffect(() => {
         dispatch(getAllSclasses(adminID, "Sclass"));
-    }, [adminID, dispatch]);
+        if (situation === "Edit") {
+            dispatch(getUserDetails(studentID, "Student"));
+        }
+    }, [adminID, dispatch, situation, studentID]);
+
+    useEffect(() => {
+        if (situation === "Edit" && userState.userDetails) {
+            setName(userState.userDetails.name || '');
+            setRollNum(userState.userDetails.rollNum || '');
+            if (userState.userDetails.sclassName) {
+                setSclassName(userState.userDetails.sclassName._id || '');
+                setClassName(userState.userDetails.sclassName.sclassName || '');
+            }
+        }
+    }, [situation, userState.userDetails]);
 
     const changeHandler = (event) => {
         if (event.target.value === 'Select Class') {
@@ -64,12 +80,20 @@ const AddStudent = ({ situation }) => {
         }
         else {
             setLoader(true)
-            dispatch(registerUser(fields, role))
+            if (situation === "Edit") {
+                const updateFields = { name, rollNum, sclassName }
+                if (password !== "") {
+                    updateFields.password = password
+                }
+                dispatch(updateUser(updateFields, studentID, "Student"))
+            } else {
+                dispatch(registerUser(fields, role))
+            }
         }
     }
 
     useEffect(() => {
-        if (status === 'added') {
+        if ((status === 'added' || status === 'done') && loader) {
             dispatch(underControl())
             navigate(-1)
         }
@@ -83,13 +107,13 @@ const AddStudent = ({ situation }) => {
             setShowPopup(true)
             setLoader(false)
         }
-    }, [status, navigate, error, response, dispatch]);
+    }, [status, navigate, error, response, dispatch, loader]);
 
     return (
         <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
             <StyledPaper elevation={3}>
                 <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold', color: 'var(--text-primary)', textAlign: 'center' }}>
-                    Add Student
+                    {situation === "Edit" ? "Edit Student" : "Add Student"}
                 </Typography>
                 <form onSubmit={submitHandler}>
                     <Grid container spacing={3}>
@@ -105,7 +129,7 @@ const AddStudent = ({ situation }) => {
                             />
                         </Grid>
 
-                        {situation === "Student" && (
+                        {(situation === "Student" || situation === "Edit") && (
                             <Grid item xs={12}>
                                 <TextField
                                     fullWidth
@@ -146,7 +170,8 @@ const AddStudent = ({ situation }) => {
                                 value={password}
                                 onChange={(event) => setPassword(event.target.value)}
                                 autoComplete="new-password"
-                                required
+                                placeholder={situation === "Edit" ? "Leave blank to keep current password" : ""}
+                                required={situation !== "Edit"}
                             />
                         </Grid>
 
@@ -158,7 +183,7 @@ const AddStudent = ({ situation }) => {
                                 variant="contained"
                                 disabled={loader}
                             >
-                                {loader ? <CircularProgress size={24} color="inherit" /> : 'Add Student'}
+                                {loader ? <CircularProgress size={24} color="inherit" /> : (situation === "Edit" ? 'Update' : 'Add Student')}
                             </SubmitButton>
                         </Grid>
                     </Grid>

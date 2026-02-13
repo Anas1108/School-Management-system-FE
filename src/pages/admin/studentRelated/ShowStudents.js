@@ -20,6 +20,8 @@ import AddIcon from '@mui/icons-material/Add';
 import Popup from '../../../components/Popup';
 import StudentFeeHistoryModal from '../../../components/StudentFeeHistoryModal';
 import HistoryIcon from '@mui/icons-material/History';
+import EditNoteIcon from '@mui/icons-material/EditNote';
+import ConfirmModal from '../../../components/ConfirmModal';
 
 const ShowStudents = () => {
     const navigate = useNavigate()
@@ -43,9 +45,22 @@ const ShowStudents = () => {
     const [historyOpen, setHistoryOpen] = useState(false);
     const [historyStudentId, setHistoryStudentId] = useState(null);
 
-    const deleteHandler = (deleteID, address) => {
-        setMessage("Sorry the delete function has been disabled for now.")
-        setShowPopup(true)
+    const [openConfirm, setOpenConfirm] = useState(false);
+    const [deleteId, setDeleteId] = useState(null);
+    const [deleteAddress, setDeleteAddress] = useState("");
+
+    const deleteHandler = (id, address) => {
+        setDeleteId(id);
+        setDeleteAddress(address);
+        setOpenConfirm(true);
+    }
+
+    const confirmDelete = () => {
+        setOpenConfirm(false);
+        dispatch(deleteUser(deleteId, deleteAddress))
+            .then(() => {
+                dispatch(getAllStudents(currentUser._id));
+            })
     }
 
     const studentColumns = [
@@ -94,6 +109,12 @@ const ShowStudents = () => {
                         onClick={() => { setHistoryStudentId(row.id); setHistoryOpen(true); }}>
                         <HistoryIcon />
                     </ActionIconButtonPrimary>
+                </Tooltip>
+                <Tooltip title="Edit" arrow>
+                    <ActionIconButtonSuccess
+                        onClick={() => navigate("/Admin/students/edit/" + row.id)}>
+                        <EditNoteIcon />
+                    </ActionIconButtonSuccess>
                 </Tooltip>
                 <Tooltip title="Delete" arrow>
                     <ActionIconButtonError
@@ -171,6 +192,13 @@ const ShowStudents = () => {
                 open={historyOpen}
                 handleClose={() => setHistoryOpen(false)}
                 studentId={historyStudentId}
+            />
+            <ConfirmModal
+                open={openConfirm}
+                handleClose={() => setOpenConfirm(false)}
+                handleConfirm={confirmDelete}
+                title="Delete Student"
+                message="Are you sure you want to delete this student record? This action cannot be undone."
             />
         </Container>
     );

@@ -55,6 +55,7 @@ const userSlice = createSlice({
 
         doneSuccess: (state, action) => {
             state.userDetails = action.payload;
+            state.status = 'done';
             state.loading = false;
             state.error = null;
             state.response = null;
@@ -67,6 +68,7 @@ const userSlice = createSlice({
 
         getRequest: (state) => {
             state.loading = true;
+            state.status = 'loading';
         },
         getFailed: (state, action) => {
             state.response = action.payload;

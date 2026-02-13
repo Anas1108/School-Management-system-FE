@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUserDetails, updateUser } from '../../../redux/userRelated/userHandle';
+import { getUserDetails, updateUser, deleteUser } from '../../../redux/userRelated/userHandle';
 import { useNavigate, useParams } from 'react-router-dom'
 import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
 import { Box, Button, Collapse, IconButton, Table, TableBody, TableHead, Typography, Tab, Paper, BottomNavigation, BottomNavigationAction, Container, Grid, Avatar } from '@mui/material';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { KeyboardArrowUp, KeyboardArrowDown, Delete as DeleteIcon } from '@mui/icons-material';
+import { KeyboardArrowUp, KeyboardArrowDown, Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
+import ConfirmModal from '../../../components/ConfirmModal';
 import { removeStuff, updateStudentFields } from '../../../redux/studentRelated/studentHandle';
 import { calculateOverallAttendancePercentage, calculateSubjectAttendancePercentage, groupAttendanceBySubject } from '../../../components/attendanceCalculator';
 import CustomBarChart from '../../../components/CustomBarChart'
@@ -52,6 +53,8 @@ const ViewStudent = () => {
 
     const [openStates, setOpenStates] = useState({});
 
+    const [openConfirm, setOpenConfirm] = useState(false);
+
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
 
@@ -85,13 +88,15 @@ const ViewStudent = () => {
     }, [userDetails]);
 
     const deleteHandler = () => {
-        setMessage("Sorry the delete function has been disabled for now.")
-        setShowPopup(true)
+        setOpenConfirm(true);
+    }
 
-        // dispatch(deleteUser(studentID, address))
-        //     .then(() => {
-        //         navigate(-1)
-        //     })
+    const confirmDelete = () => {
+        setOpenConfirm(false);
+        dispatch(deleteUser(studentID, address))
+            .then(() => {
+                navigate(-1)
+            })
     }
 
     const removeHandler = (id, deladdress) => {
@@ -355,9 +360,14 @@ const ViewStudent = () => {
                             )
                         }
 
-                        <Button variant="outlined" color="error" sx={{ mt: 2 }} onClick={deleteHandler}>
-                            Delete Student
-                        </Button>
+                        <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+                            <Button variant="contained" color="primary" startIcon={<EditIcon />} onClick={() => navigate("/Admin/students/edit/" + studentID)}>
+                                Edit Student
+                            </Button>
+                            <Button variant="outlined" color="error" startIcon={<DeleteIcon />} onClick={deleteHandler}>
+                                Delete Student
+                            </Button>
+                        </Box>
                     </Grid>
                 </Grid>
             </ProfileCard>
