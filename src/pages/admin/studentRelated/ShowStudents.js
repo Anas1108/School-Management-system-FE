@@ -18,6 +18,8 @@ import GradeOutlinedIcon from '@mui/icons-material/GradeOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import AddIcon from '@mui/icons-material/Add';
 import Popup from '../../../components/Popup';
+import StudentFeeHistoryModal from '../../../components/StudentFeeHistoryModal';
+import HistoryIcon from '@mui/icons-material/History';
 
 const ShowStudents = () => {
     const navigate = useNavigate()
@@ -36,6 +38,10 @@ const ShowStudents = () => {
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
+
+    // Fee History Modal State
+    const [historyOpen, setHistoryOpen] = useState(false);
+    const [historyStudentId, setHistoryStudentId] = useState(null);
 
     const deleteHandler = (deleteID, address) => {
         setMessage("Sorry the delete function has been disabled for now.")
@@ -82,6 +88,12 @@ const ShowStudents = () => {
                         onClick={() => navigate("/Admin/students/student/marks/" + row.id)}>
                         <GradeOutlinedIcon />
                     </ActionIconButtonInfo>
+                </Tooltip>
+                <Tooltip title="Fee History" arrow>
+                    <ActionIconButtonPrimary
+                        onClick={() => { setHistoryStudentId(row.id); setHistoryOpen(true); }}>
+                        <HistoryIcon />
+                    </ActionIconButtonPrimary>
                 </Tooltip>
                 <Tooltip title="Delete" arrow>
                     <ActionIconButtonError
@@ -155,6 +167,11 @@ const ShowStudents = () => {
                 </>
             }
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
+            <StudentFeeHistoryModal
+                open={historyOpen}
+                handleClose={() => setHistoryOpen(false)}
+                studentId={historyStudentId}
+            />
         </Container>
     );
 };

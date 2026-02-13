@@ -20,7 +20,7 @@ const FeeStructure = () => {
 
     // Structure State
     const [selectedClass, setSelectedClass] = useState('');
-    const [structure, setStructure] = useState({ feeHeads: [], lateFee: 0 });
+    const [structure, setStructure] = useState({ feeHeads: [], lateFee: 0, dueDay: 10 });
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -32,7 +32,7 @@ const FeeStructure = () => {
         if (selectedClass) {
             fetchStructure(selectedClass);
         } else {
-            setStructure({ feeHeads: [], lateFee: 0 });
+            setStructure({ feeHeads: [], lateFee: 0, dueDay: 10 });
         }
     }, [selectedClass]);
 
@@ -72,10 +72,11 @@ const FeeStructure = () => {
                 // Backend returns populated feeHeads usually
                 setStructure({
                     feeHeads: result.data.feeHeads.map(h => ({ headId: h.headId._id, amount: h.amount })),
-                    lateFee: result.data.lateFee
+                    lateFee: result.data.lateFee,
+                    dueDay: result.data.dueDay || 10
                 });
             } else {
-                setStructure({ feeHeads: [], lateFee: 0 });
+                setStructure({ feeHeads: [], lateFee: 0, dueDay: 10 });
             }
         } catch (error) { console.error(error); }
     }
@@ -87,7 +88,8 @@ const FeeStructure = () => {
                 classId: selectedClass,
                 adminID: currentUser._id,
                 feeHeads: structure.feeHeads,
-                lateFee: structure.lateFee
+                lateFee: structure.lateFee,
+                dueDay: structure.dueDay
             });
             alert("Fee Structure Saved");
         } catch (error) { console.error(error); alert("Failed to save"); }
@@ -201,6 +203,16 @@ const FeeStructure = () => {
                                         value={structure.lateFee}
                                         onChange={(e) => setStructure({ ...structure, lateFee: e.target.value })}
                                         helperText="Fine amount if paid after due date"
+                                        sx={{ mb: 2 }}
+                                    />
+                                    <TextField
+                                        label="Due Day of Month"
+                                        type="number"
+                                        fullWidth
+                                        value={structure.dueDay}
+                                        onChange={(e) => setStructure({ ...structure, dueDay: e.target.value })}
+                                        helperText="Day of the month when fee is due (1-31)"
+                                        inputProps={{ min: 1, max: 31 }}
                                     />
                                 </Box>
 
