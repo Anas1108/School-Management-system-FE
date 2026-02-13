@@ -2,14 +2,17 @@ import React, { useEffect, useState } from 'react';
 import {
     Box, Paper, Typography, TextField, MenuItem, Button, Table, TableBody,
     TableCell, TableContainer, TableHead, TableRow, IconButton, Dialog,
-    DialogTitle, DialogContent, DialogActions, Grid
+    DialogTitle, DialogContent, DialogActions, Grid, Tooltip
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const FeeStructure = () => {
+    const navigate = useNavigate();
     const { currentUser } = useSelector(state => state.user);
     const [classes, setClasses] = useState([]);
     const [feeHeads, setFeeHeads] = useState([]);
@@ -17,6 +20,7 @@ const FeeStructure = () => {
     // Fee Head State
     const [newHeadName, setNewHeadName] = useState('');
     const [newHeadDesc, setNewHeadDesc] = useState('');
+    const [headModalOpen, setHeadModalOpen] = useState(false);
 
     // Structure State
     const [selectedClass, setSelectedClass] = useState('');
@@ -60,6 +64,7 @@ const FeeStructure = () => {
             });
             setNewHeadName('');
             setNewHeadDesc('');
+            setHeadModalOpen(false);
             fetchFeeHeads();
         } catch (error) { console.error(error); }
     }
@@ -68,8 +73,6 @@ const FeeStructure = () => {
         try {
             const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/FeeStructure/${classId}`);
             if (result.data) {
-                // Transform to match local state if needed, or use as is
-                // Backend returns populated feeHeads usually
                 setStructure({
                     feeHeads: result.data.feeHeads.map(h => ({ headId: h.headId._id, amount: h.amount })),
                     lateFee: result.data.lateFee,
@@ -112,48 +115,60 @@ const FeeStructure = () => {
     }
 
     return (
-        <Box sx={{ mt: 4, mb: 4 }}>
-            <Typography variant="h4" gutterBottom>Fee Configuration</Typography>
+        <Box sx={{ mt: 2, mb: 4, px: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+                <Typography variant="h4" fontWeight="bold">Fee Configuration</Typography>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button
+                        variant="outlined"
+                        startIcon={<ArrowBackIcon />}
+                        onClick={() => navigate('/Admin/fees')}
+                        sx={{ borderRadius: 2 }}
+                    >
+                        Back to Dashboard
+                    </Button>
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={() => setHeadModalOpen(true)}
+                        sx={{ borderRadius: 2 }}
+                    >
+                        Create Fee Head
+                    </Button>
+                </Box>
+            </Box>
 
             <Grid container spacing={4}>
-                {/* Fee Heads Section */}
                 <Grid item xs={12} md={4}>
-                    <Paper elevation={3} sx={{ p: 2 }}>
-                        <Typography variant="h6" gutterBottom>Create Fee Head</Typography>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                            <TextField
-                                label="Head Name (e.g. Tuition)"
-                                value={newHeadName}
-                                onChange={(e) => setNewHeadName(e.target.value)}
-                            />
-                            <TextField
-                                label="Description"
-                                value={newHeadDesc}
-                                onChange={(e) => setNewHeadDesc(e.target.value)}
-                            />
-                            <Button variant="contained" onClick={createFeeHead}>Add Head</Button>
-                        </Box>
-
-                        <Box sx={{ mt: 3 }}>
-                            <Typography variant="subtitle1" fontWeight="bold">Existing Heads:</Typography>
-                            {feeHeads.map(head => (
-                                <Typography key={head._id} variant="body2">• {head.name}</Typography>
-                            ))}
+                    <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                        <Typography variant="h6" fontWeight="bold" gutterBottom>Fee Heads</Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                            Define global fee categories (e.g., Tuition, Sports).
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                            {feeHeads.length > 0 ? feeHeads.map(head => (
+                                <Box key={head._id} sx={{ p: 1.5, borderRadius: 2, bgcolor: 'action.hover', border: '1px solid', borderColor: 'divider' }}>
+                                    <Typography variant="subtitle2" fontWeight="bold">{head.name}</Typography>
+                                    {head.description && <Typography variant="caption" color="text.secondary">{head.description}</Typography>}
+                                </Box>
+                            )) : (
+                                <Typography variant="body2" color="text.secondary" align="center">No fee heads created yet.</Typography>
+                            )}
                         </Box>
                     </Paper>
                 </Grid>
 
-                {/* Structure Section */}
                 <Grid item xs={12} md={8}>
-                    <Paper elevation={3} sx={{ p: 2 }}>
-                        <Typography variant="h6" gutterBottom>Class Fee Structure</Typography>
+                    <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                        <Typography variant="h6" fontWeight="bold" gutterBottom>Class Fee Structure</Typography>
                         <TextField
                             select
                             label="Select Class"
                             fullWidth
                             value={selectedClass}
                             onChange={(e) => setSelectedClass(e.target.value)}
-                            sx={{ mb: 3 }}
+                            sx={{ mb: 4 }}
+                            size="small"
                         >
                             {classes.map((option) => (
                                 <MenuItem key={option._id} value={option._id}>
@@ -162,68 +177,114 @@ const FeeStructure = () => {
                             ))}
                         </TextField>
 
-                        {selectedClass && (
+                        {selectedClass ? (
                             <>
                                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                                    <Typography variant="subtitle1">Fee Breakdown</Typography>
-                                    <Button startIcon={<AddIcon />} onClick={addHeadToStructure}>Add Fee</Button>
+                                    <Typography variant="subtitle1" fontWeight="bold">Fee Breakdown</Typography>
+                                    <Button variant="outlined" size="small" startIcon={<AddIcon />} onClick={addHeadToStructure}>Add Row</Button>
                                 </Box>
 
-                                {structure.feeHeads.map((item, index) => (
-                                    <Box key={index} sx={{ display: 'flex', gap: 2, mb: 1 }}>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 4 }}>
+                                    {structure.feeHeads.map((item, index) => (
+                                        <Box key={index} sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                                            <TextField
+                                                select
+                                                label="Head"
+                                                value={item.headId}
+                                                onChange={(e) => updateStructureHead(index, 'headId', e.target.value)}
+                                                sx={{ flex: 1 }}
+                                                size="small"
+                                            >
+                                                {feeHeads.map(head => (
+                                                    <MenuItem key={head._id} value={head._id}>{head.name}</MenuItem>
+                                                ))}
+                                            </TextField>
+                                            <TextField
+                                                label="Amount"
+                                                type="number"
+                                                value={item.amount}
+                                                onChange={(e) => updateStructureHead(index, 'amount', e.target.value)}
+                                                sx={{ width: 180 }}
+                                                size="small"
+                                            />
+                                            <IconButton onClick={() => removeHeadFromStructure(index)} color="error" size="small">
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </Box>
+                                    ))}
+                                    {structure.feeHeads.length === 0 && (
+                                        <Typography variant="body2" color="text.secondary" align="center" sx={{ py: 2, bgcolor: 'action.hover', borderRadius: 2 }}>
+                                            No fees added to this structure yet.
+                                        </Typography>
+                                    )}
+                                </Box>
+
+                                <Typography variant="subtitle1" fontWeight="bold" gutterBottom>Configuration</Typography>
+                                <Grid container spacing={2} sx={{ mb: 4 }}>
+                                    <Grid item xs={12} md={6}>
                                         <TextField
-                                            select
-                                            label="Head"
-                                            value={item.headId}
-                                            onChange={(e) => updateStructureHead(index, 'headId', e.target.value)}
-                                            sx={{ flex: 1 }}
-                                        >
-                                            {feeHeads.map(head => (
-                                                <MenuItem key={head._id} value={head._id}>{head.name}</MenuItem>
-                                            ))}
-                                        </TextField>
-                                        <TextField
-                                            label="Amount"
+                                            label="Late Fee Fine"
                                             type="number"
-                                            value={item.amount}
-                                            onChange={(e) => updateStructureHead(index, 'amount', e.target.value)}
-                                            sx={{ width: 150 }}
+                                            fullWidth
+                                            value={structure.lateFee}
+                                            onChange={(e) => setStructure({ ...structure, lateFee: e.target.value })}
+                                            helperText="Fine amount if paid after due date"
+                                            size="small"
                                         />
-                                        <IconButton onClick={() => removeHeadFromStructure(index)} color="error">
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </Box>
-                                ))}
+                                    </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        <TextField
+                                            label="Due Day of Month"
+                                            type="number"
+                                            fullWidth
+                                            value={structure.dueDay}
+                                            onChange={(e) => setStructure({ ...structure, dueDay: e.target.value })}
+                                            helperText="Day of the month when fee is due (1-31)"
+                                            inputProps={{ min: 1, max: 31 }}
+                                            size="small"
+                                        />
+                                    </Grid>
+                                </Grid>
 
-                                <Box sx={{ mt: 3, mb: 2 }}>
-                                    <TextField
-                                        label="Late Fee Fine"
-                                        type="number"
-                                        fullWidth
-                                        value={structure.lateFee}
-                                        onChange={(e) => setStructure({ ...structure, lateFee: e.target.value })}
-                                        helperText="Fine amount if paid after due date"
-                                        sx={{ mb: 2 }}
-                                    />
-                                    <TextField
-                                        label="Due Day of Month"
-                                        type="number"
-                                        fullWidth
-                                        value={structure.dueDay}
-                                        onChange={(e) => setStructure({ ...structure, dueDay: e.target.value })}
-                                        helperText="Day of the month when fee is due (1-31)"
-                                        inputProps={{ min: 1, max: 31 }}
-                                    />
-                                </Box>
-
-                                <Button variant="contained" color="primary" fullWidth onClick={handleSaveStructure}>
-                                    Save Structure
+                                <Button variant="contained" color="primary" fullWidth onClick={handleSaveStructure} size="large" sx={{ borderRadius: 2 }}>
+                                    Save Class Structure
                                 </Button>
                             </>
+                        ) : (
+                            <Box sx={{ py: 8, display: 'flex', justifyContent: 'center', alignItems: 'center', bgcolor: 'action.hover', borderRadius: 2 }}>
+                                <Typography color="text.secondary">Select a class to configure its fee structure</Typography>
+                            </Box>
                         )}
                     </Paper>
                 </Grid>
             </Grid>
+
+            {/* Create Fee Head Modal */}
+            <Dialog open={headModalOpen} onClose={() => setHeadModalOpen(false)} maxWidth="xs" fullWidth>
+                <DialogTitle sx={{ fontWeight: 'bold' }}>Create New Fee Head</DialogTitle>
+                <DialogContent>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+                        <TextField
+                            label="Head Name (e.g. Tuition)"
+                            fullWidth
+                            value={newHeadName}
+                            onChange={(e) => setNewHeadName(e.target.value)}
+                        />
+                        <TextField
+                            label="Description"
+                            fullWidth
+                            multiline
+                            rows={3}
+                            value={newHeadDesc}
+                            onChange={(e) => setNewHeadDesc(e.target.value)}
+                        />
+                    </Box>
+                </DialogContent>
+                <DialogActions sx={{ p: 3 }}>
+                    <Button onClick={() => setHeadModalOpen(false)} color="inherit">Cancel</Button>
+                    <Button variant="contained" onClick={createFeeHead}>Create Head</Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };

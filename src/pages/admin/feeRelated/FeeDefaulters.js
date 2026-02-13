@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Box, Paper, Typography, TextField, MenuItem, Table, TableBody, TableCell,
-    TableContainer, TableHead, TableRow, Button, Chip, Dialog, DialogTitle,
+    Box, Grid, Paper, Typography, Button, TextField, MenuItem, Table, TableBody, TableCell,
+    TableContainer, TableHead, TableRow, Chip, Dialog, DialogTitle,
     DialogContent, DialogActions, Menu, Checkbox, ListItemText, IconButton, Tooltip
 } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import SearchIcon from '@mui/icons-material/Search';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import StudentFeeHistoryModal from '../../../components/StudentFeeHistoryModal';
 
 const FeeDefaulters = () => {
+    const navigate = useNavigate();
     const { currentUser } = useSelector(state => state.user);
     const [classes, setClasses] = useState([]);
     const [selectedClass, setSelectedClass] = useState('');
@@ -58,39 +62,70 @@ const FeeDefaulters = () => {
     const filteredInvoices = invoices;
 
     return (
-        <Box sx={{ mt: 4, mb: 4 }}>
-            <Typography variant="h4" gutterBottom>Fee Defaulters List</Typography>
+        <Box sx={{ mt: 2, mb: 4, px: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+                <Typography variant="h4" fontWeight="bold">Fee Defaulters List</Typography>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button
+                        variant="outlined"
+                        startIcon={<ArrowBackIcon />}
+                        onClick={() => navigate('/Admin/fees')}
+                        sx={{ borderRadius: 2 }}
+                    >
+                        Back to Dashboard
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        startIcon={<SearchIcon />}
+                        onClick={() => navigate('/Admin/fees/search')}
+                        sx={{ borderRadius: 2 }}
+                    >
+                        Search
+                    </Button>
+                </Box>
+            </Box>
 
-            <Paper elevation={3} sx={{ p: 2, mb: 3 }}>
-                <TextField
-                    select
-                    label="Select Class"
-                    fullWidth
-                    value={selectedClass}
-                    onChange={(e) => setSelectedClass(e.target.value)}
-                >
-                    {classes.map((option) => (
-                        <MenuItem key={option._id} value={option._id}>
-                            {option.sclassName}
-                        </MenuItem>
-                    ))}
-                </TextField>
+            <Paper elevation={0} sx={{ p: 3, mb: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                <Grid container spacing={2} alignItems="center">
+                    <Grid item xs={12} md={6}>
+                        <TextField
+                            select
+                            label="Select Class"
+                            fullWidth
+                            value={selectedClass}
+                            onChange={(e) => setSelectedClass(e.target.value)}
+                            size="small"
+                        >
+                            {classes.map((option) => (
+                                <MenuItem key={option._id} value={option._id}>
+                                    {option.sclassName}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <Typography variant="body2" color="text.secondary">
+                            Showing defaulters for the selected class. Total: <strong>{filteredInvoices.length}</strong>
+                        </Typography>
+                    </Grid>
+                </Grid>
             </Paper>
 
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} elevation={0} sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
                 <Table>
-                    <TableHead>
+                    <TableHead sx={{ bgcolor: 'action.hover' }}>
                         <TableRow>
-                            <TableCell>Roll Num</TableCell>
-                            <TableCell>Name</TableCell>
-                            <TableCell align="right">Total Due Amount</TableCell>
-                            <TableCell align="center">Action</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>Roll Num</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
+                            <TableCell align="right" sx={{ fontWeight: 'bold' }}>Total Due Amount</TableCell>
+                            <TableCell align="center" sx={{ fontWeight: 'bold' }}>Action</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {filteredInvoices.length > 0 ? (
                             filteredInvoices.map((row) => (
-                                <TableRow key={row.studentId}>
+                                <TableRow key={row.studentId} hover>
                                     <TableCell>{row.rollNum}</TableCell>
                                     <TableCell>{row.studentName}</TableCell>
                                     <TableCell align="right" sx={{ color: 'error.main', fontWeight: 'bold' }}>
@@ -101,6 +136,7 @@ const FeeDefaulters = () => {
                                             variant="contained"
                                             size="small"
                                             onClick={() => { setHistoryStudentId(row.studentId); setHistoryOpen(true); }}
+                                            sx={{ borderRadius: 2 }}
                                         >
                                             View Details / Pay
                                         </Button>
@@ -109,8 +145,8 @@ const FeeDefaulters = () => {
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={4} align="center">
-                                    {selectedClass ? "No defaulters found" : "Select a class"}
+                                <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
+                                    {loading ? "Loading..." : (selectedClass ? "No defaulters found" : "Please select a class to view defaulters")}
                                 </TableCell>
                             </TableRow>
                         )}
