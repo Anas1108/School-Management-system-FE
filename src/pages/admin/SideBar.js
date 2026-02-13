@@ -13,6 +13,8 @@ import SupervisorAccountOutlinedIcon from '@mui/icons-material/SupervisorAccount
 import ReportIcon from '@mui/icons-material/Report';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 
+import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined';
+
 const SideBar = ({ open }) => {
     const location = useLocation();
 
@@ -32,6 +34,7 @@ const SideBar = ({ open }) => {
         { text: 'Students', icon: <PersonOutlineIcon />, link: '/Admin/students' },
         { text: 'Notices', icon: <AnnouncementOutlinedIcon />, link: '/Admin/notices' },
         { text: 'Complains', icon: <ReportIcon />, link: '/Admin/complains' },
+        { text: 'Fee Management', icon: <MonetizationOnOutlinedIcon />, link: '/Admin/fees' },
     ];
 
     const userMenuItems = [
