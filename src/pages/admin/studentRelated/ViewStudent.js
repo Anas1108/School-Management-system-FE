@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails, updateUser } from '../../../redux/userRelated/userHandle';
+import { deleteUser } from '../../../redux/userRelated/userHandle';
 import { useNavigate, useParams } from 'react-router-dom'
 import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
 import { Box, Button, Collapse, IconButton, Table, TableBody, TableHead, Typography, Tab, Paper, BottomNavigation, BottomNavigationAction, Container, Grid, Avatar } from '@mui/material';
@@ -20,6 +21,7 @@ import TableChartIcon from '@mui/icons-material/TableChart';
 import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
 import Popup from '../../../components/Popup';
 import styled from 'styled-components';
+import ConfirmationModal from '../../../components/ConfirmationModal';
 
 const ViewStudent = () => {
     const navigate = useNavigate()
@@ -55,6 +57,9 @@ const ViewStudent = () => {
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
 
+    // Confirmation Modal State
+    const [confirmOpen, setConfirmOpen] = useState(false);
+
     const handleOpen = (subId) => {
         setOpenStates((prevState) => ({
             ...prevState,
@@ -85,13 +90,14 @@ const ViewStudent = () => {
     }, [userDetails]);
 
     const deleteHandler = () => {
-        setMessage("Sorry the delete function has been disabled for now.")
-        setShowPopup(true)
+        setConfirmOpen(true);
+    }
 
-        // dispatch(deleteUser(studentID, address))
-        //     .then(() => {
-        //         navigate(-1)
-        //     })
+    const confirmDeleteHandler = () => {
+        dispatch(deleteUser(studentID, address))
+            .then(() => {
+                navigate(-1)
+            })
     }
 
     const removeHandler = (id, deladdress) => {
@@ -325,37 +331,78 @@ const ViewStudent = () => {
     }
 
     const StudentDetailsSection = () => {
+        const family = userDetails?.familyId || {};
+
+        const InfoRow = ({ label, value }) => (
+            <Box sx={{ mb: 1.5, display: 'flex', borderBottom: '1px solid #f0f0f0', pb: 1 }}>
+                <Typography variant="body1" sx={{ fontWeight: 600, width: '150px', color: 'text.secondary' }}>
+                    {label}:
+                </Typography>
+                <Typography variant="body1" sx={{ flex: 1, fontWeight: 500 }}>
+                    {value || "N/A"}
+                </Typography>
+            </Box>
+        );
+
         return (
             <ProfileCard>
-                <Grid container spacing={2} alignItems="center" justifyContent="center">
-                    <Grid item xs={12} sm={4} sx={{ display: 'flex', justifyContent: 'center' }}>
-                        <Avatar sx={{ width: 120, height: 120, fontSize: '3rem', bgcolor: 'var(--color-primary-600)' }}>
+                <Grid container spacing={3}>
+                    {/* Header Section */}
+                    <Grid item xs={12} sx={{ display: 'flex', alignItems: 'center', mb: 3, pb: 3, borderBottom: '1px solid #eaeaea' }}>
+                        <Avatar sx={{ width: 100, height: 100, fontSize: '3rem', bgcolor: 'var(--color-primary-600)', mr: 3 }}>
                             {name.charAt(0)}
                         </Avatar>
+                        <Box>
+                            <Typography variant="h4" component="h2" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                                {name}
+                            </Typography>
+                            <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
+                                <Typography variant="subtitle1" color="textSecondary" sx={{ bgcolor: '#f5f5f5', px: 1, borderRadius: 1 }}>
+                                    Role: Student
+                                </Typography>
+                                <Typography variant="subtitle1" color="textSecondary" sx={{ bgcolor: '#e3f2fd', px: 1, borderRadius: 1 }}>
+                                    Class: {sclassName?.sclassName}
+                                </Typography>
+                                <Typography variant="subtitle1" color="textSecondary" sx={{ bgcolor: '#fff3e0', px: 1, borderRadius: 1 }}>
+                                    Roll: {rollNum}
+                                </Typography>
+                            </Box>
+                        </Box>
                     </Grid>
-                    <Grid item xs={12} sm={8}>
-                        <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 'bold' }}>
-                            {name}
-                        </Typography>
-                        <Typography variant="subtitle1" color="textSecondary" gutterBottom>
-                            Roll Number: {rollNum}
-                        </Typography>
-                        <Typography variant="subtitle1" color="textSecondary" gutterBottom>
-                            Class: {sclassName.sclassName}
-                        </Typography>
-                        <Typography variant="subtitle1" color="textSecondary" gutterBottom>
-                            School: {studentSchool.schoolName}
-                        </Typography>
 
-                        {
-                            subjectAttendance && Array.isArray(subjectAttendance) && subjectAttendance.length > 0 && (
-                                <Box sx={{ mt: 2, mb: 2, height: 200 }}>
-                                    <CustomPieChart data={chartData} />
-                                </Box>
-                            )
-                        }
+                    {/* Personal Information */}
+                    <Grid item xs={12} md={6}>
+                        <Typography variant="h6" gutterBottom sx={{ color: 'var(--color-primary-700)', borderBottom: '2px solid var(--color-primary-200)', pb: 1, mb: 2 }}>
+                            Personal Information
+                        </Typography>
+                        <InfoRow label="Date of Birth" value={userDetails?.dateOfBirth ? new Date(userDetails.dateOfBirth).toLocaleDateString() : ''} />
+                        <InfoRow label="Gender" value={userDetails?.gender} />
+                        <InfoRow label="Blood Group" value={userDetails?.bloodGroup} />
+                        <InfoRow label="Religion" value={userDetails?.religion} />
+                        <InfoRow label="Student B-Form" value={userDetails?.studentBForm} />
+                        <InfoRow label="Admission Date" value={userDetails?.admissionDate ? new Date(userDetails.admissionDate).toLocaleDateString() : ''} />
+                    </Grid>
 
-                        <Button variant="outlined" color="error" sx={{ mt: 2 }} onClick={deleteHandler}>
+                    {/* Family Information */}
+                    <Grid item xs={12} md={6}>
+                        <Typography variant="h6" gutterBottom sx={{ color: 'var(--color-primary-700)', borderBottom: '2px solid var(--color-primary-200)', pb: 1, mb: 2 }}>
+                            Family Information
+                        </Typography>
+                        <InfoRow label="Father Name" value={family.fatherName} />
+                        <InfoRow label="Father CNIC" value={family.fatherCNIC} />
+                        <InfoRow label="Father Phone" value={family.fatherPhone} />
+                        <InfoRow label="Father Occupation" value={family.fatherOccupation} />
+                        <InfoRow label="Mother Name" value={family.motherName} />
+                        <InfoRow label="Mother Phone" value={family.motherPhone} />
+                        <InfoRow label="Home Address" value={family.homeAddress} />
+                    </Grid>
+
+                    {/* Action Buttons */}
+                    <Grid item xs={12} sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                        <Button variant="outlined" color="primary" onClick={() => navigate("/Admin/students/student/edit/" + studentID)}>
+                            Edit Profile
+                        </Button>
+                        <Button variant="outlined" color="error" onClick={deleteHandler}>
                             Delete Student
                         </Button>
                     </Grid>
@@ -395,7 +442,14 @@ const ViewStudent = () => {
                 </>
             }
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
-
+            <ConfirmationModal
+                open={confirmOpen}
+                handleClose={() => setConfirmOpen(false)}
+                handleConfirm={confirmDeleteHandler}
+                title="Delete Student?"
+                message="Are you sure you want to delete this student? This action cannot be undone."
+                confirmLabel="Delete"
+            />
         </Container>
     )
 }

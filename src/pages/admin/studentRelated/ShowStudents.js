@@ -22,6 +22,7 @@ import AddIcon from '@mui/icons-material/Add';
 import HistoryIcon from '@mui/icons-material/History';
 import Popup from '../../../components/Popup';
 import StudentFeeHistoryModal from '../../../components/StudentFeeHistoryModal';
+import ConfirmationModal from '../../../components/ConfirmationModal';
 
 const ShowStudents = () => {
     const navigate = useNavigate()
@@ -45,11 +46,24 @@ const ShowStudents = () => {
     const [historyOpen, setHistoryOpen] = useState(false);
     const [historyStudentId, setHistoryStudentId] = useState(null);
 
+    // Confirmation Modal State
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [deleteData, setDeleteData] = useState(null);
+
     const deleteHandler = (deleteID, address) => {
-        dispatch(deleteUser(deleteID, address))
-            .then(() => {
-                dispatch(removeStudent(deleteID));
-            })
+        setDeleteData({ deleteID, address });
+        setConfirmOpen(true);
+    }
+
+    const confirmDeleteHandler = () => {
+        if (deleteData) {
+            const { deleteID, address } = deleteData;
+            dispatch(deleteUser(deleteID, address))
+                .then(() => {
+                    dispatch(removeStudent(deleteID));
+                    setConfirmOpen(false);
+                })
+        }
     }
 
     const studentColumns = [
@@ -177,11 +191,20 @@ const ShowStudents = () => {
                     }
                 </>
             }
+
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
             <StudentFeeHistoryModal
                 open={historyOpen}
                 handleClose={() => setHistoryOpen(false)}
                 studentId={historyStudentId}
+            />
+            <ConfirmationModal
+                open={confirmOpen}
+                handleClose={() => setConfirmOpen(false)}
+                handleConfirm={confirmDeleteHandler}
+                title="Delete Student?"
+                message="Are you sure you want to delete this student? This action cannot be undone."
+                confirmLabel="Delete"
             />
         </Container>
     );
