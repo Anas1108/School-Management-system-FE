@@ -58,6 +58,14 @@ const AddStudent = ({ situation }) => {
     const adminID = currentUser._id
     const role = "Student"
 
+    // Helper to format CNIC
+    const formatCNIC = (value) => {
+        const cnic = value.replace(/\D/g, ""); // Remove non-digits
+        if (cnic.length <= 5) return cnic;
+        if (cnic.length <= 12) return `${cnic.slice(0, 5)}-${cnic.slice(5)}`;
+        return `${cnic.slice(0, 5)}-${cnic.slice(5, 12)}-${cnic.slice(12, 13)}`;
+    };
+
     useEffect(() => {
         if (situation === "Class") {
             setAcademicDetails(prev => ({ ...prev, sclassName: params.id }));
@@ -75,12 +83,20 @@ const AddStudent = ({ situation }) => {
     // Handlers
     const handleFamilyChange = (e) => {
         const { name, value } = e.target;
-        setFamilyDetails(prev => ({ ...prev, [name]: value }));
+        if (name === 'fatherCNIC') {
+            setFamilyDetails(prev => ({ ...prev, [name]: formatCNIC(value) }));
+        } else {
+            setFamilyDetails(prev => ({ ...prev, [name]: value }));
+        }
     };
 
     const handleStudentChange = (e) => {
         const { name, value } = e.target;
-        setStudentDetails(prev => ({ ...prev, [name]: value }));
+        if (name === 'studentBForm') {
+            setStudentDetails(prev => ({ ...prev, [name]: formatCNIC(value) }));
+        } else {
+            setStudentDetails(prev => ({ ...prev, [name]: value }));
+        }
     };
 
     const handleAcademicChange = (e) => {
@@ -128,13 +144,38 @@ const AddStudent = ({ situation }) => {
 
     const handleNext = () => {
         if (activeStep === 0) {
-            if (!familyDetails.fatherCNIC || !familyDetails.fatherName || !familyDetails.homeAddress) {
-                // Basic validation for new family
-                if (!familyFound && (!familyDetails.fatherCNIC || !familyDetails.fatherName)) {
-                    setMessage("Please fill required Guardian fields (CNIC, Name)");
+            // Step 0 Validation
+            if (!familyFound) {
+                if (!familyDetails.fatherCNIC || familyDetails.fatherCNIC.length !== 15) {
+                    setMessage("Father's CNIC must be 13 digits (XXXXX-XXXXXXX-X)");
                     setShowPopup(true);
                     return;
                 }
+                if (!familyDetails.fatherName || !familyDetails.homeAddress) {
+                    setMessage("Please fill required Guardian fields (Name, Address)");
+                    setShowPopup(true);
+                    return;
+                }
+            } else {
+                // If family found, just ensure ID is there (should be)
+                if (!familyId) {
+                    setMessage("Please search and select a family first");
+                    setShowPopup(true);
+                    return;
+                }
+            }
+        }
+        else if (activeStep === 1) {
+            // Step 1 Validation
+            if (!studentDetails.studentBForm || studentDetails.studentBForm.length !== 15) {
+                setMessage("Student B-Form must be 13 digits (XXXXX-XXXXXXX-X)");
+                setShowPopup(true);
+                return;
+            }
+            if (!studentDetails.name || !studentDetails.dateOfBirth || !studentDetails.gender || !studentDetails.religion) {
+                setMessage("Please fill all required Student fields");
+                setShowPopup(true);
+                return;
             }
         }
         setActiveStep((prev) => prev + 1);
