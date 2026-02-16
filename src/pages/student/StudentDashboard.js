@@ -20,6 +20,7 @@ import StudentComplain from './StudentComplain';
 import Logout from '../Logout'
 import AccountMenu from '../../components/AccountMenu';
 import { AppBar, Drawer } from '../../components/styles';
+import BreadcrumbsNav from '../../components/BreadcrumbsNav';
 
 const StudentDashboard = () => {
     const [open, setOpen] = useState(true);
@@ -54,6 +55,9 @@ const StudentDashboard = () => {
                         >
                             Student Dashboard
                         </Typography>
+                        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+                            <BreadcrumbsNav />
+                        </Box>
                         <AccountMenu />
                     </Toolbar>
                 </AppBar>

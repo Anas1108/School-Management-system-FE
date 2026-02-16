@@ -23,6 +23,7 @@ import TeacherHomePage from './TeacherHomePage';
 import TeacherProfile from './TeacherProfile';
 import TeacherViewStudent from './TeacherViewStudent';
 import StudentExamMarks from '../admin/studentRelated/StudentExamMarks';
+import BreadcrumbsNav from '../../components/BreadcrumbsNav';
 
 const TeacherDashboard = () => {
     const [open, setOpen] = useState(true);
@@ -57,6 +58,9 @@ const TeacherDashboard = () => {
                         >
                             Teacher Dashboard
                         </Typography>
+                        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+                            <BreadcrumbsNav />
+                        </Box>
                         <AccountMenu />
                     </Toolbar>
                 </AppBar>

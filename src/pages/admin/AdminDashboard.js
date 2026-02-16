@@ -46,6 +46,7 @@ import FeeDashboard from './feeRelated/FeeDashboard';
 import FeeDefaulters from './feeRelated/FeeDefaulters';
 import FeeStructure from './feeRelated/FeeStructure';
 import FeeSearch from './feeRelated/FeeSearch';
+import BreadcrumbsNav from '../../components/BreadcrumbsNav';
 
 const AdminDashboard = () => {
     const [open, setOpen] = useState(true);
@@ -80,6 +81,9 @@ const AdminDashboard = () => {
                     >
                         Admin Dashboard
                     </Typography>
+                    <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+                        <BreadcrumbsNav />
+                    </Box>
                     <AccountMenu />
                 </Toolbar>
             </AppBar>
@@ -109,6 +113,9 @@ const AdminDashboard = () => {
                     <SideBar open={open} />
                 </List>
             </Drawer>
+
+
+            // ... inside the component return ...
             <Box component="main" sx={styles.boxStyled}>
                 <Toolbar />
                 <Box sx={{ flex: 1, overflow: 'hidden', background: 'var(--bg-body)', p: 4 }}>
