@@ -40,6 +40,7 @@ const ShowStudents = () => {
 
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
+    const [severity, setSeverity] = useState("success");
     const [searchTerm, setSearchTerm] = useState("");
 
     // Fee History Modal State
@@ -61,6 +62,9 @@ const ShowStudents = () => {
             dispatch(deleteUser(deleteID, address))
                 .then(() => {
                     dispatch(removeStudent(deleteID));
+                    setMessage("Student Deleted Successfully");
+                    setSeverity("success");
+                    setShowPopup(true);
                     setConfirmOpen(false);
                 })
         }
@@ -192,7 +196,7 @@ const ShowStudents = () => {
                 </>
             }
 
-            <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
+            <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} severity={severity} />
             <StudentFeeHistoryModal
                 open={historyOpen}
                 handleClose={() => setHistoryOpen(false)}

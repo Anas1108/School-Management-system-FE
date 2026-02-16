@@ -56,6 +56,7 @@ const ViewStudent = () => {
 
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
+    const [severity, setSeverity] = useState("success");
 
     // Confirmation Modal State
     const [confirmOpen, setConfirmOpen] = useState(false);
@@ -96,7 +97,13 @@ const ViewStudent = () => {
     const confirmDeleteHandler = () => {
         dispatch(deleteUser(studentID, address))
             .then(() => {
-                navigate(-1)
+                setMessage("Student Deleted Successfully");
+                setSeverity("success");
+                setShowPopup(true);
+                setConfirmOpen(false);
+                setTimeout(() => {
+                    navigate(-1);
+                }, 1500);
             })
     }
 
@@ -441,7 +448,7 @@ const ViewStudent = () => {
                     </TabContext>
                 </>
             }
-            <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
+            <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} severity={severity} />
             <ConfirmationModal
                 open={confirmOpen}
                 handleClose={() => setConfirmOpen(false)}

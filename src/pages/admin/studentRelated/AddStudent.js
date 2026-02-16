@@ -120,6 +120,7 @@ const AddStudent = ({ situation }) => {
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
     const [loader, setLoader] = useState(false)
+    const [severity, setSeverity] = useState("error"); // Default to error
 
     useEffect(() => {
         dispatch(getAllSclasses(adminID, "Sclass"));
@@ -161,6 +162,7 @@ const AddStudent = ({ situation }) => {
     const searchFamily = async () => {
         if (!familyDetails.fatherCNIC) {
             setMessage("Please enter Father's CNIC");
+            setSeverity("error");
             setShowPopup(true);
             return;
         }
@@ -172,16 +174,19 @@ const AddStudent = ({ situation }) => {
                 setFamilyDetails(result.data.family);
                 setFamilyFound(true);
                 setMessage("Family Found! Linked automatically.");
+                setSeverity("success");
                 setShowPopup(true);
             } else {
                 setFamilyFound(false);
                 setFamilyId('');
                 setMessage("Family not found. Please enter new details.");
+                setSeverity("info"); // Info for not found but not critical error
                 setShowPopup(true);
             }
         } catch (error) {
             console.error(error);
             setMessage("Error searching family");
+            setSeverity("error");
             setShowPopup(true);
         }
         setSearching(false);
@@ -195,11 +200,13 @@ const AddStudent = ({ situation }) => {
             if (shouldValidateDetails) {
                 if (!familyDetails.fatherCNIC || familyDetails.fatherCNIC.length !== 15) {
                     setMessage("Father's CNIC must be 13 digits (XXXXX-XXXXXXX-X)");
+                    setSeverity("error");
                     setShowPopup(true);
                     return;
                 }
                 if (!familyDetails.fatherName || !familyDetails.homeAddress) {
                     setMessage("Please fill required Guardian fields (Name, Address)");
+                    setSeverity("error");
                     setShowPopup(true);
                     return;
                 }
@@ -208,6 +215,7 @@ const AddStudent = ({ situation }) => {
             // If family found (linked), ensure ID is present
             if (familyFound && !familyId) {
                 setMessage("Please search and select a family first");
+                setSeverity("error");
                 setShowPopup(true);
                 return;
             }
@@ -216,11 +224,13 @@ const AddStudent = ({ situation }) => {
             // Step 1 Validation
             if (!studentDetails.studentBForm || studentDetails.studentBForm.length !== 15) {
                 setMessage("Student B-Form must be 13 digits (XXXXX-XXXXXXX-X)");
+                setSeverity("error");
                 setShowPopup(true);
                 return;
             }
             if (!studentDetails.name || !studentDetails.dateOfBirth || !studentDetails.gender || !studentDetails.religion) {
                 setMessage("Please fill all required Student fields");
+                setSeverity("error");
                 setShowPopup(true);
                 return;
             }
@@ -234,6 +244,7 @@ const AddStudent = ({ situation }) => {
         event.preventDefault()
         if (academicDetails.sclassName === "") {
             setMessage("Please select a classname")
+            setSeverity("error");
             setShowPopup(true)
         }
         else {
@@ -254,21 +265,31 @@ const AddStudent = ({ situation }) => {
     }
 
     useEffect(() => {
-        if (status === 'added' || status === 'currentUser') { // 'currentUser' might be set on successful update depending on userHandle
-            dispatch(underControl())
-            navigate(-1)
+        if (status === 'added' || status === 'currentUser') {
+            const msg = situation === "Edit" ? "Student Updated Successfully" : "Student Added Successfully";
+            setMessage(msg);
+            setSeverity("success");
+            setShowPopup(true);
+            setLoader(false);
+            const timer = setTimeout(() => {
+                dispatch(underControl());
+                navigate(-1);
+            }, 1500);
+            return () => clearTimeout(timer);
         }
         else if (status === 'failed') {
-            setMessage(response)
-            setShowPopup(true)
-            setLoader(false)
+            setMessage(response);
+            setSeverity("error");
+            setShowPopup(true);
+            setLoader(false);
         }
         else if (status === 'error') {
-            setMessage("Network Error")
-            setShowPopup(true)
-            setLoader(false)
+            setMessage("Network Error");
+            setSeverity("error");
+            setShowPopup(true);
+            setLoader(false);
         }
-    }, [status, navigate, error, response, dispatch]);
+    }, [status, navigate, error, response, dispatch, situation]);
 
     return (
         <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
@@ -557,7 +578,7 @@ const AddStudent = ({ situation }) => {
                     </Box>
                 </form>
             </StyledPaper>
-            <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
+            <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} severity={severity} />
         </Container>
     )
 }
