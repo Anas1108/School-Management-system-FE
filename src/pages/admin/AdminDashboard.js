@@ -114,11 +114,9 @@ const AdminDashboard = () => {
                 </List>
             </Drawer>
 
-
-            // ... inside the component return ...
             <Box component="main" sx={styles.boxStyled}>
                 <Toolbar />
-                <Box sx={{ flex: 1, overflow: 'hidden', background: 'var(--bg-body)', p: 4 }}>
+                <Box sx={{ flex: 1, overflow: 'auto', background: 'var(--bg-body)', p: 4 }}>
                     <Routes>
                         <Route path="/" element={<AdminHomePage />} />
                         <Route path='*' element={<Navigate to="/" />} />
