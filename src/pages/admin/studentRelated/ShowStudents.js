@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import { getAllStudents } from '../../../redux/studentRelated/studentHandle';
+import { removeStudent } from '../../../redux/studentRelated/studentSlice';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import {
     Paper, Box, TextField, InputAdornment, Typography, Container, Tooltip, Button
@@ -47,7 +48,7 @@ const ShowStudents = () => {
     const deleteHandler = (deleteID, address) => {
         dispatch(deleteUser(deleteID, address))
             .then(() => {
-                dispatch(getAllStudents(currentUser._id));
+                dispatch(removeStudent(deleteID));
             })
     }
 

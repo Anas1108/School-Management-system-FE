@@ -41,6 +41,9 @@ const studentSlice = createSlice({
             state.response = null;
             state.error = null;
             state.statestatus = "idle";
+        },
+        removeStudent: (state, action) => {
+            state.studentsList = state.studentsList.filter(student => student._id !== action.payload);
         }
     },
 });
@@ -52,6 +55,7 @@ export const {
     getError,
     underStudentControl,
     stuffDone,
+    removeStudent,
 } = studentSlice.actions;
 
 export const studentReducer = studentSlice.reducer;

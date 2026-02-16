@@ -297,7 +297,7 @@ const AddStudent = ({ situation }) => {
                                         value={familyDetails.fatherCNIC}
                                         onChange={handleFamilyChange}
                                         required
-                                        disabled={situation === "Edit" && familyFound} // Disable CNIC edit if linked to avoid conflicts for now, or allow
+                                        disabled={situation !== "Edit" && familyFound} // Disable CNIC edit ONLY if found via search in Add mode
                                     />
                                     {situation !== "Edit" && (
                                         <Button
