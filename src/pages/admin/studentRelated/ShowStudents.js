@@ -16,10 +16,11 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
 import GradeOutlinedIcon from '@mui/icons-material/GradeOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
+import HistoryIcon from '@mui/icons-material/History';
 import Popup from '../../../components/Popup';
 import StudentFeeHistoryModal from '../../../components/StudentFeeHistoryModal';
-import HistoryIcon from '@mui/icons-material/History';
 
 const ShowStudents = () => {
     const navigate = useNavigate()
@@ -44,8 +45,10 @@ const ShowStudents = () => {
     const [historyStudentId, setHistoryStudentId] = useState(null);
 
     const deleteHandler = (deleteID, address) => {
-        setMessage("Sorry the delete function has been disabled for now.")
-        setShowPopup(true)
+        dispatch(deleteUser(deleteID, address))
+            .then(() => {
+                dispatch(getAllStudents(currentUser._id));
+            })
     }
 
     const studentColumns = [
@@ -71,6 +74,13 @@ const ShowStudents = () => {
     const StudentButtonHaver = ({ row }) => {
         return (
             <>
+                <Tooltip title="Edit Student" arrow>
+                    <ActionIconButtonPrimary
+                        onClick={() => navigate("/Admin/students/student/edit/" + row.id)}>
+                        <EditIcon />
+                    </ActionIconButtonPrimary>
+                </Tooltip>
+
                 <Tooltip title="View" arrow>
                     <ActionIconButtonPrimary
                         onClick={() => navigate("/Admin/students/student/" + row.id)}>

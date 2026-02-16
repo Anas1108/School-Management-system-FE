@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { registerUser } from '../../../redux/userRelated/userHandle';
+import { registerUser, updateUser, getUserDetails } from '../../../redux/userRelated/userHandle';
 import Popup from '../../../components/Popup';
 import { underControl } from '../../../redux/userRelated/userSlice';
 import { getAllSclasses } from '../../../redux/sclassRelated/sclassHandle';
@@ -15,7 +15,7 @@ const AddStudent = ({ situation }) => {
     const params = useParams()
 
     const userState = useSelector(state => state.user);
-    const { status, currentUser, response, error } = userState;
+    const { status, currentUser, response, error, userDetails } = userState;
     const { sclassesList } = useSelector((state) => state.sclass);
 
     const [activeStep, setActiveStep] = useState(0);
@@ -52,7 +52,7 @@ const AddStudent = ({ situation }) => {
         rollNum: '',
         password: '',
         sclassName: '',
-        className: ''
+        className: '' // Only used for UI selection
     });
 
     const adminID = currentUser._id
@@ -69,8 +69,53 @@ const AddStudent = ({ situation }) => {
     useEffect(() => {
         if (situation === "Class") {
             setAcademicDetails(prev => ({ ...prev, sclassName: params.id }));
+        } else if (situation === "Edit") {
+            dispatch(getUserDetails(params.id, "Student"));
         }
-    }, [params.id, situation]);
+    }, [params.id, situation, dispatch]);
+
+    useEffect(() => {
+        if (situation === "Edit" && userDetails) {
+            // Populate Student Details
+            setStudentDetails({
+                name: userDetails.name || '',
+                dateOfBirth: userDetails.dateOfBirth ? new Date(userDetails.dateOfBirth).toISOString().split('T')[0] : '',
+                gender: userDetails.gender || '',
+                studentBForm: userDetails.studentBForm || '',
+                religion: userDetails.religion || '',
+                bloodGroup: userDetails.bloodGroup || '',
+                admissionDate: userDetails.admissionDate ? new Date(userDetails.admissionDate).toISOString().split('T')[0] : '',
+            });
+
+            // Populate Academic Details
+            setAcademicDetails({
+                rollNum: userDetails.rollNum || '',
+                password: '', // Password is usually not pre-filled for security
+                sclassName: userDetails.sclassName ? userDetails.sclassName._id : '',
+                className: userDetails.sclassName ? userDetails.sclassName.sclassName : '',
+            });
+
+            // Populate Family Details
+            if (userDetails.familyId) {
+                setFamilyId(userDetails.familyId._id);
+                setFamilyFound(true); // Treat as found/existing
+
+                // If family details are populated in userDetails (backend change required or separate fetch)
+                // Assuming backend populates familyId now as per plan
+                const fam = userDetails.familyId;
+                setFamilyDetails({
+                    fatherName: fam.fatherName || '',
+                    fatherCNIC: fam.fatherCNIC || '',
+                    fatherPhone: fam.fatherPhone || '',
+                    fatherOccupation: fam.fatherOccupation || '',
+                    motherName: fam.motherName || '',
+                    motherPhone: fam.motherPhone || '',
+                    homeAddress: fam.homeAddress || '',
+                    guardianEmail: fam.guardianEmail || '',
+                });
+            }
+        }
+    }, [userDetails, situation]);
 
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
@@ -145,7 +190,9 @@ const AddStudent = ({ situation }) => {
     const handleNext = () => {
         if (activeStep === 0) {
             // Step 0 Validation
-            if (!familyFound) {
+            const shouldValidateDetails = !familyFound || situation === "Edit";
+
+            if (shouldValidateDetails) {
                 if (!familyDetails.fatherCNIC || familyDetails.fatherCNIC.length !== 15) {
                     setMessage("Father's CNIC must be 13 digits (XXXXX-XXXXXXX-X)");
                     setShowPopup(true);
@@ -156,13 +203,13 @@ const AddStudent = ({ situation }) => {
                     setShowPopup(true);
                     return;
                 }
-            } else {
-                // If family found, just ensure ID is there (should be)
-                if (!familyId) {
-                    setMessage("Please search and select a family first");
-                    setShowPopup(true);
-                    return;
-                }
+            }
+
+            // If family found (linked), ensure ID is present
+            if (familyFound && !familyId) {
+                setMessage("Please search and select a family first");
+                setShowPopup(true);
+                return;
             }
         }
         else if (activeStep === 1) {
@@ -194,16 +241,20 @@ const AddStudent = ({ situation }) => {
             const fields = {
                 ...studentDetails,
                 ...academicDetails,
-                familyId: familyFound ? familyId : null,
-                familyDetails: familyFound ? null : familyDetails,
+                familyId: (familyFound || situation === "Edit") ? familyId : null,
+                familyDetails: familyDetails, // Always send details for potential update
                 adminID,
             }
-            dispatch(registerUser(fields, role))
+            if (situation === "Edit") {
+                dispatch(updateUser(fields, params.id, "Student"));
+            } else {
+                dispatch(registerUser(fields, role))
+            }
         }
     }
 
     useEffect(() => {
-        if (status === 'added') {
+        if (status === 'added' || status === 'currentUser') { // 'currentUser' might be set on successful update depending on userHandle
             dispatch(underControl())
             navigate(-1)
         }
@@ -223,7 +274,7 @@ const AddStudent = ({ situation }) => {
         <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
             <StyledPaper elevation={3}>
                 <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold', color: 'var(--text-primary)', textAlign: 'center' }}>
-                    Add Student
+                    {situation === "Edit" ? "Edit Student" : "Add Student"}
                 </Typography>
 
                 <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
@@ -246,17 +297,19 @@ const AddStudent = ({ situation }) => {
                                         value={familyDetails.fatherCNIC}
                                         onChange={handleFamilyChange}
                                         required
-                                        disabled={familyFound}
+                                        disabled={situation === "Edit" && familyFound} // Disable CNIC edit if linked to avoid conflicts for now, or allow
                                     />
-                                    <Button
-                                        variant="contained"
-                                        onClick={searchFamily}
-                                        disabled={searching || familyFound}
-                                        sx={{ minWidth: '120px' }}
-                                    >
-                                        {searching ? <CircularProgress size={24} /> : 'Search'}
-                                    </Button>
-                                    {familyFound && (
+                                    {situation !== "Edit" && (
+                                        <Button
+                                            variant="contained"
+                                            onClick={searchFamily}
+                                            disabled={searching || familyFound}
+                                            sx={{ minWidth: '120px' }}
+                                        >
+                                            {searching ? <CircularProgress size={24} /> : 'Search'}
+                                        </Button>
+                                    )}
+                                    {familyFound && situation !== "Edit" && (
                                         <Button variant="outlined" color="error" onClick={() => {
                                             setFamilyFound(false);
                                             setFamilyDetails({
@@ -278,7 +331,7 @@ const AddStudent = ({ situation }) => {
                                     value={familyDetails.fatherName}
                                     onChange={handleFamilyChange}
                                     required
-                                    disabled={familyFound}
+                                // disabled={familyFound && situation !== "Edit"} // Allow edit in Edit mode
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -289,7 +342,7 @@ const AddStudent = ({ situation }) => {
                                     value={familyDetails.fatherPhone}
                                     onChange={handleFamilyChange}
                                     required
-                                    disabled={familyFound}
+                                // disabled={familyFound && situation !== "Edit"}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -299,7 +352,7 @@ const AddStudent = ({ situation }) => {
                                     name="fatherOccupation"
                                     value={familyDetails.fatherOccupation}
                                     onChange={handleFamilyChange}
-                                    disabled={familyFound}
+                                // disabled={familyFound && situation !== "Edit"}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -310,7 +363,7 @@ const AddStudent = ({ situation }) => {
                                     value={familyDetails.homeAddress}
                                     onChange={handleFamilyChange}
                                     required
-                                    disabled={familyFound}
+                                // disabled={familyFound && situation !== "Edit"}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -320,7 +373,7 @@ const AddStudent = ({ situation }) => {
                                     name="motherName"
                                     value={familyDetails.motherName}
                                     onChange={handleFamilyChange}
-                                    disabled={familyFound}
+                                // disabled={familyFound && situation !== "Edit"}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -330,7 +383,7 @@ const AddStudent = ({ situation }) => {
                                     name="motherPhone"
                                     value={familyDetails.motherPhone}
                                     onChange={handleFamilyChange}
-                                    disabled={familyFound}
+                                // disabled={familyFound && situation !== "Edit"}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -340,7 +393,7 @@ const AddStudent = ({ situation }) => {
                                     name="guardianEmail"
                                     value={familyDetails.guardianEmail}
                                     onChange={handleFamilyChange}
-                                    disabled={familyFound}
+                                // disabled={familyFound && situation !== "Edit"}
                                 />
                             </Grid>
                         </Grid>
@@ -434,7 +487,8 @@ const AddStudent = ({ situation }) => {
 
                     {activeStep === 2 && (
                         <Grid container spacing={3}>
-                            {situation === "Student" && (
+                            {/* In Edit mode, we may allow changing Class if needed, or keeping logic the same */}
+                            {situation !== "Class" && (
                                 <Grid item xs={12}>
                                     <TextField
                                         fullWidth
@@ -474,7 +528,8 @@ const AddStudent = ({ situation }) => {
                                     value={academicDetails.password}
                                     onChange={handleAcademicChange}
                                     autoComplete="new-password"
-                                    required
+                                    required={situation !== "Edit"} // Password required only if not editing
+                                    helperText={situation === "Edit" ? "Leave blank to keep existing password" : ""}
                                 />
                             </Grid>
                         </Grid>
@@ -492,7 +547,7 @@ const AddStudent = ({ situation }) => {
                                 type="submit"
                                 disabled={loader}
                             >
-                                {loader ? <CircularProgress size={24} color="inherit" /> : 'Register Student'}
+                                {loader ? <CircularProgress size={24} color="inherit" /> : (situation === "Edit" ? 'Update Student' : 'Register Student')}
                             </SubmitButton>
                         ) : (
                             <Button variant="contained" onClick={handleNext}>
