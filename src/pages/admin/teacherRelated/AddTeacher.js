@@ -3,32 +3,47 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getSubjectDetails } from '../../../redux/sclassRelated/sclassHandle';
 import Popup from '../../../components/Popup';
-import { registerUser } from '../../../redux/userRelated/userHandle';
+import { registerUser, updateUser } from '../../../redux/userRelated/userHandle';
 import { underControl } from '../../../redux/userRelated/userSlice';
+import { getTeacherDetails } from '../../../redux/teacherRelated/teacherHandle';
 import { CircularProgress, Container, Paper, Typography, TextField, Button, Box, Grid } from '@mui/material';
 import styled from 'styled-components';
 
-const AddTeacher = () => {
+const AddTeacher = ({ situation }) => {
   const params = useParams()
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
   const subjectID = params.id
+  const teacherID = params.id
 
   const { status, response, error } = useSelector(state => state.user);
   const { subjectDetails } = useSelector((state) => state.sclass);
+  const { teacherDetails } = useSelector((state) => state.teacher);
 
   useEffect(() => {
-    dispatch(getSubjectDetails(subjectID, "Subject"));
-  }, [dispatch, subjectID]);
+    if (situation === "Edit") {
+      dispatch(getTeacherDetails(teacherID));
+    } else {
+      dispatch(getSubjectDetails(subjectID, "Subject"));
+    }
+  }, [dispatch, subjectID, teacherID, situation]);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('')
 
+  useEffect(() => {
+    if (situation === "Edit" && teacherDetails) {
+      setName(teacherDetails.name);
+      setEmail(teacherDetails.email);
+    }
+  }, [teacherDetails, situation]);
+
   const [showPopup, setShowPopup] = useState(false);
   const [message, setMessage] = useState("");
   const [loader, setLoader] = useState(false)
+  const [severity, setSeverity] = useState("success");
 
   const role = "Teacher"
   const school = subjectDetails && subjectDetails.school
@@ -40,34 +55,49 @@ const AddTeacher = () => {
   const submitHandler = (event) => {
     event.preventDefault()
     setLoader(true)
-    dispatch(registerUser(fields, role))
+    if (situation === "Edit") {
+      const updateFields = { name, email, ...(password && { password }) }
+      dispatch(updateUser(updateFields, teacherID, "Teacher"));
+    } else {
+      dispatch(registerUser(fields, role))
+    }
   }
 
   useEffect(() => {
-    if (status === 'added') {
-      dispatch(underControl())
-      navigate("/Admin/teachers")
+    if (status === 'added' || status === 'currentUser') {
+      const msg = situation === "Edit" ? "Teacher Updated Successfully" : "Teacher Added Successfully";
+      setMessage(msg);
+      setSeverity("success");
+      setShowPopup(true);
+      setLoader(false);
+      const timer = setTimeout(() => {
+        dispatch(underControl());
+        navigate("/Admin/teachers");
+      }, 1500);
+      return () => clearTimeout(timer);
     }
     else if (status === 'failed') {
       setMessage(response)
+      setSeverity("error")
       setShowPopup(true)
       setLoader(false)
     }
     else if (status === 'error') {
       setMessage("Network Error")
+      setSeverity("error")
       setShowPopup(true)
       setLoader(false)
     }
-  }, [status, navigate, error, response, dispatch]);
+  }, [status, navigate, error, response, dispatch, situation]);
 
   return (
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
       <StyledPaper elevation={3}>
         <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold', color: 'var(--text-primary)', textAlign: 'center' }}>
-          Add Teacher
+          {situation === "Edit" ? "Edit Teacher" : "Add Teacher"}
         </Typography>
 
-        {subjectDetails && (
+        {situation !== "Edit" && subjectDetails && (
           <Box sx={{ mb: 3, p: 2, bgcolor: 'var(--bg-default)', borderRadius: 'var(--border-radius-md)' }}>
             <Typography variant="subtitle1" color="textSecondary" align="center">
               Adding teacher for:
@@ -115,7 +145,8 @@ const AddTeacher = () => {
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 autoComplete="new-password"
-                required
+                required={situation !== "Edit"}
+                helperText={situation === "Edit" ? "Leave blank to keep current password" : ""}
               />
             </Grid>
             <Grid item xs={12}>
@@ -126,13 +157,13 @@ const AddTeacher = () => {
                 variant="contained"
                 disabled={loader}
               >
-                {loader ? <CircularProgress size={24} color="inherit" /> : 'Register'}
+                {loader ? <CircularProgress size={24} color="inherit" /> : (situation === "Edit" ? 'Update' : 'Register')}
               </SubmitButton>
             </Grid>
           </Grid>
         </form>
       </StyledPaper>
-      <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
+      <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} severity={severity} />
     </Container>
   )
 }

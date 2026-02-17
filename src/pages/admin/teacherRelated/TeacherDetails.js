@@ -1,15 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getTeacherDetails } from '../../../redux/teacherRelated/teacherHandle';
+import { deleteUser } from '../../../redux/userRelated/userHandle';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Container, Typography, Box, Paper, Avatar, Grid } from '@mui/material';
 import styled from 'styled-components';
+import ConfirmationModal from '../../../components/ConfirmationModal';
+import Popup from '../../../components/Popup';
 
 const TeacherDetails = () => {
     const navigate = useNavigate();
     const params = useParams();
     const dispatch = useDispatch();
-    const { loading, teacherDetails, error } = useSelector((state) => state.teacher);
+    const { loading, teacherDetails } = useSelector((state) => state.teacher);
+    const { error } = useSelector((state) => state.user);
 
     const teacherID = params.id;
 
@@ -17,15 +21,35 @@ const TeacherDetails = () => {
         dispatch(getTeacherDetails(teacherID));
     }, [dispatch, teacherID]);
 
-    if (error) {
-        console.log(error);
-    }
+    const [showPopup, setShowPopup] = useState(false);
+    const [message, setMessage] = useState("");
+    const [severity, setSeverity] = useState("success");
+
+    // Confirmation Modal State
+    const [confirmOpen, setConfirmOpen] = useState(false);
 
     const isSubjectNamePresent = teacherDetails?.teachSubject?.subName;
 
     const handleAddSubject = () => {
         navigate(`/Admin/teachers/choosesubject/${teacherDetails?.teachSclass?._id}/${teacherDetails?._id}`);
     };
+
+    const deleteHandler = () => {
+        setConfirmOpen(true);
+    }
+
+    const confirmDeleteHandler = () => {
+        dispatch(deleteUser(teacherID, "Teacher"))
+            .then(() => {
+                setMessage("Teacher Deleted Successfully");
+                setSeverity("success");
+                setShowPopup(true);
+                setConfirmOpen(false);
+                setTimeout(() => {
+                    navigate("/Admin/teachers");
+                }, 1500);
+            })
+    }
 
     return (
         <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
@@ -65,9 +89,26 @@ const TeacherDetails = () => {
                                 </Button>
                             )}
                         </Grid>
+                        <Grid item xs={12} sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                            <Button variant="outlined" color="primary" onClick={() => navigate("/Admin/teachers/teacher/edit/" + teacherID)}>
+                                Edit Profile
+                            </Button>
+                            <Button variant="outlined" color="error" onClick={deleteHandler}>
+                                Delete Teacher
+                            </Button>
+                        </Grid>
                     </Grid>
                 </ProfileCard>
             )}
+            <ConfirmationModal
+                open={confirmOpen}
+                handleClose={() => setConfirmOpen(false)}
+                handleConfirm={confirmDeleteHandler}
+                title="Delete Teacher?"
+                message="Are you sure you want to delete this teacher? This action cannot be undone."
+                confirmLabel="Delete"
+            />
+            <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} severity={severity} />
         </Container>
     );
 };

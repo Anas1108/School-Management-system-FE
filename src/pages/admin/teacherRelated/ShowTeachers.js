@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 import { getAllTeachers } from '../../../redux/teacherRelated/teacherHandle';
 import {
     Paper, Box, TextField, InputAdornment, Typography, Container, Tooltip, Button
@@ -12,8 +12,10 @@ import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Popup from '../../../components/Popup';
+import ConfirmationModal from '../../../components/ConfirmationModal';
 
 const ShowTeachers = () => {
     const navigate = useNavigate();
@@ -28,6 +30,11 @@ const ShowTeachers = () => {
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
+    const [severity, setSeverity] = useState("success");
+
+    // Confirmation Modal State
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [deleteData, setDeleteData] = useState(null);
 
     if (loading) {
         return <div>Loading...</div>;
@@ -44,8 +51,22 @@ const ShowTeachers = () => {
     }
 
     const deleteHandler = (deleteID, address) => {
-        setMessage("Sorry the delete function has been disabled for now.")
-        setShowPopup(true)
+        setDeleteData({ deleteID, address });
+        setConfirmOpen(true);
+    };
+
+    const confirmDeleteHandler = () => {
+        if (deleteData) {
+            const { deleteID, address } = deleteData;
+            dispatch(deleteUser(deleteID, address))
+                .then(() => {
+                    dispatch(getAllTeachers(currentUser._id));
+                    setMessage("Teacher Deleted Successfully");
+                    setSeverity("success");
+                    setShowPopup(true);
+                    setConfirmOpen(false);
+                })
+        }
     };
 
     const teacherColumns = [
@@ -72,6 +93,12 @@ const ShowTeachers = () => {
     const TeacherButtonHaver = ({ row }) => {
         return (
             <>
+                <Tooltip title="Edit" arrow>
+                    <ActionIconButtonPrimary
+                        onClick={() => navigate("/Admin/teachers/teacher/edit/" + row.id)}>
+                        <EditIcon />
+                    </ActionIconButtonPrimary>
+                </Tooltip>
                 <Tooltip title="View" arrow>
                     <ActionIconButtonPrimary
                         onClick={() => navigate("/Admin/teachers/teacher/" + row.id)}>
@@ -129,7 +156,15 @@ const ShowTeachers = () => {
                 </Box>
             </Box>
             <TableTemplate buttonHaver={TeacherButtonHaver} columns={teacherColumns} rows={filteredRows} />
-            <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
+            <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} severity={severity} />
+            <ConfirmationModal
+                open={confirmOpen}
+                handleClose={() => setConfirmOpen(false)}
+                handleConfirm={confirmDeleteHandler}
+                title="Delete Teacher?"
+                message="Are you sure you want to delete this teacher? This action cannot be undone."
+                confirmLabel="Delete"
+            />
         </Container>
     );
 };
