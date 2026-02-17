@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getAllTeachers } from '../../../redux/teacherRelated/teacherHandle';
+import { removeTeacherFromList } from '../../../redux/teacherRelated/teacherSlice';
 import {
     Paper, Box, TextField, InputAdornment, Typography, Container, Tooltip, Button
 } from '@mui/material';
@@ -41,7 +42,7 @@ const ShowTeachers = () => {
     } else if (response) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-                <GreenButton variant="contained" onClick={() => navigate("/Admin/teachers/chooseclass")}>
+                <GreenButton variant="contained" onClick={() => navigate("/Admin/teachers/add")}>
                     Add Teacher
                 </GreenButton>
             </Box>
@@ -60,7 +61,7 @@ const ShowTeachers = () => {
             const { deleteID, address } = deleteData;
             dispatch(deleteUser(deleteID, address))
                 .then(() => {
-                    dispatch(getAllTeachers(currentUser._id));
+                    dispatch(removeTeacherFromList(deleteID));
                     setMessage("Teacher Deleted Successfully");
                     setSeverity("success");
                     setShowPopup(true);
@@ -83,10 +84,10 @@ const ShowTeachers = () => {
             name: teacher.name,
             employeeId: teacher.employeeId || "N/A",
             teachSubject: teacher.teachSubject?.subName || null,
-            teachSclass: teacher.teachSclass.sclassName,
+            teachSclass: teacher.teachSclass?.sclassName || "N/A",
             department: teacher.department?.departmentName || "N/A",
             designation: teacher.designation || "N/A",
-            teachSclassID: teacher.teachSclass._id,
+            teachSclassID: teacher.teachSclass?._id || null,
             id: teacher._id,
         };
     });
@@ -149,7 +150,7 @@ const ShowTeachers = () => {
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
-                        onClick={() => navigate("/Admin/teachers/chooseclass")}
+                        onClick={() => navigate("/Admin/teachers/add")}
                         sx={{
                             textTransform: 'none', fontWeight: 600, fontFamily: 'var(--font-family-sans)',
                             borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--color-primary-600)',

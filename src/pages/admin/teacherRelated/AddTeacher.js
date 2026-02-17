@@ -6,10 +6,8 @@ import Popup from '../../../components/Popup';
 import { registerUser, updateUser } from '../../../redux/userRelated/userHandle';
 import { underControl } from '../../../redux/userRelated/userSlice';
 import { getTeacherDetails } from '../../../redux/teacherRelated/teacherHandle';
-import { CircularProgress, Container, Paper, Typography, TextField, Button, Box, Grid, Tab, Tabs } from '@mui/material';
+import { CircularProgress, Container, Paper, Typography, TextField, Button, Box, Grid, Stepper, Step, StepLabel } from '@mui/material';
 import styled from 'styled-components';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
 
 const AddTeacher = ({ situation }) => {
   const params = useParams()
@@ -19,14 +17,14 @@ const AddTeacher = ({ situation }) => {
   const subjectID = params.id
   const teacherID = params.id
 
-  const { status, response, error } = useSelector(state => state.user);
+  const { status, response, error, currentUser } = useSelector(state => state.user);
   const { subjectDetails } = useSelector((state) => state.sclass);
   const { teacherDetails } = useSelector((state) => state.teacher);
 
   useEffect(() => {
     if (situation === "Edit") {
       dispatch(getTeacherDetails(teacherID));
-    } else {
+    } else if (subjectID) {
       dispatch(getSubjectDetails(subjectID, "Subject"));
     }
   }, [dispatch, subjectID, teacherID, situation]);
@@ -48,8 +46,7 @@ const AddTeacher = ({ situation }) => {
   const [cnicError, setCnicError] = useState(false);
   const [phoneError, setPhoneError] = useState(false);
 
-  // Tab State
-  const [tabValue, setTabValue] = useState(0);
+
 
   useEffect(() => {
     if (situation === "Edit" && teacherDetails) {
@@ -73,9 +70,9 @@ const AddTeacher = ({ situation }) => {
   const [severity, setSeverity] = useState("success");
 
   const role = "Teacher"
-  const school = subjectDetails && subjectDetails.school
-  const teachSubject = subjectDetails && subjectDetails._id
-  const teachSclass = subjectDetails && subjectDetails.sclassName && subjectDetails.sclassName._id
+  const school = (subjectID && subjectDetails) ? subjectDetails.school : currentUser._id
+  const teachSubject = (subjectID && subjectDetails) ? subjectDetails._id : null
+  const teachSclass = (subjectID && subjectDetails && subjectDetails.sclassName) ? subjectDetails.sclassName._id : null
 
   const fields = {
     name, email, password, role, school, teachSubject, teachSclass,
@@ -110,9 +107,7 @@ const AddTeacher = ({ situation }) => {
     setPhoneError(val.replace(/\D/g, '').length !== 11);
   };
 
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue);
-  };
+
 
   const submitHandler = (event) => {
     event.preventDefault()
@@ -164,6 +159,29 @@ const AddTeacher = ({ situation }) => {
     }
   }, [status, navigate, error, response, dispatch, situation]);
 
+  const [activeStep, setActiveStep] = useState(0);
+  const steps = ['Personal Details', 'Login & Employment'];
+
+  const handleNext = () => {
+    if (activeStep === 0) {
+      if (cnicError || phoneError) {
+        setMessage("Please fix validation errors");
+        setSeverity("error");
+        setShowPopup(true);
+        return;
+      }
+      if (!name || !phone || !cnic || !qualification) {
+        setMessage("Please fill all required fields");
+        setSeverity("error");
+        setShowPopup(true);
+        return;
+      }
+    }
+    setActiveStep((prev) => prev + 1);
+  };
+
+  const handleBack = () => setActiveStep((prev) => prev - 1);
+
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
       <StyledPaper elevation={3}>
@@ -171,91 +189,85 @@ const AddTeacher = ({ situation }) => {
           {situation === "Edit" ? "Edit Teacher" : "Add Teacher"}
         </Typography>
 
-        {situation !== "Edit" && subjectDetails && (
-          <Box sx={{ mb: 3, p: 2, bgcolor: 'var(--bg-default)', borderRadius: 'var(--border-radius-md)' }}>
-            <Typography variant="subtitle1" color="textSecondary" align="center">
-              Adding teacher for:
-            </Typography>
-            <Typography variant="h6" align="center" sx={{ color: 'var(--color-primary-600)' }}>
-              Subject: {subjectDetails.subName}
-            </Typography>
-            <Typography variant="h6" align="center" sx={{ color: 'var(--color-primary-600)' }}>
-              Class: {subjectDetails.sclassName && subjectDetails.sclassName.sclassName}
-            </Typography>
-          </Box>
-        )}
+        <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
 
         <form onSubmit={submitHandler}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-            <Tabs value={tabValue} onChange={handleTabChange} centered variant="fullWidth">
-              <Tab icon={<PersonOutlineIcon />} label="Personal Details" />
-              <Tab icon={<LockOpenIcon />} label="Login & Employment" />
-            </Tabs>
+          {activeStep === 0 && (
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <TextField fullWidth label="Name" variant="outlined" value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" required />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField fullWidth label="Phone" value={phone} onChange={handlePhoneChange} error={phoneError} helperText={phoneError ? "Invalid Phone Format (03XX-XXXXXXX)" : ""} required />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField fullWidth label="CNIC" value={cnic} onChange={handleCnicChange} error={cnicError} helperText={cnicError ? "Invalid CNIC Format (XXXXX-XXXXXXX-X)" : ""} required />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField fullWidth label="Qualification" value={qualification} onChange={(e) => setQualification(e.target.value)} required />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField fullWidth label="Service Book Number" value={serviceBookNumber} onChange={(e) => setServiceBookNumber(e.target.value)} />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField select fullWidth label="Police Verification" value={policeVerification} onChange={(e) => setPoliceVerification(e.target.value)} SelectProps={{ native: true }}>
+                  <option value="No">No</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Yes">Yes</option>
+                </TextField>
+              </Grid>
+            </Grid>
+          )}
+
+          {activeStep === 1 && (
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <TextField fullWidth label="Email" type="email" variant="outlined" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField fullWidth label="Password" type="password" variant="outlined" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="new-password" required={situation !== "Edit"} helperText={situation === "Edit" ? "Leave blank to keep current password" : ""} />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField fullWidth label="Designation" value={designation} onChange={(e) => setDesignation(e.target.value)} required />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField fullWidth label="Department" value={department} onChange={(e) => setDepartment(e.target.value)} required />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField fullWidth label="Joining Date" type="date" InputLabelProps={{ shrink: true }} value={joiningDate} onChange={(e) => setJoiningDate(e.target.value)} required />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField fullWidth label="Salary" type="number" value={salary} onChange={(e) => setSalary(e.target.value)} required />
+              </Grid>
+            </Grid>
+          )}
+
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3, gap: 2 }}>
+            {activeStep !== 0 && (
+              <Button onClick={handleBack} variant="outlined">
+                Back
+              </Button>
+            )}
+            {activeStep === steps.length - 1 ? (
+              <SubmitButton
+                variant="contained"
+                type="submit"
+                disabled={loader}
+              >
+                {loader ? <CircularProgress size={24} color="inherit" /> : (situation === "Edit" ? 'Update' : 'Register')}
+              </SubmitButton>
+            ) : (
+              <Button variant="contained" onClick={handleNext}>
+                Next
+              </Button>
+            )}
           </Box>
-
-          <div role="tabpanel" hidden={tabValue !== 0}>
-            {tabValue === 0 && (
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label="Name" variant="outlined" value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" required />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label="Phone" value={phone} onChange={handlePhoneChange} error={phoneError} helperText={phoneError ? "Invalid Phone Format (03XX-XXXXXXX)" : ""} required />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label="CNIC" value={cnic} onChange={handleCnicChange} error={cnicError} helperText={cnicError ? "Invalid CNIC Format (XXXXX-XXXXXXX-X)" : ""} required />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label="Qualification" value={qualification} onChange={(e) => setQualification(e.target.value)} required />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label="Service Book Number" value={serviceBookNumber} onChange={(e) => setServiceBookNumber(e.target.value)} />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField select fullWidth label="Police Verification" value={policeVerification} onChange={(e) => setPoliceVerification(e.target.value)} SelectProps={{ native: true }}>
-                    <option value="No">No</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Yes">Yes</option>
-                  </TextField>
-                </Grid>
-                <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                  <Button variant="contained" onClick={() => setTabValue(1)}>Next</Button>
-                </Grid>
-              </Grid>
-            )}
-          </div>
-
-          <div role="tabpanel" hidden={tabValue !== 1}>
-            {tabValue === 1 && (
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label="Email" type="email" variant="outlined" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label="Password" type="password" variant="outlined" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="new-password" required={situation !== "Edit"} helperText={situation === "Edit" ? "Leave blank to keep current password" : ""} />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label="Designation" value={designation} onChange={(e) => setDesignation(e.target.value)} required />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label="Department" value={department} onChange={(e) => setDepartment(e.target.value)} required />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label="Joining Date" type="date" InputLabelProps={{ shrink: true }} value={joiningDate} onChange={(e) => setJoiningDate(e.target.value)} required />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label="Salary" type="number" value={salary} onChange={(e) => setSalary(e.target.value)} required />
-                </Grid>
-
-                <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-                  <Button variant="outlined" onClick={() => setTabValue(0)}>Back</Button>
-                  <SubmitButton size="large" type="submit" variant="contained" disabled={loader}>
-                    {loader ? <CircularProgress size={24} color="inherit" /> : (situation === "Edit" ? 'Update' : 'Register')}
-                  </SubmitButton>
-                </Grid>
-              </Grid>
-            )}
-          </div>
         </form>
       </StyledPaper>
       <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} severity={severity} />
@@ -277,7 +289,7 @@ const SubmitButton = styled(Button)`
         background: var(--gradient-primary);
         color: white;
         font-weight: bold;
-        padding: 12px;
+        padding: 10px 20px;
         border-radius: var(--border-radius-md);
         text-transform: none;
         font-size: 1rem;

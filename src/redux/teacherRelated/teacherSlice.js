@@ -40,6 +40,10 @@ const teacherSlice = createSlice({
             state.loading = false;
             state.error = null;
             state.response = null;
+        },
+        removeTeacherFromList: (state, action) => {
+            state.teachersList = state.teachersList.filter(teacher => teacher._id !== action.payload);
+            state.loading = false;
         }
     },
 });
@@ -50,7 +54,8 @@ export const {
     getFailed,
     getError,
     doneSuccess,
-    postDone
+    postDone,
+    removeTeacherFromList
 } = teacherSlice.actions;
 
 export const teacherReducer = teacherSlice.reducer;
