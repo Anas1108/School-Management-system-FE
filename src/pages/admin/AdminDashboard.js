@@ -81,9 +81,6 @@ const AdminDashboard = () => {
                     >
                         Admin Dashboard
                     </Typography>
-                    <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
-                        <BreadcrumbsNav />
-                    </Box>
                     <AccountMenu />
                 </Toolbar>
             </AppBar>
@@ -117,6 +114,7 @@ const AdminDashboard = () => {
             <Box component="main" sx={styles.boxStyled}>
                 <Toolbar />
                 <Box sx={{ flex: 1, overflow: 'auto', background: 'var(--bg-body)', p: 4 }}>
+                    <BreadcrumbsNav />
                     <Routes>
                         <Route path="/" element={<AdminHomePage />} />
                         <Route path='*' element={<Navigate to="/" />} />

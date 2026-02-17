@@ -2,6 +2,7 @@ import React from 'react';
 import { Breadcrumbs, Typography, Link, Box } from '@mui/material';
 import { useLocation, Link as RouterLink } from 'react-router-dom';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import HomeIcon from '@mui/icons-material/Home';
 
 const BreadcrumbsNav = () => {
     const location = useLocation();
@@ -154,36 +155,72 @@ const BreadcrumbsNav = () => {
     // or handle it inside the map
 
     return (
-        <Breadcrumbs
-            separator={<NavigateNextIcon fontSize="small" sx={{ color: 'inherit' }} />}
-            aria-label="breadcrumb"
+        <Box
             sx={{
-                '& .MuiBreadcrumbs-li': {
-                    color: 'inherit',
+                mb: 1.5,
+                p: '6px 16px',
+                borderRadius: 'var(--border-radius-md)',
+                background: 'rgba(255, 255, 255, 0.4)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                display: 'inline-flex',
+                boxShadow: 'var(--shadow-sm)',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                    boxShadow: 'var(--shadow-md)',
+                    background: 'rgba(255, 255, 255, 0.6)',
                 }
             }}
         >
-            {breadcrumbs.map((crumb, index) => {
-                const last = index === breadcrumbs.length - 1;
+            <Breadcrumbs
+                separator={<NavigateNextIcon fontSize="small" sx={{ color: 'var(--text-tertiary)', mx: 0.5 }} />}
+                aria-label="breadcrumb"
+            >
+                {breadcrumbs.map((crumb, index) => {
+                    const last = index === breadcrumbs.length - 1;
+                    const isDashboard = crumb.label === 'Dashboard';
 
-                return last ? (
-                    <Typography color="inherit" key={index} sx={{ fontWeight: 'bold' }}>
-                        {crumb.label}
-                    </Typography>
-                ) : (
-                    <Link
-                        underline="hover"
-                        color="inherit"
-                        component={RouterLink}
-                        to={crumb.to}
-                        key={index}
-                        sx={{ opacity: 0.8 }}
-                    >
-                        {crumb.label}
-                    </Link>
-                );
-            })}
-        </Breadcrumbs>
+                    return last ? (
+                        <Typography
+                            key={index}
+                            sx={{
+                                color: 'var(--color-primary-700)',
+                                fontWeight: 600,
+                                fontSize: 'var(--font-size-sm)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 0.5
+                            }}
+                        >
+                            {isDashboard && <HomeIcon sx={{ fontSize: '1.2rem', color: 'var(--color-primary-600)' }} />}
+                            {crumb.label}
+                        </Typography>
+                    ) : (
+                        <Link
+                            underline="none"
+                            color="inherit"
+                            component={RouterLink}
+                            to={crumb.to}
+                            key={index}
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 0.5,
+                                fontSize: 'var(--font-size-sm)',
+                                color: 'var(--text-secondary)',
+                                transition: 'color 0.2s',
+                                '&:hover': {
+                                    color: 'var(--color-primary-600)',
+                                }
+                            }}
+                        >
+                            {isDashboard && <HomeIcon sx={{ fontSize: '1.2rem' }} />}
+                            {crumb.label}
+                        </Link>
+                    );
+                })}
+            </Breadcrumbs>
+        </Box>
     );
 };
 

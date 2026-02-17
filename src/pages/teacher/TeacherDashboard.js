@@ -58,9 +58,6 @@ const TeacherDashboard = () => {
                         >
                             Teacher Dashboard
                         </Typography>
-                        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
-                            <BreadcrumbsNav />
-                        </Box>
                         <AccountMenu />
                     </Toolbar>
                 </AppBar>
@@ -78,6 +75,7 @@ const TeacherDashboard = () => {
                 <Box component="main" sx={styles.boxStyled}>
                     <Toolbar />
                     <Box sx={{ flex: 1, overflow: 'hidden', background: 'var(--bg-body)', p: 4 }}>
+                        <BreadcrumbsNav />
                         <Routes>
                             <Route path="/" element={<TeacherHomePage />} />
                             <Route path='*' element={<Navigate to="/" />} />
