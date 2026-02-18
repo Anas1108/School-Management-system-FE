@@ -5,19 +5,25 @@ import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import {
-    Paper, Box, IconButton,
+    Paper, Box, Container, Typography, TextField, InputAdornment, Tooltip, Button
 } from '@mui/material';
 import DeleteIcon from "@mui/icons-material/Delete";
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import SearchIcon from '@mui/icons-material/Search';
+import AddIcon from '@mui/icons-material/Add';
 import TableTemplate from '../../../components/TableTemplate';
-import { BlueButton, GreenButton } from '../../../components/buttonStyles';
-import SpeedDialTemplate from '../../../components/SpeedDialTemplate';
+import { GreenButton, ActionIconButtonPrimary, ActionIconButtonError } from '../../../components/buttonStyles';
 import Popup from '../../../components/Popup';
+import CustomLoader from '../../../components/CustomLoader';
 
 const ShowSubjects = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch();
     const { subjectsList, loading, error, response } = useSelector((state) => state.sclass);
     const { currentUser } = useSelector(state => state.user)
+
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         dispatch(getSubjectList(currentUser._id, "AllSubjects"));
@@ -58,35 +64,35 @@ const ShowSubjects = () => {
         };
     })
 
+    const filteredRows = subjectRows.filter((row) => {
+        return row.subName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            row.sclassName.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+
     const SubjectsButtonHaver = ({ row }) => {
         return (
             <>
-                <IconButton onClick={() => deleteHandler(row.id, "Subject")}>
-                    <DeleteIcon color="error" />
-                </IconButton>
-                <BlueButton variant="contained"
-                    onClick={() => navigate(`/Admin/subjects/subject/${row.sclassID}/${row.id}`)}>
-                    View
-                </BlueButton>
+                <Tooltip title="View" arrow>
+                    <ActionIconButtonPrimary
+                        onClick={() => navigate(`/Admin/subjects/subject/${row.sclassID}/${row.id}`)}>
+                        <VisibilityOutlinedIcon />
+                    </ActionIconButtonPrimary>
+                </Tooltip>
+                <Tooltip title="Delete" arrow>
+                    <ActionIconButtonError
+                        onClick={() => deleteHandler(row.id, "Subject")}>
+                        <DeleteOutlineIcon />
+                    </ActionIconButtonError>
+                </Tooltip>
             </>
         );
     };
 
-    const actions = [
-        {
-            icon: <PostAddIcon color="primary" />, name: 'Add New Subject',
-            action: () => navigate("/Admin/subjects/chooseclass")
-        },
-        {
-            icon: <DeleteIcon color="error" />, name: 'Delete All Subjects',
-            action: () => deleteHandler(currentUser._id, "Subjects")
-        }
-    ];
 
     return (
-        <>
+        <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
             {loading ?
-                <div>Loading...</div>
+                <CustomLoader />
                 :
                 <>
                     {response ?
@@ -97,18 +103,55 @@ const ShowSubjects = () => {
                             </GreenButton>
                         </Box>
                         :
-                        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-                            {Array.isArray(subjectsList) && subjectsList.length > 0 &&
-                                <TableTemplate buttonHaver={SubjectsButtonHaver} columns={subjectColumns} rows={subjectRows} />
+                        <>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                                    Subjects
+                                </Typography>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                    <TextField
+                                        placeholder="Search subjects..."
+                                        variant="outlined"
+                                        size="small"
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <SearchIcon />
+                                                </InputAdornment>
+                                            ),
+                                            style: {
+                                                borderRadius: 'var(--border-radius-md)',
+                                                backgroundColor: 'var(--bg-paper)',
+                                            }
+                                        }}
+                                        sx={{ width: '260px' }}
+                                    />
+                                    <Button
+                                        variant="contained"
+                                        startIcon={<AddIcon />}
+                                        onClick={() => navigate("/Admin/subjects/chooseclass")}
+                                        sx={{
+                                            textTransform: 'none', fontWeight: 600, fontFamily: 'var(--font-family-sans)',
+                                            borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--color-primary-600)',
+                                            boxShadow: 'none', px: 2.5, whiteSpace: 'nowrap',
+                                            '&:hover': { backgroundColor: 'var(--color-primary-700)', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
+                                        }}
+                                    >
+                                        Add Subject
+                                    </Button>
+                                </Box>
+                            </Box>
+                            {Array.isArray(filteredRows) && filteredRows.length > 0 &&
+                                <TableTemplate buttonHaver={SubjectsButtonHaver} columns={subjectColumns} rows={filteredRows} />
                             }
-                            <SpeedDialTemplate actions={actions} />
-                        </Paper>
+                        </>
                     }
                 </>
             }
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
 
-        </>
+        </Container>
     );
 };
 

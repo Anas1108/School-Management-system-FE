@@ -1,14 +1,15 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Paper, Box, Checkbox
+  Paper, Box, Checkbox, Container, Typography
 } from '@mui/material';
 import { getAllComplains } from '../../../redux/complainRelated/complainHandle';
 import TableTemplate from '../../../components/TableTemplate';
+import CustomLoader from '../../../components/CustomLoader';
 
 const SeeComplains = () => {
 
-  const label = { inputProps: { 'aria-label': 'Checkbox demo' } };  const dispatch = useDispatch();
+  const label = { inputProps: { 'aria-label': 'Checkbox demo' } }; const dispatch = useDispatch();
   const { complainsList, loading, error, response } = useSelector((state) => state.complain);
   const { currentUser } = useSelector(state => state.user)
 
@@ -30,7 +31,7 @@ const SeeComplains = () => {
     const date = new Date(complain.date);
     const dateString = date.toString() !== "Invalid Date" ? date.toISOString().substring(0, 10) : "Invalid Date";
     return {
-      user: complain.user.name,
+      user: complain.user?.name || "Unknown User",
       complaint: complain.complaint,
       date: dateString,
       id: complain._id,
@@ -46,25 +47,28 @@ const SeeComplains = () => {
   };
 
   return (
-    <>
+    <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
       {loading ?
-        <div>Loading...</div>
+        <CustomLoader />
         :
         <>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)', mb: 2 }}>
+            Complains
+          </Typography>
           {response ?
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
               No Complains Right Now
             </Box>
             :
-            <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+            <>
               {Array.isArray(complainsList) && complainsList.length > 0 &&
                 <TableTemplate buttonHaver={ComplainButtonHaver} columns={complainColumns} rows={complainRows} />
               }
-            </Paper>
+            </>
           }
         </>
       }
-    </>
+    </Container>
   );
 };
 

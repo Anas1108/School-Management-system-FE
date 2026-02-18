@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, CircularProgress, Stack, TextField } from "@mui/material";
+import { Box, Button, CircularProgress, Stack, TextField, Container, Paper, Typography } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addStuff } from '../../../redux/userRelated/userHandle';
 import { underControl } from '../../../redux/userRelated/userSlice';
-import { BlueButton } from "../../../components/buttonStyles";
 import Popup from "../../../components/Popup";
-import Classroom from "../../../assets/classroom.png";
 import styled from "styled-components";
 
 const AddClass = () => {
@@ -53,68 +51,71 @@ const AddClass = () => {
             setLoader(false)
         }
     }, [status, navigate, error, response, dispatch, tempDetails]);
+
     return (
-        <>
-            <StyledContainer>
-                <StyledBox>
-                    <Stack sx={{
-                        alignItems: 'center',
-                        mb: 3
-                    }}>
-                        <img
-                            src={Classroom}
-                            alt="classroom"
-                            style={{ width: '80%' }}
+        <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
+            <StyledPaper elevation={3}>
+                <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold', color: 'var(--text-primary)', textAlign: 'center' }}>
+                    Add New Class
+                </Typography>
+                <form onSubmit={submitHandler}>
+                    <Stack spacing={3}>
+                        <TextField
+                            label="Class Name"
+                            variant="outlined"
+                            fullWidth
+                            value={sclassName}
+                            onChange={(event) => {
+                                setSclassName(event.target.value);
+                            }}
+                            required
                         />
+                        <SubmitButton
+                            fullWidth
+                            size="large"
+                            variant="contained"
+                            type="submit"
+                            disabled={loader}
+                        >
+                            {loader ? <CircularProgress size={24} color="inherit" /> : "Create Class"}
+                        </SubmitButton>
+                        <Button variant="outlined" onClick={() => navigate(-1)}>
+                            Go Back
+                        </Button>
                     </Stack>
-                    <form onSubmit={submitHandler}>
-                        <Stack spacing={3}>
-                            <TextField
-                                label="Create a class"
-                                variant="outlined"
-                                value={sclassName}
-                                onChange={(event) => {
-                                    setSclassName(event.target.value);
-                                }}
-                                required
-                            />
-                            <BlueButton
-                                fullWidth
-                                size="large"
-                                sx={{ mt: 3 }}
-                                variant="contained"
-                                type="submit"
-                                disabled={loader}
-                            >
-                                {loader ? <CircularProgress size={24} color="inherit" /> : "Create"}
-                            </BlueButton>
-                            <Button variant="outlined" onClick={() => navigate(-1)}>
-                                Go Back
-                            </Button>
-                        </Stack>
-                    </form>
-                </StyledBox>
-            </StyledContainer>
+                </form>
+            </StyledPaper>
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
-        </>
+        </Container>
     )
 }
 
 export default AddClass
 
-const StyledContainer = styled(Box)`
-  flex: 1 1 auto;
-  align-items: center;
-  display: flex;
-  justify-content: center;
+const StyledPaper = styled(Paper)`
+    padding: 2.5rem;
+    border-radius: var(--border-radius-xl);
+    background: var(--bg-paper);
+    border: 1px solid var(--border-color);
 `;
 
-const StyledBox = styled(Box)`
-  max-width: 550px;
-  padding: 50px 3rem 50px;
-  margin-top: 1rem;
-  background-color: white;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  border: 1px solid #ccc;
-  border-radius: 4px;
+const SubmitButton = styled(Button)`
+    && {
+        background: var(--gradient-primary);
+        color: white;
+        font-weight: bold;
+        padding: 12px;
+        border-radius: var(--border-radius-md);
+        text-transform: none;
+        font-size: 1rem;
+        box-shadow: var(--shadow-md);
+        transition: all 0.3s ease;
+
+        &:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+            background: var(--gradient-primary);
+            filter: brightness(1.1);
+        }
+    }
 `;

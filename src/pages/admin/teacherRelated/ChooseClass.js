@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, Button, Typography } from '@mui/material'
+import { Box, Button, Typography, Tooltip } from '@mui/material'
 import { getAllSclasses } from '../../../redux/sclassRelated/sclassHandle';
 import { useNavigate } from 'react-router-dom';
-import { PurpleButton } from '../../../components/buttonStyles';
+import { ActionIconButtonPrimary } from '../../../components/buttonStyles';
 import TableTemplate from '../../../components/TableTemplate';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 const ChooseClass = ({ situation }) => {
     const navigate = useNavigate()
@@ -44,10 +45,12 @@ const ChooseClass = ({ situation }) => {
     const SclassButtonHaver = ({ row }) => {
         return (
             <>
-                <PurpleButton variant="contained"
-                    onClick={() => navigateHandler(row.id)}>
-                    Choose
-                </PurpleButton>
+                <Tooltip title="Choose" arrow>
+                    <ActionIconButtonPrimary
+                        onClick={() => navigateHandler(row.id)}>
+                        <ArrowForwardIcon />
+                    </ActionIconButtonPrimary>
+                </Tooltip>
             </>
         );
     };

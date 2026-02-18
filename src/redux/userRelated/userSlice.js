@@ -64,6 +64,13 @@ const userSlice = createSlice({
             state.error = null;
             state.response = null;
         },
+        updateSuccess: (state, action) => {
+            state.userDetails = action.payload;
+            state.status = 'added'; // Use 'added' to trigger navigation in AddStudent
+            state.loading = false;
+            state.error = null;
+            state.response = null;
+        },
 
         getRequest: (state) => {
             state.loading = true;
@@ -94,6 +101,7 @@ export const {
     doneSuccess,
     getDeleteSuccess,
     getRequest,
+    updateSuccess,
     getFailed,
     getError,
     toggleDarkMode

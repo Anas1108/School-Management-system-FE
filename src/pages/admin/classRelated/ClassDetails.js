@@ -4,20 +4,24 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { getClassDetails, getClassStudents, getSubjectList } from "../../../redux/sclassRelated/sclassHandle";
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import {
-    Box, Container, Typography, Tab, IconButton
+    Box, Container, Typography, Tab, Paper, Grid, Tooltip, Button
 } from '@mui/material';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { resetSubjects } from "../../../redux/sclassRelated/sclassSlice";
-import { BlueButton, GreenButton, PurpleButton } from "../../../components/buttonStyles";
+import { GreenButton, ActionIconButtonPrimary, ActionIconButtonError, ActionIconButtonSuccess } from "../../../components/buttonStyles";
 import TableTemplate from "../../../components/TableTemplate";
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
-import SpeedDialTemplate from "../../../components/SpeedDialTemplate";
 import Popup from "../../../components/Popup";
 import DeleteIcon from "@mui/icons-material/Delete";
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
 import PostAddIcon from '@mui/icons-material/PostAdd';
+import AddIcon from '@mui/icons-material/Add';
+import styled from 'styled-components';
 
 const ClassDetails = () => {
     const params = useParams()
@@ -75,31 +79,22 @@ const ClassDetails = () => {
     const SubjectsButtonHaver = ({ row }) => {
         return (
             <>
-                <IconButton onClick={() => deleteHandler(row.id, "Subject")}>
-                    <DeleteIcon color="error" />
-                </IconButton>
-                <BlueButton
-                    variant="contained"
-                    onClick={() => {
-                        navigate(`/Admin/class/subject/${classID}/${row.id}`)
-                    }}
-                >
-                    View
-                </BlueButton >
+                <Tooltip title="View" arrow>
+                    <ActionIconButtonPrimary
+                        onClick={() => navigate(`/Admin/class/subject/${classID}/${row.id}`)}>
+                        <VisibilityOutlinedIcon />
+                    </ActionIconButtonPrimary>
+                </Tooltip>
+                <Tooltip title="Delete" arrow>
+                    <ActionIconButtonError
+                        onClick={() => deleteHandler(row.id, "Subject")}>
+                        <DeleteOutlineIcon />
+                    </ActionIconButtonError>
+                </Tooltip>
             </>
         );
     };
 
-    const subjectActions = [
-        {
-            icon: <PostAddIcon color="primary" />, name: 'Add New Subject',
-            action: () => navigate("/Admin/addsubject/" + classID)
-        },
-        {
-            icon: <DeleteIcon color="error" />, name: 'Delete All Subjects',
-            action: () => deleteHandler(classID, "SubjectsClass")
-        }
-    ];
 
     const ClassSubjectsSection = () => {
         return (
@@ -115,12 +110,25 @@ const ClassDetails = () => {
                     </Box>
                     :
                     <>
-                        <Typography variant="h5" gutterBottom>
-                            Subjects List:
-                        </Typography>
-
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                            <Typography variant="h5" gutterBottom sx={{ mb: 0 }}>
+                                Subjects List:
+                            </Typography>
+                            <Button
+                                variant="contained"
+                                startIcon={<AddIcon />}
+                                onClick={() => navigate("/Admin/addsubject/" + classID)}
+                                sx={{
+                                    textTransform: 'none', fontWeight: 600, fontFamily: 'var(--font-family-sans)',
+                                    borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--color-primary-600)',
+                                    boxShadow: 'none', px: 2.5, whiteSpace: 'nowrap',
+                                    '&:hover': { backgroundColor: 'var(--color-primary-700)', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
+                                }}
+                            >
+                                Add Subject
+                            </Button>
+                        </Box>
                         <TableTemplate buttonHaver={SubjectsButtonHaver} columns={subjectColumns} rows={subjectRows} />
-                        <SpeedDialTemplate actions={subjectActions} />
                     </>
                 }
             </>
@@ -143,37 +151,28 @@ const ClassDetails = () => {
     const StudentsButtonHaver = ({ row }) => {
         return (
             <>
-                <IconButton onClick={() => deleteHandler(row.id, "Student")}>
-                    <PersonRemoveIcon color="error" />
-                </IconButton>
-                <BlueButton
-                    variant="contained"
-                    onClick={() => navigate("/Admin/students/student/" + row.id)}
-                >
-                    View
-                </BlueButton>
-                <PurpleButton
-                    variant="contained"
-                    onClick={() =>
-                        navigate("/Admin/students/student/attendance/" + row.id)
-                    }
-                >
-                    Attendance
-                </PurpleButton>
+                <Tooltip title="View" arrow>
+                    <ActionIconButtonPrimary
+                        onClick={() => navigate("/Admin/students/student/" + row.id)}>
+                        <VisibilityOutlinedIcon />
+                    </ActionIconButtonPrimary>
+                </Tooltip>
+                <Tooltip title="Attendance" arrow>
+                    <ActionIconButtonSuccess
+                        onClick={() => navigate("/Admin/students/student/attendance/" + row.id)}>
+                        <EventAvailableOutlinedIcon />
+                    </ActionIconButtonSuccess>
+                </Tooltip>
+                <Tooltip title="Delete" arrow>
+                    <ActionIconButtonError
+                        onClick={() => deleteHandler(row.id, "Student")}>
+                        <DeleteOutlineIcon />
+                    </ActionIconButtonError>
+                </Tooltip>
             </>
         );
     };
 
-    const studentActions = [
-        {
-            icon: <PersonAddAlt1Icon color="primary" />, name: 'Add New Student',
-            action: () => navigate("/Admin/class/addstudents/" + classID)
-        },
-        {
-            icon: <PersonRemoveIcon color="error" />, name: 'Delete All Students',
-            action: () => deleteHandler(classID, "StudentsClass")
-        },
-    ];
 
     const ClassStudentsSection = () => {
         return (
@@ -191,12 +190,25 @@ const ClassDetails = () => {
                     </>
                 ) : (
                     <>
-                        <Typography variant="h5" gutterBottom>
-                            Students List:
-                        </Typography>
-
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                            <Typography variant="h5" gutterBottom sx={{ mb: 0 }}>
+                                Students List:
+                            </Typography>
+                            <Button
+                                variant="contained"
+                                startIcon={<AddIcon />}
+                                onClick={() => navigate("/Admin/class/addstudents/" + classID)}
+                                sx={{
+                                    textTransform: 'none', fontWeight: 600, fontFamily: 'var(--font-family-sans)',
+                                    borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--color-primary-600)',
+                                    boxShadow: 'none', px: 2.5, whiteSpace: 'nowrap',
+                                    '&:hover': { backgroundColor: 'var(--color-primary-700)', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
+                                }}
+                            >
+                                Add Student
+                            </Button>
+                        </Box>
                         <TableTemplate buttonHaver={StudentsButtonHaver} columns={studentColumns} rows={studentRows} />
-                        <SpeedDialTemplate actions={studentActions} />
                     </>
                 )}
             </>
@@ -205,9 +217,11 @@ const ClassDetails = () => {
 
     const ClassTeachersSection = () => {
         return (
-            <>
-                Teachers
-            </>
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+                <Typography variant="h6" color="textSecondary">
+                    Teachers section coming soon
+                </Typography>
+            </Box>
         )
     }
 
@@ -216,76 +230,103 @@ const ClassDetails = () => {
         const numberOfStudents = sclassStudents.length;
 
         return (
-            <>
-                <Typography variant="h4" align="center" gutterBottom>
-                    Class Details
+            <DetailsCard>
+                <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 'bold', textAlign: 'center' }}>
+                    {sclassDetails && sclassDetails.sclassName}
                 </Typography>
-                <Typography variant="h5" gutterBottom>
-                    This is Class {sclassDetails && sclassDetails.sclassName}
-                </Typography>
-                <Typography variant="h6" gutterBottom>
-                    Number of Subjects: {numberOfSubjects}
-                </Typography>
-                <Typography variant="h6" gutterBottom>
-                    Number of Students: {numberOfStudents}
-                </Typography>
-                {getresponse &&
-                    <GreenButton
-                        variant="contained"
-                        onClick={() => navigate("/Admin/class/addstudents/" + classID)}
-                    >
-                        Add Students
-                    </GreenButton>
-                }
-                {response &&
-                    <GreenButton
-                        variant="contained"
-                        onClick={() => navigate("/Admin/addsubject/" + classID)}
-                    >
-                        Add Subjects
-                    </GreenButton>
-                }
-            </>
+                <Grid container spacing={3} sx={{ mt: 2 }}>
+                    <Grid item xs={12} sm={6}>
+                        <StatBox>
+                            <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'var(--color-primary-600)' }}>
+                                {numberOfSubjects}
+                            </Typography>
+                            <Typography variant="subtitle1" color="textSecondary">
+                                Subjects
+                            </Typography>
+                        </StatBox>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <StatBox>
+                            <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'var(--color-success-600)' }}>
+                                {numberOfStudents}
+                            </Typography>
+                            <Typography variant="subtitle1" color="textSecondary">
+                                Students
+                            </Typography>
+                        </StatBox>
+                    </Grid>
+                </Grid>
+                <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
+                    {getresponse &&
+                        <GreenButton
+                            variant="contained"
+                            onClick={() => navigate("/Admin/class/addstudents/" + classID)}
+                        >
+                            Add Students
+                        </GreenButton>
+                    }
+                    {response &&
+                        <GreenButton
+                            variant="contained"
+                            onClick={() => navigate("/Admin/addsubject/" + classID)}
+                        >
+                            Add Subjects
+                        </GreenButton>
+                    }
+                </Box>
+            </DetailsCard>
         );
     }
 
     return (
-        <>
+        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             {loading ? (
                 <div>Loading...</div>
             ) : (
                 <>
-                    <Box sx={{ width: '100%', typography: 'body1', }} >
-                        <TabContext value={value}>
-                            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                                <TabList onChange={handleChange} sx={{ position: 'fixed', width: '100%', bgcolor: 'background.paper', zIndex: 1 }}>
+                    <TabContext value={value}>
+                        <Paper sx={{ borderRadius: 'var(--border-radius-xl)', overflow: 'hidden' }}>
+                            <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'var(--bg-paper)' }}>
+                                <TabList onChange={handleChange} centered textColor="primary" indicatorColor="primary">
                                     <Tab label="Details" value="1" />
                                     <Tab label="Subjects" value="2" />
                                     <Tab label="Students" value="3" />
                                     <Tab label="Teachers" value="4" />
                                 </TabList>
                             </Box>
-                            <Container sx={{ marginTop: "3rem", marginBottom: "4rem" }}>
-                                <TabPanel value="1">
-                                    <ClassDetailsSection />
-                                </TabPanel>
-                                <TabPanel value="2">
-                                    <ClassSubjectsSection />
-                                </TabPanel>
-                                <TabPanel value="3">
-                                    <ClassStudentsSection />
-                                </TabPanel>
-                                <TabPanel value="4">
-                                    <ClassTeachersSection />
-                                </TabPanel>
-                            </Container>
-                        </TabContext>
-                    </Box>
+                            <TabPanel value="1" sx={{ p: 4 }}>
+                                <ClassDetailsSection />
+                            </TabPanel>
+                            <TabPanel value="2" sx={{ p: 4 }}>
+                                <ClassSubjectsSection />
+                            </TabPanel>
+                            <TabPanel value="3" sx={{ p: 4 }}>
+                                <ClassStudentsSection />
+                            </TabPanel>
+                            <TabPanel value="4" sx={{ p: 4 }}>
+                                <ClassTeachersSection />
+                            </TabPanel>
+                        </Paper>
+                    </TabContext>
                 </>
             )}
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
-        </>
+        </Container>
     );
 };
 
 export default ClassDetails;
+
+const DetailsCard = styled(Box)`
+    background: var(--bg-paper);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
+`;
+
+const StatBox = styled(Box)`
+    text-align: center;
+    padding: 2rem;
+    background: var(--bg-default);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-color);
+`;

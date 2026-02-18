@@ -13,6 +13,7 @@ import {
     Typography, Stack,
     TextField, CircularProgress, FormControl
 } from '@mui/material';
+import CustomLoader from '../../../components/CustomLoader';
 
 const StudentExamMarks = ({ situation }) => {
     const dispatch = useDispatch();
@@ -88,9 +89,7 @@ const StudentExamMarks = ({ situation }) => {
         <>
             {loading
                 ?
-                <>
-                    <div>Loading...</div>
-                </>
+                <CustomLoader />
                 :
                 <>
                     <Box

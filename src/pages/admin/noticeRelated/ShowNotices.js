@@ -2,15 +2,17 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import {
-    Paper, Box, IconButton
+    Paper, Box, Tooltip, Button, Container, Typography
 } from '@mui/material';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import DeleteIcon from "@mui/icons-material/Delete";
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import AddIcon from '@mui/icons-material/Add';
 import { getAllNotices } from '../../../redux/noticeRelated/noticeHandle';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import TableTemplate from '../../../components/TableTemplate';
-import { GreenButton } from '../../../components/buttonStyles';
-import SpeedDialTemplate from '../../../components/SpeedDialTemplate';
+import { GreenButton, ActionIconButtonError } from '../../../components/buttonStyles';
+import CustomLoader from '../../../components/CustomLoader';
 
 const ShowNotices = () => {
 
@@ -42,60 +44,68 @@ const ShowNotices = () => {
 
     const noticeRows = noticesList && noticesList.length > 0 && noticesList.map((notice) => {
         const date = new Date(notice.date);
-        const dateString = date.toString() !== "Invalid Date" ? date.toISOString().substring(0, 10) : "Invalid Date";
+        const dateString = date.toString() !== "Invalid Date" ? date.toISOString().substring(0, 10) : "N/A";
         return {
             title: notice.title,
             details: notice.details,
             date: dateString,
             id: notice._id,
         };
-    });
+    })
 
     const NoticeButtonHaver = ({ row }) => {
         return (
             <>
-                <IconButton onClick={() => deleteHandler(row.id, "Notice")}>
-                    <DeleteIcon color="error" />
-                </IconButton>
+                <Tooltip title="Delete" arrow>
+                    <ActionIconButtonError
+                        onClick={() => deleteHandler(row.id, "Notice")}>
+                        <DeleteOutlineIcon />
+                    </ActionIconButtonError>
+                </Tooltip>
             </>
         );
     };
 
-    const actions = [
-        {
-            icon: <NoteAddIcon color="primary" />, name: 'Add New Notice',
-            action: () => navigate("/Admin/addnotice")
-        },
-        {
-            icon: <DeleteIcon color="error" />, name: 'Delete All Notices',
-            action: () => deleteHandler(currentUser._id, "Notices")
-        }
-    ];
-
     return (
-        <>
+        <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
             {loading ?
-                <div>Loading...</div>
+                <CustomLoader />
                 :
                 <>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                            Notices
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <Button
+                                variant="contained"
+                                startIcon={<AddIcon />}
+                                onClick={() => navigate("/Admin/addnotice")}
+                                sx={{
+                                    textTransform: 'none', fontWeight: 600, fontFamily: 'var(--font-family-sans)',
+                                    borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--color-primary-600)',
+                                    boxShadow: 'none', px: 2.5, whiteSpace: 'nowrap',
+                                    '&:hover': { backgroundColor: 'var(--color-primary-700)', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
+                                }}
+                            >
+                                Add Notice
+                            </Button>
+                        </Box>
+                    </Box>
                     {response ?
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-                            <GreenButton variant="contained"
-                                onClick={() => navigate("/Admin/addnotice")}>
-                                Add Notice
-                            </GreenButton>
+                            {/* Response content if needed, currently reusing button above or handling empty state differently */}
                         </Box>
                         :
-                        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+                        <>
                             {Array.isArray(noticesList) && noticesList.length > 0 &&
                                 <TableTemplate buttonHaver={NoticeButtonHaver} columns={noticeColumns} rows={noticeRows} />
                             }
-                            <SpeedDialTemplate actions={actions} />
-                        </Paper>
+                        </>
                     }
                 </>
             }
-        </>
+        </Container>
     );
 };
 

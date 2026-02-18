@@ -9,8 +9,7 @@ import { LightPurpleButton } from '../components/buttonStyles';
 import styled from 'styled-components';
 import { loginUser } from '../redux/userRelated/userHandle';
 import Popup from '../components/Popup';
-
-const defaultTheme = createTheme();
+import theme from '../theme';
 
 const LoginPage = ({ role }) => {
 
@@ -122,10 +121,15 @@ const LoginPage = ({ role }) => {
     }, [status, currentRole, navigate, error, response, currentUser]);
 
     return (
-        <ThemeProvider theme={defaultTheme}>
+        <ThemeProvider theme={theme}>
             <Grid container component="main" sx={{ height: '100vh' }}>
                 <CssBaseline />
-                <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+                <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    backgroundColor: 'var(--bg-paper)'
+                }}>
                     <Box
                         sx={{
                             my: 8,
@@ -135,16 +139,16 @@ const LoginPage = ({ role }) => {
                             alignItems: 'center',
                         }}
                     >
-                        <Typography variant="h4" sx={{ mb: 2, color: "#2c2143" }}>
+                        <StyledTypography variant="h4" sx={{ mb: 1, color: "var(--text-primary)" }}>
                             {role} Login
-                        </Typography>
-                        <Typography variant="h7">
+                        </StyledTypography>
+                        <Typography variant="body1" sx={{ color: 'var(--text-secondary)', mb: 3 }}>
                             Welcome back! Please enter your details
                         </Typography>
-                        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 2 }}>
+                        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1, width: '100%', maxWidth: '400px' }}>
                             {role === "Student" ? (
                                 <>
-                                    <TextField
+                                    <StyledTextField
                                         margin="normal"
                                         required
                                         fullWidth
@@ -157,8 +161,9 @@ const LoginPage = ({ role }) => {
                                         error={rollNumberError}
                                         helperText={rollNumberError && 'Roll Number is required'}
                                         onChange={handleInputChange}
+                                        variant="outlined"
                                     />
-                                    <TextField
+                                    <StyledTextField
                                         margin="normal"
                                         required
                                         fullWidth
@@ -166,14 +171,14 @@ const LoginPage = ({ role }) => {
                                         label="Enter your name"
                                         name="studentName"
                                         autoComplete="name"
-                                        autoFocus
                                         error={studentNameError}
                                         helperText={studentNameError && 'Name is required'}
                                         onChange={handleInputChange}
+                                        variant="outlined"
                                     />
                                 </>
                             ) : (
-                                <TextField
+                                <StyledTextField
                                     margin="normal"
                                     required
                                     fullWidth
@@ -185,9 +190,10 @@ const LoginPage = ({ role }) => {
                                     error={emailError}
                                     helperText={emailError && 'Email is required'}
                                     onChange={handleInputChange}
+                                    variant="outlined"
                                 />
                             )}
-                            <TextField
+                            <StyledTextField
                                 margin="normal"
                                 required
                                 fullWidth
@@ -199,6 +205,7 @@ const LoginPage = ({ role }) => {
                                 error={passwordError}
                                 helperText={passwordError && 'Password is required'}
                                 onChange={handleInputChange}
+                                variant="outlined"
                                 InputProps={{
                                     endAdornment: (
                                         <InputAdornment position="end">
@@ -213,12 +220,12 @@ const LoginPage = ({ role }) => {
                                     ),
                                 }}
                             />
-                            <Grid container sx={{ display: "flex", justifyContent: "space-between" }}>
+                            <Grid container sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 1 }}>
                                 <FormControlLabel
                                     control={<Checkbox value="remember" color="primary" />}
-                                    label="Remember me"
+                                    label={<Typography sx={{ color: 'var(--text-secondary)' }}>Remember me</Typography>}
                                 />
-                                <StyledLink href="#">
+                                <StyledLink href="#" variant="body2">
                                     Forgot password?
                                 </StyledLink>
                             </Grid>
@@ -226,26 +233,26 @@ const LoginPage = ({ role }) => {
                                 type="submit"
                                 fullWidth
                                 variant="contained"
-                                sx={{ mt: 3 }}
+                                sx={{ mt: 3, mb: 2 }}
                             >
                                 {loader ?
                                     <CircularProgress size={24} color="inherit" />
                                     : "Login"}
                             </LightPurpleButton>
-                            <Button
+                            <StyledGuestButton
                                 fullWidth
                                 onClick={guestModeHandler}
                                 variant="outlined"
-                                sx={{ mt: 2, mb: 3, color: "#7f56da", borderColor: "#7f56da" }}
                             >
                                 Login as Guest
-                            </Button>
+                            </StyledGuestButton>
                             {role === "Admin" &&
-                                <Grid container>
-                                    <Grid>
-                                        Don't have an account?
-                                    </Grid>
-                                    <Grid item sx={{ ml: 2 }}>
+                                <Grid container justifyContent="center" sx={{ mt: 3 }}>
+                                    <Grid item>
+                                        <Typography variant="body2" sx={{ color: 'var(--text-secondary)', mr: 1, display: 'inline' }}>
+                                            Don't have an account?
+                                        </Typography>
+
                                         <StyledLink to="/Adminregister">
                                             Sign up
                                         </StyledLink>
@@ -263,10 +270,10 @@ const LoginPage = ({ role }) => {
                     sx={{
                         backgroundImage: `url(${bgpic})`,
                         backgroundRepeat: 'no-repeat',
-                        backgroundColor: (t) =>
-                            t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
+                        backgroundColor: 'var(--color-primary-50)',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
+                        borderLeft: '1px solid var(--border-color)',
                     }}
                 />
             </Grid>
@@ -284,8 +291,51 @@ const LoginPage = ({ role }) => {
 
 export default LoginPage
 
+const StyledTypography = styled(Typography)`
+    font-family: var(--font-family-heading) !important;
+    font-weight: 700 !important;
+`;
+
+const StyledTextField = styled(TextField)`
+    & .MuiOutlinedInput-root {
+        border-radius: var(--border-radius-lg) !important;
+        background-color: var(--color-gray-50);
+        
+        & fieldset {
+            border-color: var(--color-gray-200);
+        }
+        
+        &:hover fieldset {
+            border-color: var(--color-primary-300);
+        }
+        
+        &.Mui-focused fieldset {
+            border-color: var(--color-primary-600);
+        }
+    }
+`;
+
 const StyledLink = styled(Link)`
-  margin-top: 9px;
   text-decoration: none;
-  color: #7f56da;
+  color: var(--color-primary-600);
+  font-weight: 600;
+  transition: color 0.2s;
+  
+  &:hover {
+      color: var(--color-primary-800);
+  }
+`;
+
+const StyledGuestButton = styled(Button)`
+    && {
+        border-color: var(--color-primary-600);
+        color: var(--color-primary-600);
+        border-radius: var(--border-radius-lg);
+        padding: 10px;
+        
+        &:hover {
+            border-color: var(--color-primary-800);
+            background-color: var(--color-primary-50);
+        }
+    }
 `;

@@ -23,6 +23,7 @@ import TeacherHomePage from './TeacherHomePage';
 import TeacherProfile from './TeacherProfile';
 import TeacherViewStudent from './TeacherViewStudent';
 import StudentExamMarks from '../admin/studentRelated/StudentExamMarks';
+import BreadcrumbsNav from '../../components/BreadcrumbsNav';
 
 const TeacherDashboard = () => {
     const [open, setOpen] = useState(true);
@@ -32,7 +33,7 @@ const TeacherDashboard = () => {
 
     return (
         <>
-            <Box sx={{ display: 'flex' }}>
+            <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
                 <CssBaseline />
                 <AppBar open={open} position='absolute'>
                     <Toolbar sx={{ pr: '24px' }}>
@@ -67,28 +68,31 @@ const TeacherDashboard = () => {
                         </IconButton>
                     </Toolbar>
                     <Divider />
-                    <List component="nav">
+                    <List component="nav" sx={{ flex: 1, overflow: 'hidden' }}>
                         <TeacherSideBar />
                     </List>
                 </Drawer>
                 <Box component="main" sx={styles.boxStyled}>
                     <Toolbar />
-                    <Routes>
-                        <Route path="/" element={<TeacherHomePage />} />
-                        <Route path='*' element={<Navigate to="/" />} />
-                        <Route path="/Teacher/dashboard" element={<TeacherHomePage />} />
-                        <Route path="/Teacher/profile" element={<TeacherProfile />} />
+                    <Box sx={{ flex: 1, overflow: 'hidden', background: 'var(--bg-body)', p: 4 }}>
+                        <BreadcrumbsNav />
+                        <Routes>
+                            <Route path="/" element={<TeacherHomePage />} />
+                            <Route path='*' element={<Navigate to="/" />} />
+                            <Route path="/Teacher/dashboard" element={<TeacherHomePage />} />
+                            <Route path="/Teacher/profile" element={<TeacherProfile />} />
 
-                        <Route path="/Teacher/complain" element={<TeacherComplain />} />
+                            <Route path="/Teacher/complain" element={<TeacherComplain />} />
 
-                        <Route path="/Teacher/class" element={<TeacherClassDetails />} />
-                        <Route path="/Teacher/class/student/:id" element={<TeacherViewStudent />} />
+                            <Route path="/Teacher/class" element={<TeacherClassDetails />} />
+                            <Route path="/Teacher/class/student/:id" element={<TeacherViewStudent />} />
 
-                        <Route path="/Teacher/class/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
-                        <Route path="/Teacher/class/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
+                            <Route path="/Teacher/class/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
+                            <Route path="/Teacher/class/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
 
-                        <Route path="/logout" element={<Logout />} />
-                    </Routes>
+                            <Route path="/logout" element={<Logout />} />
+                        </Routes>
+                    </Box>
                 </Box>
             </Box>
         </>
@@ -105,7 +109,9 @@ const styles = {
                 : theme.palette.grey[900],
         flexGrow: 1,
         height: '100vh',
-        overflow: 'auto',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
     },
     toolBarStyled: {
         display: 'flex',
