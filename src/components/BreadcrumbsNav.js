@@ -82,6 +82,9 @@ const BreadcrumbsNav = () => {
                 crumbs.push({ label: 'Subjects', to: '/Admin/subjects' });
                 crumbs.push({ label: 'Add Subject', to: '#' });
             }
+            else if (path === '/Admin/subject-allocation') {
+                crumbs.push({ label: 'Subject Allocation', to: '#' });
+            }
 
             // Notices
             else if (path.startsWith('/Admin/notices')) {
