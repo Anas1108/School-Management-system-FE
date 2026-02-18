@@ -145,23 +145,6 @@ const TeacherDetails = () => {
                         {/* Academic & Workload Tab */}
                         <CustomTabPanel value={value} index={1}>
                             <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-                                Current Assignment
-                            </Typography>
-                            <Grid container spacing={3} sx={{ mb: 4 }}>
-                                <DetailItem label="Assigned Class" value={teacherDetails?.teachSclass?.sclassName} />
-                                <DetailItem label="Assigned Subject" value={teacherDetails?.teachSubject?.subName} />
-                                <DetailItem label="Sessions" value={teacherDetails?.teachSubject?.sessions} />
-                            </Grid>
-
-                            {!isSubjectNamePresent && (
-                                <Box sx={{ mb: 4 }}>
-                                    <Button variant="contained" onClick={handleAddSubject} sx={{ bgcolor: 'var(--color-primary-600)' }}>
-                                        Assign Primary Subject
-                                    </Button>
-                                </Box>
-                            )}
-
-                            <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
                                 Subject Workload
                             </Typography>
                             {workloadLoading ? (
