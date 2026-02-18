@@ -30,6 +30,7 @@ import ShowNotices from './noticeRelated/ShowNotices';
 import ShowSubjects from './subjectRelated/ShowSubjects';
 import SubjectForm from './subjectRelated/SubjectForm';
 import ViewSubject from './subjectRelated/ViewSubject';
+import SubjectAllocation from './SubjectAllocation';
 
 import AddTeacher from './teacherRelated/AddTeacher';
 import ChooseClass from './teacherRelated/ChooseClass';
@@ -135,7 +136,9 @@ const AdminDashboard = () => {
                         <Route path="/Admin/class/subject/:classID/:subjectID" element={<ViewSubject />} />
 
                         <Route path="/Admin/subject/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
+                        <Route path="/Admin/subject/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
                         <Route path="/Admin/subject/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
+                        <Route path="/Admin/subject-allocation" element={<SubjectAllocation />} />
 
                         {/* Class */}
                         <Route path="/Admin/addclass" element={<AddClass />} />

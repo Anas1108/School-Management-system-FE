@@ -12,6 +12,7 @@ import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
 import SupervisorAccountOutlinedIcon from '@mui/icons-material/SupervisorAccountOutlined';
 import ReportIcon from '@mui/icons-material/Report';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 
 import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined';
 
@@ -34,6 +35,7 @@ const SideBar = ({ open }) => {
         { text: 'Students', icon: <PersonOutlineIcon />, link: '/Admin/students' },
         { text: 'Notices', icon: <AnnouncementOutlinedIcon />, link: '/Admin/notices' },
         { text: 'Complains', icon: <ReportIcon />, link: '/Admin/complains' },
+        { text: 'Subject Allocation', icon: <AssignmentIndIcon />, link: '/Admin/subject-allocation' },
         { text: 'Fee Management', icon: <MonetizationOnOutlinedIcon />, link: '/Admin/fees' },
     ];
 

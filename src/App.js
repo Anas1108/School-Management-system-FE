@@ -38,6 +38,9 @@ const App = () => {
         {currentRole === "Admin" &&
           <>
             <AdminDashboard />
+            <Routes>
+              {/* <Route path="/Admin/subject-allocation" element={<SubjectAllocation />} />  Moved to AdminDashboard */}
+            </Routes>
           </>
         }
 
