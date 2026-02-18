@@ -2,9 +2,34 @@ import React, { useState } from 'react'
 import { StyledTableCell, StyledTableRow } from './styles';
 import { Table, TableBody, TableContainer, TableHead, TablePagination, Box, Typography } from '@mui/material';
 
-const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows, count, page: propPage, rowsPerPage: propRowsPerPage, onPageChange, onRowsPerPageChange }) => {
+    const [internalPage, setInternalPage] = useState(0);
+    const [internalRowsPerPage, setInternalRowsPerPage] = useState(5);
+
+    // Determine if we are using server-side pagination
+    const isServerSide = count !== undefined;
+
+    const page = isServerSide ? propPage : internalPage;
+    const rowsPerPage = isServerSide ? propRowsPerPage : internalRowsPerPage;
+    const totalCount = isServerSide ? count : rows.length;
+
+    const handleChangePage = (event, newPage) => {
+        if (isServerSide) {
+            onPageChange(event, newPage);
+        } else {
+            setInternalPage(newPage);
+        }
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        if (isServerSide) {
+            onRowsPerPageChange(event);
+        } else {
+            setInternalRowsPerPage(parseInt(event.target.value, 10));
+            setInternalPage(0);
+        }
+    };
+
     return (
         <Box sx={{
             borderRadius: 'var(--border-radius-lg)',
@@ -32,8 +57,7 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
                     </TableHead>
                     <TableBody>
                         {rows.length > 0 ? (
-                            rows
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            (isServerSide ? rows : rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage))
                                 .map((row) => {
                                     return (
                                         <StyledTableRow hover role="checkbox" tabIndex={-1} key={row.id}>
@@ -69,18 +93,15 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
                     </TableBody>
                 </Table>
             </TableContainer>
-            {rows.length > 0 && (
+            {(rows.length > 0 || isServerSide) && (
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25, 100]}
                     component="div"
-                    count={rows.length}
+                    count={totalCount}
                     rowsPerPage={rowsPerPage}
                     page={page}
-                    onPageChange={(event, newPage) => setPage(newPage)}
-                    onRowsPerPageChange={(event) => {
-                        setRowsPerPage(parseInt(event.target.value, 10));
-                        setPage(0);
-                    }}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
                     sx={{
                         borderTop: '1px solid var(--border-color)',
                         '& .MuiTablePagination-toolbar': {

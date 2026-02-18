@@ -7,11 +7,21 @@ import {
     stuffDone
 } from './studentSlice';
 
-export const getAllStudents = (id) => async (dispatch) => {
+export const getAllStudents = (id, page, limit, search) => async (dispatch) => {
     dispatch(getRequest());
 
     try {
-        const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/Students/${id}`);
+        let url = `${process.env.REACT_APP_BASE_URL}/Students/${id}`;
+        const params = new URLSearchParams();
+        if (page) params.append('page', page);
+        if (limit) params.append('limit', limit);
+        if (search) params.append('search', search);
+
+        if (params.toString()) {
+            url += `?${params.toString()}`;
+        }
+
+        const result = await axios.get(url);
         if (result.data.message) {
             dispatch(getFailed(result.data.message));
         } else {

@@ -5,7 +5,7 @@ import { getAllStudents } from '../../../redux/studentRelated/studentHandle';
 import { removeStudent } from '../../../redux/studentRelated/studentSlice';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import {
-    Paper, Box, TextField, InputAdornment, Typography, Container, Tooltip, Button
+    Paper, Box, TextField, InputAdornment, Typography, Container, Tooltip, Button, IconButton
 } from '@mui/material';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import { ActionIconButtonPrimary, ActionIconButtonError, ActionIconButtonSuccess, ActionIconButtonInfo } from '../../../components/buttonStyles';
@@ -27,21 +27,26 @@ import ConfirmationModal from '../../../components/ConfirmationModal';
 const ShowStudents = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch();
-    const { studentsList, loading, error, response } = useSelector((state) => state.student);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const { studentsList, loading, error, response, totalStudents } = useSelector((state) => state.student);
     const { currentUser } = useSelector(state => state.user)
-
-    useEffect(() => {
-        dispatch(getAllStudents(currentUser._id));
-    }, [currentUser._id, dispatch]);
-
-    if (error) {
-        console.log(error);
-    }
 
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
     const [severity, setSeverity] = useState("success");
     const [searchTerm, setSearchTerm] = useState("");
+
+    useEffect(() => {
+        dispatch(getAllStudents(currentUser._id, page + 1, rowsPerPage, searchTerm));
+    }, [currentUser._id, dispatch, page, rowsPerPage]); // Trigger fetch on pagination only. Search is manual.
+
+    if (error) {
+        console.log(error);
+    }
+
+    // Debounce search (optional optimization - for now simple state update)
+    // Ideally use lodash debounce or setTimeout
 
     // Fee History Modal State
     const [historyOpen, setHistoryOpen] = useState(false);
@@ -66,6 +71,8 @@ const ShowStudents = () => {
                     setSeverity("success");
                     setShowPopup(true);
                     setConfirmOpen(false);
+                    // Refresh data
+                    dispatch(getAllStudents(currentUser._id, page + 1, rowsPerPage, searchTerm));
                 })
         }
     }
@@ -80,15 +87,10 @@ const ShowStudents = () => {
         return {
             name: student.name,
             rollNum: student.rollNum,
-            sclassName: student.sclassName.sclassName,
+            sclassName: student.sclassName ? student.sclassName.sclassName : 'N/A', // Check if sclassName exists
             id: student._id,
         };
     })
-
-    const filteredRows = studentRows && studentRows.filter((row) => {
-        return row.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            row.rollNum.toString().includes(searchTerm);
-    });
 
     const StudentButtonHaver = ({ row }) => {
         return (
@@ -134,6 +136,14 @@ const ShowStudents = () => {
         );
     };
 
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
 
     return (
         <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
@@ -150,11 +160,23 @@ const ShowStudents = () => {
                                 placeholder="Search students..."
                                 variant="outlined"
                                 size="small"
+                                value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        setPage(0);
+                                        dispatch(getAllStudents(currentUser._id, 1, rowsPerPage, searchTerm));
+                                    }
+                                }}
                                 InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <SearchIcon />
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton onClick={() => {
+                                                setPage(0);
+                                                dispatch(getAllStudents(currentUser._id, 1, rowsPerPage, searchTerm));
+                                            }}>
+                                                <SearchIcon />
+                                            </IconButton>
                                         </InputAdornment>
                                     ),
                                     style: {
@@ -189,7 +211,16 @@ const ShowStudents = () => {
                         :
                         <>
                             {Array.isArray(studentsList) && studentsList.length > 0 &&
-                                <TableTemplate buttonHaver={StudentButtonHaver} columns={studentColumns} rows={filteredRows} />
+                                <TableTemplate
+                                    buttonHaver={StudentButtonHaver}
+                                    columns={studentColumns}
+                                    rows={studentRows}
+                                    count={totalStudents}
+                                    page={page}
+                                    rowsPerPage={rowsPerPage}
+                                    onPageChange={handleChangePage}
+                                    onRowsPerPageChange={handleChangeRowsPerPage}
+                                />
                             }
                         </>
                     }
