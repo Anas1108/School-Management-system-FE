@@ -3,8 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getAllTeachers } from '../../../redux/teacherRelated/teacherHandle';
 import { removeTeacherFromList } from '../../../redux/teacherRelated/teacherSlice';
+import axios from 'axios';
 import {
-    Paper, Box, TextField, InputAdornment, Typography, Container, Tooltip, Button
+    Paper, Box, TextField, InputAdornment, Typography, Container, Tooltip, Button,
+    Dialog, DialogTitle, DialogContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, IconButton
 } from '@mui/material';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import { ActionIconButtonPrimary, ActionIconButtonError, GreenButton } from '../../../components/buttonStyles';
@@ -15,6 +17,7 @@ import AddIcon from '@mui/icons-material/Add';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import Popup from '../../../components/Popup';
 import ConfirmationModal from '../../../components/ConfirmationModal';
 
@@ -36,6 +39,12 @@ const ShowTeachers = () => {
     // Confirmation Modal State
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [deleteData, setDeleteData] = useState(null);
+
+    // Workload Modal State
+    const [workloadOpen, setWorkloadOpen] = useState(false);
+    const [currentWorkload, setCurrentWorkload] = useState([]);
+    const [currentTeacherName, setCurrentTeacherName] = useState("");
+    const [workloadLoading, setWorkloadLoading] = useState(false);
 
     if (loading) {
         return <div>Loading...</div>;
@@ -68,6 +77,29 @@ const ShowTeachers = () => {
                     setConfirmOpen(false);
                 })
         }
+    };
+
+    const handleWorkloadOpen = (teacherId, teacherName) => {
+        setCurrentTeacherName(teacherName);
+        setWorkloadLoading(true);
+        setWorkloadOpen(true);
+
+        axios.get(`${process.env.REACT_APP_BASE_URL}/TeacherWorkload/${teacherId}`)
+            .then(response => {
+                setCurrentWorkload(response.data);
+                setWorkloadLoading(false);
+            })
+            .catch(error => {
+                console.error("Error fetching workload:", error);
+                setWorkloadLoading(false);
+                setCurrentWorkload([]);
+            });
+    };
+
+    const handleWorkloadClose = () => {
+        setWorkloadOpen(false);
+        setCurrentWorkload([]);
+        setCurrentTeacherName("");
     };
 
     const teacherColumns = [
@@ -111,6 +143,11 @@ const ShowTeachers = () => {
                         onClick={() => navigate("/Admin/teachers/teacher/" + row.id)}>
                         <VisibilityOutlinedIcon />
                     </ActionIconButtonPrimary>
+                </Tooltip>
+                <Tooltip title="Workload" arrow>
+                    <IconButton onClick={() => handleWorkloadOpen(row.id, row.name)} color="secondary">
+                        <AssignmentIndIcon />
+                    </IconButton>
                 </Tooltip>
                 <Tooltip title="Delete" arrow>
                     <ActionIconButtonError
@@ -172,6 +209,61 @@ const ShowTeachers = () => {
                 message="Are you sure you want to delete this teacher? This action cannot be undone."
                 confirmLabel="Delete"
             />
+
+            {/* Workload Dialog */}
+            <Dialog open={workloadOpen} onClose={handleWorkloadClose} fullWidth maxWidth="md">
+                <DialogTitle>
+                    Workload: {currentTeacherName}
+                </DialogTitle>
+                <DialogContent dividers>
+                    {workloadLoading ? (
+                        <Typography>Loading...</Typography>
+                    ) : currentWorkload.length > 0 ? (
+                        <TableContainer component={Paper} variant="outlined">
+                            <Table size="small">
+                                <TableHead>
+                                    <TableRow sx={{ backgroundColor: 'var(--bg-light)' }}>
+                                        <TableCell sx={{ fontWeight: 'bold' }}>Class</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold' }}>Subject</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold' }}>Role</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {currentWorkload.map((alloc) => (
+                                        <TableRow key={alloc._id} hover>
+                                            <TableCell>{alloc.classId?.sclassName || 'N/A'}</TableCell>
+                                            <TableCell>
+                                                <Typography variant="body2">{alloc.subjectId?.subName}</Typography>
+                                                <Typography variant="caption" color="textSecondary">{alloc.subjectId?.subCode}</Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Box sx={{ display: 'flex', gap: 0.5 }}>
+                                                    <Chip
+                                                        label={alloc.type}
+                                                        size="small"
+                                                        color={alloc.type === 'Primary' ? 'success' : 'warning'}
+                                                        variant="outlined"
+                                                    />
+                                                    {alloc.isClassIncharge && (
+                                                        <Chip label="In-charge" size="small" color="info" />
+                                                    )}
+                                                </Box>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    ) : (
+                        <Typography align="center" color="textSecondary" sx={{ py: 3 }}>
+                            No subjects assigned to this teacher.
+                        </Typography>
+                    )}
+                </DialogContent>
+                <Box sx={{ p: 2, display: 'flex', justifyContent: 'flex-end' }}>
+                    <Button onClick={handleWorkloadClose}>Close</Button>
+                </Box>
+            </Dialog>
         </Container>
     );
 };
