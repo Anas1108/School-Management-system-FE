@@ -98,7 +98,10 @@ const TeacherDetails = () => {
                             </Box>
                         </Box>
                         <Box sx={{ display: 'flex', gap: 2 }}>
-                            <Button variant="outlined" color="primary" onClick={() => navigate("/Admin/teachers/teacher/edit/" + teacherID)}>
+                            <Button variant="outlined" onClick={() => navigate("/Admin/teachers")}>
+                                Back
+                            </Button>
+                            <Button variant="contained" color="primary" onClick={() => navigate("/Admin/teachers/teacher/edit/" + teacherID)}>
                                 Edit Profile
                             </Button>
                             <Button variant="outlined" color="error" onClick={deleteHandler}>

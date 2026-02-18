@@ -557,7 +557,11 @@ const AddStudent = ({ situation }) => {
                     )}
 
                     <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3, gap: 2 }}>
-                        {activeStep !== 0 && (
+                        {activeStep === 0 ? (
+                            <Button onClick={() => navigate(-1)} variant="outlined">
+                                Back
+                            </Button>
+                        ) : (
                             <Button onClick={handleBack} variant="outlined">
                                 Back
                             </Button>

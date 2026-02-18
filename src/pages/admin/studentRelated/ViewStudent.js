@@ -354,29 +354,6 @@ const ViewStudent = () => {
         return (
             <ProfileCard>
                 <Grid container spacing={3}>
-                    {/* Header Section */}
-                    <Grid item xs={12} sx={{ display: 'flex', alignItems: 'center', mb: 3, pb: 3, borderBottom: '1px solid #eaeaea' }}>
-                        <Avatar sx={{ width: 100, height: 100, fontSize: '3rem', bgcolor: 'var(--color-primary-600)', mr: 3 }}>
-                            {name.charAt(0)}
-                        </Avatar>
-                        <Box>
-                            <Typography variant="h4" component="h2" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
-                                {name}
-                            </Typography>
-                            <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
-                                <Typography variant="subtitle1" color="textSecondary" sx={{ bgcolor: '#f5f5f5', px: 1, borderRadius: 1 }}>
-                                    Role: Student
-                                </Typography>
-                                <Typography variant="subtitle1" color="textSecondary" sx={{ bgcolor: '#e3f2fd', px: 1, borderRadius: 1 }}>
-                                    Class: {sclassName?.sclassName}
-                                </Typography>
-                                <Typography variant="subtitle1" color="textSecondary" sx={{ bgcolor: '#fff3e0', px: 1, borderRadius: 1 }}>
-                                    Roll: {rollNum}
-                                </Typography>
-                            </Box>
-                        </Box>
-                    </Grid>
-
                     {/* Personal Information */}
                     <Grid item xs={12} md={6}>
                         <Typography variant="h6" gutterBottom sx={{ color: 'var(--color-primary-700)', borderBottom: '2px solid var(--color-primary-200)', pb: 1, mb: 2 }}>
@@ -403,16 +380,6 @@ const ViewStudent = () => {
                         <InfoRow label="Mother Phone" value={family.motherPhone} />
                         <InfoRow label="Home Address" value={family.homeAddress} />
                     </Grid>
-
-                    {/* Action Buttons */}
-                    <Grid item xs={12} sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-                        <Button variant="outlined" color="primary" onClick={() => navigate("/Admin/students/student/edit/" + studentID)}>
-                            Edit Profile
-                        </Button>
-                        <Button variant="outlined" color="error" onClick={deleteHandler}>
-                            Delete Student
-                        </Button>
-                    </Grid>
                 </Grid>
             </ProfileCard>
         )
@@ -425,6 +392,36 @@ const ViewStudent = () => {
                 <div>Loading...</div>
                 :
                 <>
+                    <Paper sx={{ p: 3, mb: 3, borderRadius: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                            <Avatar sx={{ width: 80, height: 80, fontSize: '2rem', bgcolor: 'var(--color-primary-600)' }}>
+                                {name.charAt(0)}
+                            </Avatar>
+                            <Box>
+                                <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>
+                                    {name}
+                                </Typography>
+                                <Typography variant="body1" color="textSecondary">
+                                    Roll: {rollNum}
+                                </Typography>
+                                <Typography variant="body2" color="primary">
+                                    Class: {sclassName?.sclassName}
+                                </Typography>
+                            </Box>
+                        </Box>
+                        <Box sx={{ display: 'flex', gap: 2 }}>
+                            <Button variant="outlined" onClick={() => navigate("/Admin/students")}>
+                                Back
+                            </Button>
+                            <Button variant="contained" color="primary" onClick={() => navigate("/Admin/students/student/edit/" + studentID)}>
+                                Edit Profile
+                            </Button>
+                            <Button variant="outlined" color="error" onClick={deleteHandler}>
+                                Delete
+                            </Button>
+                        </Box>
+                    </Paper>
+
                     <TabContext value={value}>
                         <Paper sx={{ borderRadius: 'var(--border-radius-xl)', overflow: 'hidden' }}>
                             <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'var(--bg-paper)' }}>
