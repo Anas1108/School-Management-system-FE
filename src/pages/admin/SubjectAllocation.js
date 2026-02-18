@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllSclasses } from '../../redux/sclassRelated/sclassHandle';
 import { getAllTeachers } from '../../redux/teacherRelated/teacherHandle';
@@ -12,7 +12,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import axios from 'axios';
-import styled from 'styled-components';
+
 import Popup from '../../components/Popup';
 import ConfirmationModal from '../../components/ConfirmationModal';
 
@@ -27,7 +27,7 @@ const SubjectAllocation = () => {
     const [sclass, setSclass] = useState('');
     const [subjects, setSubjects] = useState([]);
     const [selectedSubjects, setSelectedSubjects] = useState([]);
-    const [academicYear, setAcademicYear] = useState('2026'); // Ideally this should be dynamic or from settings
+    const [academicYear] = useState('2026'); // Ideally this should be dynamic or from settings
     const [isClassIncharge, setIsClassIncharge] = useState(false);
     const [allocationType, setAllocationType] = useState('Primary');
     const [workload, setWorkload] = useState([]);
@@ -76,9 +76,9 @@ const SubjectAllocation = () => {
             setSelectedSubjects([]);
             setClassAllocations([]);
         }
-    }, [sclass]);
+    }, [sclass, fetchClassAllocations]);
 
-    const fetchClassAllocations = (classId) => {
+    const fetchClassAllocations = useCallback((classId) => {
         axios.get(`${process.env.REACT_APP_BASE_URL}/ClassAllocations/${classId}`, {
             params: { schoolId: adminID, academicYear }
         })
@@ -89,7 +89,7 @@ const SubjectAllocation = () => {
                 console.error("Error fetching class allocations:", error);
                 setClassAllocations([]);
             });
-    };
+    }, [adminID, academicYear]);
 
     // Fetch Workload when Teacher is selected
     useEffect(() => {

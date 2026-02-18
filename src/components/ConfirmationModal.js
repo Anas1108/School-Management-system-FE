@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography } from '@mui/material';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
 const ConfirmationModal = ({ open, handleClose, handleConfirm, title, message, confirmLabel = "Delete", cancelLabel = "Cancel" }) => {

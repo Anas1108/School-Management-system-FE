@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, CircularProgress, Stack, TextField, Container, Paper, Typography } from "@mui/material";
+import { Button, CircularProgress, Stack, TextField, Container, Paper, Typography } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addStuff } from '../../../redux/userRelated/userHandle';

@@ -4,9 +4,6 @@ import { useNavigate } from "react-router-dom";
 import {
     Paper, Box, Tooltip, Button, Container, Typography
 } from '@mui/material';
-import NoteAddIcon from '@mui/icons-material/NoteAdd';
-import DeleteIcon from "@mui/icons-material/Delete";
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import AddIcon from '@mui/icons-material/Add';
 import { getAllNotices } from '../../../redux/noticeRelated/noticeHandle';
 import { deleteUser } from '../../../redux/userRelated/userHandle';

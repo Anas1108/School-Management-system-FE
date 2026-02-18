@@ -2,24 +2,16 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom'
 import { getClassDetails, getClassStudents, getSubjectList } from "../../../redux/sclassRelated/sclassHandle";
-import { deleteUser } from '../../../redux/userRelated/userHandle';
+
 import {
     Box, Container, Typography, Tab, Paper, Grid, Tooltip, Button
 } from '@mui/material';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { resetSubjects } from "../../../redux/sclassRelated/sclassSlice";
+
 import { GreenButton, ActionIconButtonPrimary, ActionIconButtonError, ActionIconButtonSuccess } from "../../../components/buttonStyles";
 import TableTemplate from "../../../components/TableTemplate";
-import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
-import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
-import Popup from "../../../components/Popup";
-import DeleteIcon from "@mui/icons-material/Delete";
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
-import PostAddIcon from '@mui/icons-material/PostAdd';
 import AddIcon from '@mui/icons-material/Add';
 import styled from 'styled-components';
 

@@ -45,11 +45,7 @@ const TeacherDetails = () => {
     // Confirmation Modal State
     const [confirmOpen, setConfirmOpen] = useState(false);
 
-    const isSubjectNamePresent = teacherDetails?.teachSubject?.subName;
 
-    const handleAddSubject = () => {
-        navigate(`/Admin/teachers/choosesubject/${teacherDetails?.teachSclass?._id}/${teacherDetails?._id}`);
-    };
 
     const deleteHandler = () => {
         setConfirmOpen(true);

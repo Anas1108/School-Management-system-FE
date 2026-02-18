@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
     Dialog, DialogTitle, DialogContent, DialogActions, Button,
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
@@ -23,9 +23,10 @@ const StudentFeeHistoryModal = ({ open, handleClose, studentId }) => {
         } else {
             setHistory(null); // Reset on close/change
         }
-    }, [open, studentId]);
+    }, [open, studentId, fetchHistory]);
 
-    const fetchHistory = async () => {
+    const fetchHistory = useCallback(async () => {
+        if (!studentId) return;
         setLoading(true);
         setError(null);
         try {
@@ -37,7 +38,7 @@ const StudentFeeHistoryModal = ({ open, handleClose, studentId }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [studentId]);
 
     const handlePayClick = (invoice) => {
         setSelectedInvoice(invoice);

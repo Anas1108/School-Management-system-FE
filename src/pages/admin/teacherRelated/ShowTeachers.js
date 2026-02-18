@@ -11,7 +11,7 @@ import {
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import { ActionIconButtonPrimary, ActionIconButtonError, GreenButton } from '../../../components/buttonStyles';
 import TableTemplate from '../../../components/TableTemplate';
-import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
+
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';

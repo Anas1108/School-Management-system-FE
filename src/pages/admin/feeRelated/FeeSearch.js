@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     Box, Paper, Typography, TextField, MenuItem, Button, Table, TableBody,
     TableCell, TableContainer, TableHead, TableRow, IconButton, Tooltip,
@@ -29,9 +29,9 @@ const FeeSearch = () => {
         if (currentUser && currentUser._id) {
             fetchClasses();
         }
-    }, [currentUser]);
+    }, [currentUser, fetchClasses]);
 
-    const fetchClasses = async () => {
+    const fetchClasses = useCallback(async () => {
         try {
             const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/SclassList/${currentUser._id}`);
             if (!result.data.message) {
@@ -40,7 +40,7 @@ const FeeSearch = () => {
         } catch (error) {
             console.error("Error fetching classes:", error);
         }
-    };
+    }, [currentUser._id]);
 
     const handleSearch = async (e) => {
         if (e) e.preventDefault();

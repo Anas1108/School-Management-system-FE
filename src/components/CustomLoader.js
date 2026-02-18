@@ -41,15 +41,7 @@ const Spinner = styled.div`
   margin-bottom: 20px;
 `;
 
-const PulseCircle = styled.div`
-  width: 20px;
-  height: 20px;
-  background-color: #1976d2;
-  border-radius: 50%;
-  animation: ${pulse} 2s infinite;
-  margin-top: -35px; /* Center inside spinner */
-  margin-bottom: 35px; /* Adjust spacing */
-`;
+
 
 const LoadingText = styled(Typography)`
   font-family: 'Poppins', sans-serif;
@@ -60,15 +52,15 @@ const LoadingText = styled(Typography)`
 `;
 
 const CustomLoader = () => {
-    return (
-        <LoaderContainer>
-            <Spinner />
-            {/* <PulseCircle />  Optional: Inner pulse circle for extra effect */}
-            <LoadingText variant="h6">
-                Loading Data...
-            </LoadingText>
-        </LoaderContainer>
-    );
+  return (
+    <LoaderContainer>
+      <Spinner />
+      {/* <PulseCircle />  Optional: Inner pulse circle for extra effect */}
+      <LoadingText variant="h6">
+        Loading Data...
+      </LoadingText>
+    </LoaderContainer>
+  );
 };
 
 export default CustomLoader;

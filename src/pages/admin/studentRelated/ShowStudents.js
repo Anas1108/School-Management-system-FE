@@ -7,11 +7,10 @@ import { deleteUser } from '../../../redux/userRelated/userHandle';
 import {
     Paper, Box, TextField, InputAdornment, Typography, Container, Tooltip, Button, IconButton
 } from '@mui/material';
-import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
+
 import { ActionIconButtonPrimary, ActionIconButtonError, ActionIconButtonSuccess, ActionIconButtonInfo } from '../../../components/buttonStyles';
 import { GreenButton } from '../../../components/buttonStyles';
 import TableTemplate from '../../../components/TableTemplate';
-import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
@@ -40,6 +39,7 @@ const ShowStudents = () => {
 
     useEffect(() => {
         dispatch(getAllStudents(currentUser._id, page + 1, rowsPerPage, searchTerm));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUser._id, dispatch, page, rowsPerPage]); // Trigger fetch on pagination only. Search is manual.
 
     if (error) {

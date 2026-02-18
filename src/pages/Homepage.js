@@ -1,56 +1,56 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Container, Grid, Box, Button, Typography, Paper } from '@mui/material';
+import { Container, Grid, Button, Typography } from '@mui/material';
 import styled, { keyframes } from 'styled-components';
 import Students from "../assets/students.svg";
 import { LightPurpleButton } from '../components/buttonStyles';
 
 const Homepage = () => {
-    return (
-        <StyledContainer maxWidth={false}>
-            <Grid container spacing={4} alignItems="center" justifyContent="center">
-                <Grid item xs={12} md={6}>
-                    <ContentWrapper>
-                        <StyledTitle variant="h1">
-                            Welcome to the <br />
-                            <GradientText>School Management</GradientText> <br />
-                            System
-                        </StyledTitle>
-                        <StyledText>
-                            Streamline school management, class organization, and add students and faculty.
-                            Seamlessly track attendance, assess performance, and provide feedback.
-                            Access records, view marks, and communicate effortlessly.
-                        </StyledText>
-                        <ButtonContainer>
-                            <StyledLink to="/choose">
-                                <LightPurpleButton variant="contained" fullWidth>
-                                    Login
-                                </LightPurpleButton>
-                            </StyledLink>
-                            <StyledLink to="/chooseasguest">
-                                <GuestButton variant="outlined" fullWidth>
-                                    Login as Guest
-                                </GuestButton>
-                            </StyledLink>
-                        </ButtonContainer>
-                        <FooterText>
-                            Don't have an account?{' '}
-                            <Link to="/Adminregister" style={{ color: "var(--color-primary-600)", fontWeight: "600" }}>
-                                Sign up
-                            </Link>
-                        </FooterText>
-                    </ContentWrapper>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <ImageWrapper>
-                        <StyledImage src={Students} alt="students" />
-                    </ImageWrapper>
-                </Grid>
-            </Grid>
-            <BackgroundShape1 />
-            <BackgroundShape2 />
-        </StyledContainer>
-    );
+  return (
+    <StyledContainer maxWidth={false}>
+      <Grid container spacing={4} alignItems="center" justifyContent="center">
+        <Grid item xs={12} md={6}>
+          <ContentWrapper>
+            <StyledTitle variant="h1">
+              Welcome to the <br />
+              <GradientText>School Management</GradientText> <br />
+              System
+            </StyledTitle>
+            <StyledText>
+              Streamline school management, class organization, and add students and faculty.
+              Seamlessly track attendance, assess performance, and provide feedback.
+              Access records, view marks, and communicate effortlessly.
+            </StyledText>
+            <ButtonContainer>
+              <StyledLink to="/choose">
+                <LightPurpleButton variant="contained" fullWidth>
+                  Login
+                </LightPurpleButton>
+              </StyledLink>
+              <StyledLink to="/chooseasguest">
+                <GuestButton variant="outlined" fullWidth>
+                  Login as Guest
+                </GuestButton>
+              </StyledLink>
+            </ButtonContainer>
+            <FooterText>
+              Don't have an account?{' '}
+              <Link to="/Adminregister" style={{ color: "var(--color-primary-600)", fontWeight: "600" }}>
+                Sign up
+              </Link>
+            </FooterText>
+          </ContentWrapper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <ImageWrapper>
+            <StyledImage src={Students} alt="students" />
+          </ImageWrapper>
+        </Grid>
+      </Grid>
+      <BackgroundShape1 />
+      <BackgroundShape2 />
+    </StyledContainer>
+  );
 };
 
 export default Homepage;

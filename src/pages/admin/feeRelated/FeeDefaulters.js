@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
     Box, Grid, Paper, Typography, Button, TextField, MenuItem, Table, TableBody, TableCell,
-    TableContainer, TableHead, TableRow, Chip, Dialog, DialogTitle,
-    DialogContent, DialogActions, Menu, Checkbox, ListItemText, IconButton, Tooltip
+    TableContainer, TableHead, TableRow
 } from '@mui/material';
-import FilterListIcon from '@mui/icons-material/FilterList';
+
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SearchIcon from '@mui/icons-material/Search';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import StudentFeeHistoryModal from '../../../components/StudentFeeHistoryModal';
@@ -28,7 +27,7 @@ const FeeDefaulters = () => {
         if (currentUser && currentUser._id) {
             fetchClasses();
         }
-    }, [currentUser]);
+    }, [currentUser, fetchClasses]);
 
     useEffect(() => {
         if (selectedClass) {
@@ -36,7 +35,7 @@ const FeeDefaulters = () => {
         }
     }, [selectedClass]);
 
-    const fetchClasses = async () => {
+    const fetchClasses = useCallback(async () => {
         try {
             const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/SclassList/${currentUser._id}`);
             if (!result.data.message) {
@@ -45,7 +44,7 @@ const FeeDefaulters = () => {
         } catch (error) {
             console.error(error);
         }
-    }
+    }, [currentUser._id]);
 
     const fetchInvoices = async (classId) => {
         setLoading(true);

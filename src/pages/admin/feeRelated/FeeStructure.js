@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
-    Box, Paper, Typography, TextField, MenuItem, Button, Table, TableBody,
-    TableCell, TableContainer, TableHead, TableRow, IconButton, Dialog,
-    DialogTitle, DialogContent, DialogActions, Grid, Tooltip
+    Box, Paper, Typography, TextField, MenuItem, Button, IconButton, Dialog,
+    DialogTitle, DialogContent, DialogActions, Grid
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -25,12 +24,12 @@ const FeeStructure = () => {
     // Structure State
     const [selectedClass, setSelectedClass] = useState('');
     const [structure, setStructure] = useState({ feeHeads: [], lateFee: 0, dueDay: 10 });
-    const [loading, setLoading] = useState(false);
+    const [loading] = useState(false);
 
     useEffect(() => {
         fetchClasses();
         fetchFeeHeads();
-    }, []);
+    }, [fetchClasses, fetchFeeHeads]);
 
     useEffect(() => {
         if (selectedClass) {
@@ -40,19 +39,19 @@ const FeeStructure = () => {
         }
     }, [selectedClass]);
 
-    const fetchClasses = async () => {
+    const fetchClasses = useCallback(async () => {
         try {
             const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/SclassList/${currentUser._id}`);
             if (!result.data.message) setClasses(result.data);
         } catch (error) { console.error(error); }
-    }
+    }, [currentUser._id]);
 
-    const fetchFeeHeads = async () => {
+    const fetchFeeHeads = useCallback(async () => {
         try {
             const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/FeeHeads/${currentUser._id}`);
             setFeeHeads(result.data);
         } catch (error) { console.error(error); }
-    }
+    }, [currentUser._id]);
 
     const createFeeHead = async () => {
         if (!newHeadName) return;

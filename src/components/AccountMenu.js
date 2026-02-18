@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Avatar, IconButton, Tooltip } from '@mui/material';
-import { Settings, Logout, Person, KeyboardArrowDown } from '@mui/icons-material';
-import { Link, useNavigate } from 'react-router-dom';
+import { Settings, Logout, Person } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import CustomMenu from './CustomMenu';
 

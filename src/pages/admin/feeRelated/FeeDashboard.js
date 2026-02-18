@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
     Box, Grid, Paper, Typography, Button, TextField, MenuItem, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Chip, Dialog, DialogTitle,
@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import CountUp from 'react-countup';
 import axios from 'axios';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
@@ -50,9 +50,9 @@ const FeeDashboard = () => {
     useEffect(() => {
         fetchStats();
         fetchClasses();
-    }, []);
+    }, [fetchStats, fetchClasses]);
 
-    const fetchStats = async () => {
+    const fetchStats = useCallback(async () => {
         try {
             const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/FeeStats/${currentUser._id}`);
             setStats(result.data);
@@ -61,9 +61,9 @@ const FeeDashboard = () => {
             console.error(error);
             setLoading(false);
         }
-    };
+    }, [currentUser._id]);
 
-    const fetchClasses = async () => {
+    const fetchClasses = useCallback(async () => {
         try {
             const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/SclassList/${currentUser._id}`);
             if (!result.data.message) {
@@ -72,7 +72,7 @@ const FeeDashboard = () => {
         } catch (error) {
             console.error(error);
         }
-    }
+    }, [currentUser._id]);
 
     const handleGenerate = async () => {
         if (!generationData.classId) {
@@ -97,7 +97,7 @@ const FeeDashboard = () => {
         }
     };
 
-    const fetchInvoices = async (classId) => {
+    const fetchInvoices = useCallback(async (classId) => {
         const idToUse = classId || generationData.classId;
         if (!idToUse) return;
         setLoadingInvoices(true);
@@ -116,13 +116,13 @@ const FeeDashboard = () => {
             console.error(error);
             setLoadingInvoices(false);
         }
-    };
+    }, [generationData.classId, generationData.month, generationData.year]);
 
     useEffect(() => {
         if (generationData.classId) {
             fetchInvoices();
         }
-    }, [generationData.month, generationData.year, generationData.classId]);
+    }, [fetchInvoices, generationData.classId]);
 
     const handleFilterClick = (event, column) => {
         setAnchorEl(event.currentTarget);

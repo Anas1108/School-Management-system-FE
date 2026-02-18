@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Tooltip, Box, TextField, InputAdornment, Typography, Container, Paper, Button } from '@mui/material';
+import { Tooltip, Box, TextField, InputAdornment, Typography, Container, Button } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { deleteUser } from '../../../redux/userRelated/userHandle';
+
 import { getAllSclasses } from '../../../redux/sclassRelated/sclassHandle';
 import { GreenButton, ActionIconButtonPrimary, ActionIconButtonError, ActionIconButtonSuccess, ActionIconButtonInfo } from '../../../components/buttonStyles';
 import TableTemplate from '../../../components/TableTemplate';
 
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
-import AddCardIcon from '@mui/icons-material/AddCard';
-import DeleteIcon from "@mui/icons-material/Delete";
+
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import SearchIcon from '@mui/icons-material/Search';

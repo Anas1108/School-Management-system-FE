@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUserDetails, updateUser } from '../../../redux/userRelated/userHandle';
+import { getUserDetails } from '../../../redux/userRelated/userHandle';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import { useNavigate, useParams } from 'react-router-dom'
 import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
@@ -12,7 +12,6 @@ import { KeyboardArrowUp, KeyboardArrowDown, Delete as DeleteIcon } from '@mui/i
 import { removeStuff, updateStudentFields } from '../../../redux/studentRelated/studentHandle';
 import { calculateOverallAttendancePercentage, calculateSubjectAttendancePercentage, groupAttendanceBySubject } from '../../../components/attendanceCalculator';
 import CustomBarChart from '../../../components/CustomBarChart'
-import CustomPieChart from '../../../components/CustomPieChart'
 import { StyledTableCell, StyledTableRow } from '../../../components/styles';
 
 import InsertChartIcon from '@mui/icons-material/InsertChart';
