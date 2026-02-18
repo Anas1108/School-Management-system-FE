@@ -24,16 +24,31 @@ import ConfirmationModal from '../../../components/ConfirmationModal';
 const ShowTeachers = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { teachersList, loading, error, response } = useSelector((state) => state.teacher);
+    const { teachersList, loading, error, response, totalTeachers } = useSelector((state) => state.teacher);
     const { currentUser } = useSelector((state) => state.user);
 
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [query, setQuery] = useState("");
+
     useEffect(() => {
-        dispatch(getAllTeachers(currentUser._id));
-    }, [currentUser._id, dispatch]);
+        dispatch(getAllTeachers(currentUser._id, page + 1, rowsPerPage, query));
+    }, [currentUser._id, dispatch, page, rowsPerPage, query]);
+
+    const handleSearch = () => {
+        setQuery(searchTerm);
+        setPage(0); // Reset to first page on new search
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
+    };
 
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
-    const [searchTerm, setSearchTerm] = useState("");
     const [severity, setSeverity] = useState("success");
 
     // Confirmation Modal State
@@ -75,6 +90,8 @@ const ShowTeachers = () => {
                     setSeverity("success");
                     setShowPopup(true);
                     setConfirmOpen(false);
+                    // Refresh the list after deletion
+                    dispatch(getAllTeachers(currentUser._id, page + 1, rowsPerPage, query));
                 })
         }
     };
@@ -122,11 +139,6 @@ const ShowTeachers = () => {
         };
     });
 
-    const filteredRows = teacherRows.filter((row) => {
-        return row.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (row.teachSubject && row.teachSubject.toLowerCase().includes(searchTerm.toLowerCase()));
-    });
-
     const TeacherButtonHaver = ({ row }) => {
         return (
             <>
@@ -168,11 +180,15 @@ const ShowTeachers = () => {
                         placeholder="Search teachers..."
                         variant="outlined"
                         size="small"
+                        value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={handleKeyDown}
                         InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <SearchIcon />
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={handleSearch} edge="end">
+                                        <SearchIcon />
+                                    </IconButton>
                                 </InputAdornment>
                             ),
                             style: {
@@ -197,7 +213,19 @@ const ShowTeachers = () => {
                     </Button>
                 </Box>
             </Box>
-            <TableTemplate buttonHaver={TeacherButtonHaver} columns={teacherColumns} rows={filteredRows} />
+            <TableTemplate
+                buttonHaver={TeacherButtonHaver}
+                columns={teacherColumns}
+                rows={teacherRows}
+                count={totalTeachers}
+                page={page}
+                rowsPerPage={rowsPerPage}
+                onPageChange={(event, newPage) => setPage(newPage)}
+                onRowsPerPageChange={(event) => {
+                    setRowsPerPage(parseInt(event.target.value, 10));
+                    setPage(0);
+                }}
+            />
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} severity={severity} />
             <ConfirmationModal
                 open={confirmOpen}

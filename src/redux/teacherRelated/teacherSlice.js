@@ -6,6 +6,9 @@ const initialState = {
     loading: false,
     error: null,
     response: null,
+    totalTeachers: 0,
+    totalPages: 0,
+    currentPage: 1
 };
 
 const teacherSlice = createSlice({
@@ -22,7 +25,17 @@ const teacherSlice = createSlice({
             state.response = null;
         },
         getSuccess: (state, action) => {
-            state.teachersList = action.payload;
+            if (Array.isArray(action.payload)) {
+                state.teachersList = action.payload;
+                state.totalTeachers = action.payload.length;
+                state.totalPages = 1;
+                state.currentPage = 1;
+            } else {
+                state.teachersList = action.payload.teachers;
+                state.totalTeachers = action.payload.total;
+                state.totalPages = action.payload.pages;
+                state.currentPage = action.payload.page;
+            }
             state.loading = false;
             state.error = null;
             state.response = null;
