@@ -12,6 +12,7 @@ import { getAllNotices } from '../../../redux/noticeRelated/noticeHandle';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import TableTemplate from '../../../components/TableTemplate';
 import { GreenButton, ActionIconButtonError } from '../../../components/buttonStyles';
+import CustomLoader from '../../../components/CustomLoader';
 
 const ShowNotices = () => {
 
@@ -68,7 +69,7 @@ const ShowNotices = () => {
     return (
         <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
             {loading ?
-                <div>Loading...</div>
+                <CustomLoader />
                 :
                 <>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>

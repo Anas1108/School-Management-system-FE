@@ -22,6 +22,7 @@ import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
 import Popup from '../../../components/Popup';
 import styled from 'styled-components';
 import ConfirmationModal from '../../../components/ConfirmationModal';
+import CustomLoader from '../../../components/CustomLoader';
 
 const ViewStudent = () => {
     const navigate = useNavigate()
@@ -389,7 +390,7 @@ const ViewStudent = () => {
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             {loading
                 ?
-                <div>Loading...</div>
+                <CustomLoader />
                 :
                 <>
                     <Paper sx={{ p: 3, mb: 3, borderRadius: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>

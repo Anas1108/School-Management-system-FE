@@ -15,6 +15,7 @@ import AddIcon from '@mui/icons-material/Add';
 import TableTemplate from '../../../components/TableTemplate';
 import { GreenButton, ActionIconButtonPrimary, ActionIconButtonError } from '../../../components/buttonStyles';
 import Popup from '../../../components/Popup';
+import CustomLoader from '../../../components/CustomLoader';
 
 const ShowSubjects = () => {
     const navigate = useNavigate()
@@ -91,7 +92,7 @@ const ShowSubjects = () => {
     return (
         <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
             {loading ?
-                <div>Loading...</div>
+                <CustomLoader />
                 :
                 <>
                     {response ?

@@ -17,6 +17,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import Popup from '../../../components/Popup';
 
+import CustomLoader from '../../../components/CustomLoader';
+
 const ShowClasses = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
@@ -98,7 +100,7 @@ const ShowClasses = () => {
   return (
     <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
       {loading ?
-        <div>Loading...</div>
+        <CustomLoader />
         :
         <>
           {getresponse ?

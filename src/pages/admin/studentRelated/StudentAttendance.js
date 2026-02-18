@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { PurpleButton } from '../../../components/buttonStyles';
 import Popup from '../../../components/Popup';
+import CustomLoader from '../../../components/CustomLoader';
 
 const StudentAttendance = ({ situation }) => {
     const dispatch = useDispatch();
@@ -89,9 +90,7 @@ const StudentAttendance = ({ situation }) => {
         <>
             {loading
                 ?
-                <>
-                    <div>Loading...</div>
-                </>
+                <CustomLoader />
                 :
                 <>
                     <Box

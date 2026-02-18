@@ -20,6 +20,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import Popup from '../../../components/Popup';
 import ConfirmationModal from '../../../components/ConfirmationModal';
+import CustomLoader from '../../../components/CustomLoader';
 
 const ShowTeachers = () => {
     const navigate = useNavigate();
@@ -61,8 +62,9 @@ const ShowTeachers = () => {
     const [currentTeacherName, setCurrentTeacherName] = useState("");
     const [workloadLoading, setWorkloadLoading] = useState(false);
 
+
     if (loading) {
-        return <div>Loading...</div>;
+        return <CustomLoader />;
     } else if (response) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>

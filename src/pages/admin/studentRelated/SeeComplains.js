@@ -5,6 +5,7 @@ import {
 } from '@mui/material';
 import { getAllComplains } from '../../../redux/complainRelated/complainHandle';
 import TableTemplate from '../../../components/TableTemplate';
+import CustomLoader from '../../../components/CustomLoader';
 
 const SeeComplains = () => {
 
@@ -48,7 +49,7 @@ const SeeComplains = () => {
   return (
     <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
       {loading ?
-        <div>Loading...</div>
+        <CustomLoader />
         :
         <>
           <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)', mb: 2 }}>

@@ -23,6 +23,7 @@ import HistoryIcon from '@mui/icons-material/History';
 import Popup from '../../../components/Popup';
 import StudentFeeHistoryModal from '../../../components/StudentFeeHistoryModal';
 import ConfirmationModal from '../../../components/ConfirmationModal';
+import CustomLoader from '../../../components/CustomLoader';
 
 const ShowStudents = () => {
     const navigate = useNavigate()
@@ -148,7 +149,7 @@ const ShowStudents = () => {
     return (
         <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
             {loading ?
-                <div>Loading...</div>
+                <CustomLoader />
                 :
                 <>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>

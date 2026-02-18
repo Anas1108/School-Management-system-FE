@@ -17,6 +17,7 @@ import InsertChartIcon from '@mui/icons-material/InsertChart';
 import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
 import TableChartIcon from '@mui/icons-material/TableChart';
 import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
+import CustomLoader from '../../../components/CustomLoader';
 
 const ViewSubject = () => {
   const navigate = useNavigate()
@@ -209,7 +210,7 @@ const ViewSubject = () => {
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       {subloading ?
-        < div > Loading...</div >
+        <CustomLoader />
         :
         <>
           <TabContext value={value}>
