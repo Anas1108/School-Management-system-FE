@@ -4,12 +4,17 @@ import { getAllSclasses } from '../../redux/sclassRelated/sclassHandle';
 import { getAllTeachers } from '../../redux/teacherRelated/teacherHandle';
 import {
     Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup,
-    InputLabel, MenuItem, Select, Typography, CircularProgress, Alert,
+    InputLabel, MenuItem, Select, Typography, CircularProgress,
     Grid, Paper, Switch, RadioGroup, Radio, Table, TableBody, TableCell,
-    TableContainer, TableHead, TableRow, Chip, Container, Tabs, Tab
+    TableContainer, TableHead, TableRow, Chip, Container, Tabs, Tab,
+    IconButton, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import axios from 'axios';
 import styled from 'styled-components';
+import Popup from '../../components/Popup';
+import ConfirmationModal from '../../components/ConfirmationModal';
 
 const SubjectAllocation = () => {
     const dispatch = useDispatch();
@@ -27,8 +32,24 @@ const SubjectAllocation = () => {
     const [allocationType, setAllocationType] = useState('Primary');
     const [workload, setWorkload] = useState([]);
     const [classAllocations, setClassAllocations] = useState([]);
-    const [message, setMessage] = useState({ type: '', content: '' });
     const [tabValue, setTabValue] = useState(0);
+
+    // Feedback State
+    const [showPopup, setShowPopup] = useState(false);
+    const [message, setMessage] = useState("");
+    const [severity, setSeverity] = useState("success");
+
+    // Edit Dialog State
+    const [openEditDialog, setOpenEditDialog] = useState(false);
+    const [currentAllocation, setCurrentAllocation] = useState(null);
+    const [editTeacher, setEditTeacher] = useState('');
+    const [editType, setEditType] = useState('Primary');
+    const [editIsClassIncharge, setEditIsClassIncharge] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
+
+    // Delete Confirmation State
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [deleteId, setDeleteId] = useState(null);
 
     const adminID = currentUser._id;
 
@@ -104,7 +125,6 @@ const SubjectAllocation = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setMessage({ type: '', content: '' });
 
         try {
             const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/SubjectAllocation`, {
@@ -117,7 +137,9 @@ const SubjectAllocation = () => {
                 type: allocationType
             });
 
-            setMessage({ type: 'success', content: response.data.message });
+            setMessage(response.data.message);
+            setSeverity("success");
+            setShowPopup(true);
             setSelectedSubjects([]);
             setIsClassIncharge(false);
             fetchWorkload(teacher); // Refresh workload
@@ -125,14 +147,79 @@ const SubjectAllocation = () => {
         } catch (error) {
             if (error.response && error.response.data && error.response.data.message) {
                 const errorMsg = error.response.data.message + (error.response.data.errors ? `: ${error.response.data.errors.join(', ')}` : '');
-                setMessage({ type: 'error', content: errorMsg });
+                setMessage(errorMsg);
+                setSeverity("error");
+                setShowPopup(true);
             } else {
-                setMessage({ type: 'error', content: "An error occurred during allocation." });
+                setMessage("An error occurred during allocation.");
+                setSeverity("error");
+                setShowPopup(true);
             }
         } finally {
             setLoading(false);
         }
     };
+
+    const handleDeleteClick = (allocationId) => {
+        setDeleteId(allocationId);
+        setOpenDeleteModal(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!deleteId) return;
+        setActionLoading(true);
+        try {
+            await axios.delete(`${process.env.REACT_APP_BASE_URL}/SubjectAllocation/${deleteId}`);
+            setMessage('Allocation deleted successfully');
+            setSeverity('success');
+            setShowPopup(true);
+            fetchClassAllocations(sclass);
+            if (teacher) fetchWorkload(teacher);
+        } catch (error) {
+            console.error("Error deleting allocation", error);
+            setMessage('Failed to delete allocation');
+            setSeverity('error');
+            setShowPopup(true);
+        } finally {
+            setActionLoading(false);
+            setOpenDeleteModal(false);
+            setDeleteId(null);
+        }
+    }
+
+    const handleEditClick = (allocation) => {
+        setCurrentAllocation(allocation);
+        setEditTeacher(allocation.teacherId);
+        setEditType(allocation.type);
+        setEditIsClassIncharge(allocation.isClassIncharge);
+        setOpenEditDialog(true);
+    };
+
+    const handleEditSave = async () => {
+        if (!currentAllocation) return;
+        setActionLoading(true);
+        try {
+            await axios.put(`${process.env.REACT_APP_BASE_URL}/SubjectAllocation/${currentAllocation.allocationId}`, {
+                teacherId: editTeacher,
+                type: editType,
+                isClassIncharge: editIsClassIncharge
+            });
+            setMessage('Allocation updated successfully');
+            setSeverity('success');
+            setShowPopup(true);
+            fetchClassAllocations(sclass);
+            if (teacher) fetchWorkload(teacher);
+            setOpenEditDialog(false);
+        } catch (error) {
+            console.error("Error updating allocation", error);
+            setMessage('Failed to update allocation');
+            setSeverity('error');
+            setShowPopup(true);
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
 
     return (
         <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
@@ -181,8 +268,6 @@ const SubjectAllocation = () => {
                         <Typography variant="h6" gutterBottom sx={{ color: 'var(--text-primary)', mb: 2 }}>
                             Allocation Details
                         </Typography>
-
-                        {message.content && <Alert severity={message.type} sx={{ mb: 2 }}>{message.content}</Alert>}
 
                         <form onSubmit={handleSubmit}>
                             {!sclass || !teacher ? (
@@ -298,6 +383,7 @@ const SubjectAllocation = () => {
                                                         <TableCell>Teacher</TableCell>
                                                         <TableCell>Type</TableCell>
                                                         <TableCell align="right">Status</TableCell>
+                                                        <TableCell align="center">Actions</TableCell>
                                                     </TableRow>
                                                 </TableHead>
                                                 <TableBody>
@@ -339,6 +425,18 @@ const SubjectAllocation = () => {
                                                                     <Chip label="Done" size="small" color="success" variant="soft" sx={{ height: 20, fontSize: '0.7rem' }} />
                                                                 ) : (
                                                                     <Chip label="Pending" size="small" color="error" variant="soft" sx={{ height: 20, fontSize: '0.7rem' }} />
+                                                                )}
+                                                            </TableCell>
+                                                            <TableCell align="center">
+                                                                {alloc.isAllocated && (
+                                                                    <>
+                                                                        <IconButton size="small" onClick={() => handleEditClick(alloc)} color="primary">
+                                                                            <EditIcon fontSize="small" />
+                                                                        </IconButton>
+                                                                        <IconButton size="small" onClick={() => handleDeleteClick(alloc.allocationId)} color="error">
+                                                                            <DeleteIcon fontSize="small" />
+                                                                        </IconButton>
+                                                                    </>
                                                                 )}
                                                             </TableCell>
                                                         </TableRow>
@@ -407,6 +505,76 @@ const SubjectAllocation = () => {
                     </Paper>
                 </Grid>
             </Grid>
+
+            {/* Edit Support Dialog */}
+            <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)}>
+                <DialogTitle>Edit Allocation</DialogTitle>
+                <DialogContent sx={{ minWidth: 300, mt: 1 }}>
+                    {currentAllocation && (
+                        <>
+                            <Typography variant="subtitle2" gutterBottom>
+                                Subject: {currentAllocation.subjectName} ({currentAllocation.subjectCode})
+                            </Typography>
+                            <Box sx={{ mt: 2 }}>
+                                <FormControl fullWidth size="small" margin="dense">
+                                    <InputLabel>Teacher</InputLabel>
+                                    <Select
+                                        value={editTeacher}
+                                        label="Teacher"
+                                        onChange={(e) => setEditTeacher(e.target.value)}
+                                    >
+                                        {teachersList && teachersList.map((tea) => (
+                                            <MenuItem key={tea._id} value={tea._id}>
+                                                {tea.name} ({tea.employeeId})
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Box>
+                            <Box sx={{ mt: 2 }}>
+                                <Typography variant="caption" color="textSecondary">Type</Typography>
+                                <RadioGroup
+                                    row
+                                    value={editType}
+                                    onChange={(e) => setEditType(e.target.value)}
+                                >
+                                    <FormControlLabel value="Primary" control={<Radio size="small" />} label="Primary" />
+                                    <FormControlLabel value="Substitute" control={<Radio size="small" />} label="Substitute" />
+                                </RadioGroup>
+                            </Box>
+                            <Box sx={{ mt: 1 }}>
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={editIsClassIncharge}
+                                            onChange={(e) => setEditIsClassIncharge(e.target.checked)}
+                                        />
+                                    }
+                                    label="Class In-charge"
+                                />
+                            </Box>
+                        </>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenEditDialog(false)} disabled={actionLoading}>Cancel</Button>
+                    <Button onClick={handleEditSave} variant="contained" disabled={actionLoading}>
+                        {actionLoading ? <CircularProgress size={20} /> : "Save Changes"}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            <ConfirmationModal
+                open={openDeleteModal}
+                handleClose={() => setOpenDeleteModal(false)}
+                handleConfirm={handleConfirmDelete}
+                title="Delete Allocation"
+                message="Are you sure you want to delete this subject allocation? This action cannot be undone."
+                confirmLabel="Delete"
+            />
+
+            <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} severity={severity} />
+
         </Container>
     );
 };
