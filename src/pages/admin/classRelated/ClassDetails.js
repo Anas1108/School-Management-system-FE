@@ -13,6 +13,10 @@ import TabPanel from '@mui/lab/TabPanel';
 import { GreenButton, ActionIconButtonPrimary, ActionIconButtonError, ActionIconButtonSuccess } from "../../../components/buttonStyles";
 import TableTemplate from "../../../components/TableTemplate";
 import AddIcon from '@mui/icons-material/Add';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
+import Popup from "../../../components/Popup";
 import styled from 'styled-components';
 
 const ClassDetails = () => {
