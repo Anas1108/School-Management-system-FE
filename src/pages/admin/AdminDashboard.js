@@ -16,6 +16,7 @@ import Logout from '../Logout';
 import SideBar from './SideBar';
 import AdminProfile from './AdminProfile';
 import AdminHomePage from './AdminHomePage';
+import AdminSettings from './AdminSettings';
 
 import AddStudent from './studentRelated/AddStudent';
 import SeeComplains from './studentRelated/SeeComplains';
@@ -121,6 +122,7 @@ const AdminDashboard = () => {
                         <Route path='*' element={<Navigate to="/" />} />
                         <Route path="/Admin/dashboard" element={<AdminHomePage />} />
                         <Route path="/Admin/profile" element={<AdminProfile />} />
+                        <Route path="/Admin/settings" element={<AdminSettings />} />
                         <Route path="/Admin/complains" element={<SeeComplains />} />
 
                         {/* Notice */}

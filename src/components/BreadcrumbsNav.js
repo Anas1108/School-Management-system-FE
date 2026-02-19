@@ -105,6 +105,11 @@ const BreadcrumbsNav = () => {
                 crumbs.push({ label: 'Profile', to: '#' });
             }
 
+            // Settings
+            else if (path === '/Admin/settings') {
+                crumbs.push({ label: 'Settings', to: '#' });
+            }
+
             // Fees
             else if (path.startsWith('/Admin/fees')) {
                 crumbs.push({ label: 'Fees', to: '/Admin/fees' });

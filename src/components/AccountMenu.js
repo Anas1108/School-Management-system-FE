@@ -41,7 +41,10 @@ const AccountMenu = () => {
         {
             label: 'Settings',
             icon: <Settings fontSize="small" />,
-            action: handleClose
+            action: () => {
+                handleClose();
+                navigate(`/${currentRole}/settings`);
+            }
         },
         { divider: true },
         {
