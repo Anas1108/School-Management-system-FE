@@ -290,16 +290,16 @@ const ClassDetails = () => {
                                     <Tab label="Teachers" value="4" />
                                 </TabList>
                             </Box>
-                            <TabPanel value="1" sx={{ p: 4 }}>
+                            <TabPanel value="1" sx={{ p: { xs: 2, md: 4 } }}>
                                 <ClassDetailsSection />
                             </TabPanel>
-                            <TabPanel value="2" sx={{ p: 4 }}>
+                            <TabPanel value="2" sx={{ p: { xs: 2, md: 4 } }}>
                                 <ClassSubjectsSection />
                             </TabPanel>
-                            <TabPanel value="3" sx={{ p: 4 }}>
+                            <TabPanel value="3" sx={{ p: { xs: 2, md: 4 } }}>
                                 <ClassStudentsSection />
                             </TabPanel>
-                            <TabPanel value="4" sx={{ p: 4 }}>
+                            <TabPanel value="4" sx={{ p: { xs: 2, md: 4 } }}>
                                 <ClassTeachersSection />
                             </TabPanel>
                         </Paper>

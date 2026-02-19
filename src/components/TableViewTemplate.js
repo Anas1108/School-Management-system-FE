@@ -75,18 +75,19 @@ const TableViewTemplate = ({ columns, rows }) => {
                     }}
                     sx={{
                         borderTop: '1px solid var(--border-color)',
-                        '& .MuiTablePagination-toolbar': {
-                            fontFamily: 'var(--font-family-sans)',
-                            color: 'var(--text-secondary)',
-                        },
-                        '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
+                        '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows': {
                             fontFamily: 'var(--font-family-sans)',
                             fontSize: '0.85rem',
                             color: 'var(--text-secondary)',
+                            display: { xs: 'none', sm: 'block' } // Hide on mobile for compactness
                         },
-                        '& .MuiTablePagination-select': {
-                            fontFamily: 'var(--font-family-sans)',
+                        '.MuiTablePagination-actions': {
+                            marginLeft: { xs: 0, sm: '20px' }
                         },
+                        '& .MuiTablePagination-toolbar': {
+                            paddingLeft: { xs: 2 },
+                            paddingRight: { xs: 2 },
+                        }
                     }}
                 />
             )}

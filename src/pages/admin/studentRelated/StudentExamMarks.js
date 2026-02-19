@@ -104,7 +104,7 @@ const StudentExamMarks = ({ situation }) => {
                             sx={{
                                 maxWidth: 550,
                                 px: 3,
-                                py: '100px',
+                                py: { xs: 4, md: 12 },
                                 width: '100%'
                             }}
                         >

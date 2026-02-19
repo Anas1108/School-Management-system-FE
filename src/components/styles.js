@@ -64,6 +64,12 @@ export const AppBar = styled(MuiAppBar, {
             duration: theme.transitions.duration.enteringScreen,
         }),
     }),
+
+    // Responsive adjustments
+    [theme.breakpoints.down('md')]: {
+        marginLeft: 0,
+        width: '100%',
+    },
 }));
 
 export const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -83,6 +89,8 @@ export const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
+
+            // Default desktop behavior
             ...(!open && {
                 overflowX: 'hidden',
                 transition: theme.transitions.create('width', {
@@ -94,6 +102,13 @@ export const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 
                     width: theme.spacing(9),
                 },
             }),
+
+            // Responsive adjustments for mobile overlay
+            /* [theme.breakpoints.down('md')]: {
+                 position: 'fixed',
+                 height: '100%',
+                 zIndex: theme.zIndex.drawer + 2,
+             },*/
         },
     }),
 );

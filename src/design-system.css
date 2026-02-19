@@ -219,3 +219,86 @@ body {
   -moz-osx-font-smoothing: grayscale;
   transition: background-color var(--transition-normal), color var(--transition-normal);
 }
+
+/* =========================================
+   Responsive Design System
+   ========================================= */
+
+:root {
+  /* Sidebar Widths */
+  --sidebar-width-desktop: 260px;
+  --sidebar-width-tablet: 80px;
+  --sidebar-width-mobile: 0px;
+  /* Overlay on mobile */
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  :root {
+    --font-size-2xl: 1.25rem;
+    --font-size-3xl: 1.5rem;
+    --font-size-4xl: 1.75rem;
+    --font-size-5xl: 2rem;
+  }
+}
+
+/* Responsive Utilities */
+.hide-on-mobile {
+  display: block;
+}
+
+.hide-on-desktop {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+
+  .hide-on-desktop {
+    display: block !important;
+  }
+
+  .full-width-mobile {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+  }
+
+  .stack-mobile {
+    flex-direction: column !important;
+  }
+
+  .p-mobile-2 {
+    padding: 16px !important;
+  }
+
+  .p-mobile-1 {
+    padding: 8px !important;
+  }
+}
+
+/* Responsive Table Container */
+.responsive-table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile Card View (for shifting from table to cards) */
+.mobile-card-view {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .desktop-table-view {
+    display: none;
+  }
+
+  .mobile-card-view {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+}

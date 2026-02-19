@@ -233,13 +233,13 @@ const FeeDashboard = () => {
             </Box>
 
             <Grid container spacing={3} sx={{ mb: 4 }}>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} sm={6} md={4}>
                     <StatCard title="Expected Revenue" value={stats.totalExpected} color="#1976d2" icon={MonetizationOnIcon} />
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} sm={6} md={4}>
                     <StatCard title="Collected Revenue" value={stats.totalCollected} color="#2e7d32" icon={MonetizationOnIcon} />
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} sm={6} md={4}>
                     <StatCard title="Total Late Fines" value={stats.totalLateFines} color="#ed6c02" icon={MonetizationOnIcon} />
                 </Grid>
             </Grid>

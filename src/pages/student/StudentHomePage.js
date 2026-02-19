@@ -49,7 +49,7 @@ const StudentHomePage = () => {
                     Welcome back, {currentUser.name}!
                 </Typography>
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={4} lg={3}>
+                    <Grid item xs={12} sm={6} md={3} lg={3}>
                         <GradientCard elevation={3} $gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
                             <IconWrapper>
                                 <SubjectIcon sx={{ fontSize: 40, color: 'white' }} />
@@ -58,7 +58,7 @@ const StudentHomePage = () => {
                             <StatValue start={0} end={numberOfSubjects} duration={2.5} />
                         </GradientCard>
                     </Grid>
-                    <Grid item xs={12} md={4} lg={3}>
+                    <Grid item xs={12} sm={6} md={3} lg={3}>
                         <GradientCard elevation={3} $gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)">
                             <IconWrapper>
                                 <AssignmentIcon sx={{ fontSize: 40, color: 'white' }} />
@@ -67,7 +67,7 @@ const StudentHomePage = () => {
                             <StatValue start={0} end={15} duration={4} />
                         </GradientCard>
                     </Grid>
-                    <Grid item xs={12} md={4} lg={6}>
+                    <Grid item xs={12} md={6} lg={6}>
                         <ChartCard elevation={3}>
                             <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'var(--text-primary)' }}>
                                 Attendance Overview

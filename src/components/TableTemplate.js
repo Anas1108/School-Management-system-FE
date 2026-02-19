@@ -37,7 +37,7 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows, count, page: p
             border: '1px solid var(--border-color)',
             background: 'var(--bg-paper)',
         }}>
-            <TableContainer sx={{ maxHeight: '75vh' }}>
+            <TableContainer sx={{ maxHeight: '75vh', overflowX: 'auto' }}>
                 <Table stickyHeader aria-label="data table">
                     <TableHead>
                         <StyledTableRow>
@@ -104,18 +104,19 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows, count, page: p
                     onRowsPerPageChange={handleChangeRowsPerPage}
                     sx={{
                         borderTop: '1px solid var(--border-color)',
-                        '& .MuiTablePagination-toolbar': {
-                            fontFamily: 'var(--font-family-sans)',
-                            color: 'var(--text-secondary)',
-                        },
-                        '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
+                        '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows': {
                             fontFamily: 'var(--font-family-sans)',
                             fontSize: '0.85rem',
                             color: 'var(--text-secondary)',
+                            display: { xs: 'none', sm: 'block' } // Hide on mobile for compactness
                         },
-                        '& .MuiTablePagination-select': {
-                            fontFamily: 'var(--font-family-sans)',
+                        '.MuiTablePagination-actions': {
+                            marginLeft: { xs: 0, sm: '20px' }
                         },
+                        '& .MuiTablePagination-toolbar': {
+                            paddingLeft: { xs: 2 },
+                            paddingRight: { xs: 2 },
+                        }
                     }}
                 />
             )}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     CssBaseline,
     Box,
@@ -7,10 +7,12 @@ import {
     Typography,
     Divider,
     IconButton,
+    useMediaQuery,
+    useTheme,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { AppBar, Drawer } from '../../components/styles';
 import Logout from '../Logout';
 import SideBar from './SideBar';
@@ -51,10 +53,22 @@ import FeeSearch from './feeRelated/FeeSearch';
 import BreadcrumbsNav from '../../components/BreadcrumbsNav';
 
 const AdminDashboard = () => {
-    const [open, setOpen] = useState(true);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const [open, setOpen] = useState(!isMobile);
+
+    // Toggle drawer
     const toggleDrawer = () => {
         setOpen(!open);
     };
+
+    // Auto-close overlay drawer on route change
+    const location = useLocation();
+    useEffect(() => {
+        if (isMobile && open) {
+            setOpen(false);
+        }
+    }, [location.pathname]);
 
     return (
         <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
@@ -68,7 +82,7 @@ const AdminDashboard = () => {
                         onClick={toggleDrawer}
                         sx={{
                             marginRight: '36px',
-                            ...(open && { display: 'none' }),
+                            ...(open && !isMobile && { display: 'none' }),
                             color: 'var(--color-primary-600)'
                         }}
                     >
@@ -86,7 +100,18 @@ const AdminDashboard = () => {
                     <AccountMenu />
                 </Toolbar>
             </AppBar>
-            <Drawer variant="permanent" open={open} sx={open ? styles.drawerStyled : styles.hideDrawer}>
+            <Drawer
+                variant={isMobile ? "temporary" : "permanent"}
+                open={open}
+                onClose={toggleDrawer}
+                sx={styles.drawerStyled}
+                PaperProps={{
+                    sx: {
+                        backgroundColor: 'var(--bg-paper)',
+                        width: isMobile ? '260px' : undefined
+                    }
+                }}
+            >
                 <Toolbar sx={styles.toolBarStyled}>
                     <Typography
                         variant="h5"
@@ -115,7 +140,12 @@ const AdminDashboard = () => {
 
             <Box component="main" sx={styles.boxStyled}>
                 <Toolbar />
-                <Box sx={{ flex: 1, overflow: 'auto', background: 'var(--bg-body)', p: 4 }}>
+                <Box sx={{
+                    flex: 1,
+                    overflow: 'auto',
+                    background: 'var(--bg-body)',
+                    p: { xs: 2, sm: 3, md: 4 } // Responsive padding
+                }}>
                     <BreadcrumbsNav />
                     <Routes>
                         <Route path="/" element={<AdminHomePage />} />
@@ -204,11 +234,5 @@ const styles = {
     },
     drawerStyled: {
         display: "flex"
-    },
-    hideDrawer: {
-        display: 'flex',
-        '@media (max-width: 600px)': {
-            display: 'none',
-        },
     },
 }
