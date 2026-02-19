@@ -17,14 +17,6 @@ const StudentFeeHistoryModal = ({ open, handleClose, studentId }) => {
     const [paymentAmount, setPaymentAmount] = useState('');
     const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0]);
 
-    useEffect(() => {
-        if (open && studentId) {
-            fetchHistory();
-        } else {
-            setHistory(null); // Reset on close/change
-        }
-    }, [open, studentId, fetchHistory]);
-
     const fetchHistory = useCallback(async () => {
         if (!studentId) return;
         setLoading(true);
@@ -39,6 +31,14 @@ const StudentFeeHistoryModal = ({ open, handleClose, studentId }) => {
             setLoading(false);
         }
     }, [studentId]);
+
+    useEffect(() => {
+        if (open && studentId) {
+            fetchHistory();
+        } else {
+            setHistory(null); // Reset on close/change
+        }
+    }, [open, studentId, fetchHistory]);
 
     const handlePayClick = (invoice) => {
         setSelectedInvoice(invoice);
