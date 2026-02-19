@@ -98,6 +98,44 @@ const ShowClasses = () => {
 
   return (
     <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+          Classes
+        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <TextField
+            placeholder="Search classes..."
+            variant="outlined"
+            size="small"
+            onChange={(e) => setSearchTerm(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+              style: {
+                borderRadius: 'var(--border-radius-md)',
+                backgroundColor: 'var(--bg-paper)',
+              }
+            }}
+            sx={{ width: '260px' }}
+          />
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate("/Admin/addclass")}
+            sx={{
+              textTransform: 'none', fontWeight: 600, fontFamily: 'var(--font-family-sans)',
+              borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--color-primary-600)',
+              boxShadow: 'none', px: 2.5, whiteSpace: 'nowrap',
+              '&:hover': { backgroundColor: 'var(--color-primary-700)', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
+            }}
+          >
+            Add Class
+          </Button>
+        </Box>
+      </Box>
       {loading ?
         <CustomLoader />
         :
@@ -110,44 +148,6 @@ const ShowClasses = () => {
             </Box>
             :
             <>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
-                  Classes
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <TextField
-                    placeholder="Search classes..."
-                    variant="outlined"
-                    size="small"
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <SearchIcon />
-                        </InputAdornment>
-                      ),
-                      style: {
-                        borderRadius: 'var(--border-radius-md)',
-                        backgroundColor: 'var(--bg-paper)',
-                      }
-                    }}
-                    sx={{ width: '260px' }}
-                  />
-                  <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={() => navigate("/Admin/addclass")}
-                    sx={{
-                      textTransform: 'none', fontWeight: 600, fontFamily: 'var(--font-family-sans)',
-                      borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--color-primary-600)',
-                      boxShadow: 'none', px: 2.5, whiteSpace: 'nowrap',
-                      '&:hover': { backgroundColor: 'var(--color-primary-700)', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
-                    }}
-                  >
-                    Add Class
-                  </Button>
-                </Box>
-              </Box>
               {Array.isArray(filteredRows) && filteredRows.length > 0 &&
                 <TableTemplate buttonHaver={SclassButtonHaver} columns={sclassColumns} rows={filteredRows} />
               }

@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react'
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, Button, Typography, Tooltip } from '@mui/material'
-import { getAllSclasses } from '../../../redux/sclassRelated/sclassHandle';
+import { Box, Button, Typography, Tooltip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { getAllSclasses } from '../../../redux/sclassRelated/sclassHandle';
 import { ActionIconButtonPrimary } from '../../../components/buttonStyles';
 import TableTemplate from '../../../components/TableTemplate';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import CustomLoader from '../../../components/CustomLoader';
 
 const ChooseClass = ({ situation }) => {
     const navigate = useNavigate()
@@ -56,9 +57,12 @@ const ChooseClass = ({ situation }) => {
     };
 
     return (
-        <>
+        <Box sx={{ mt: 2, mb: 2 }}>
+            <Typography variant="h6" gutterBottom component="div">
+                Choose a class
+            </Typography>
             {loading ?
-                <div>Loading...</div>
+                <CustomLoader />
                 :
                 <>
                     {getresponse ?
@@ -69,16 +73,13 @@ const ChooseClass = ({ situation }) => {
                         </Box>
                         :
                         <>
-                            <Typography variant="h6" gutterBottom component="div">
-                                Choose a class
-                            </Typography>
                             {Array.isArray(sclassesList) && sclassesList.length > 0 &&
                                 <TableTemplate buttonHaver={SclassButtonHaver} columns={sclassColumns} rows={sclassRows} />
                             }
                         </>}
                 </>
             }
-        </>
+        </Box>
     )
 }
 

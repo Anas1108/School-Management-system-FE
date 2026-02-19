@@ -48,13 +48,13 @@ const SeeComplains = () => {
 
   return (
     <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
+      <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)', mb: 2 }}>
+        Complains
+      </Typography>
       {loading ?
         <CustomLoader />
         :
         <>
-          <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)', mb: 2 }}>
-            Complains
-          </Typography>
           {response ?
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
               No Complains Right Now

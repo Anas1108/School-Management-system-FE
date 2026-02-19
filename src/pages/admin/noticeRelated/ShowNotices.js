@@ -66,30 +66,30 @@ const ShowNotices = () => {
 
     return (
         <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                    Notices
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={() => navigate("/Admin/addnotice")}
+                        sx={{
+                            textTransform: 'none', fontWeight: 600, fontFamily: 'var(--font-family-sans)',
+                            borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--color-primary-600)',
+                            boxShadow: 'none', px: 2.5, whiteSpace: 'nowrap',
+                            '&:hover': { backgroundColor: 'var(--color-primary-700)', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
+                        }}
+                    >
+                        Add Notice
+                    </Button>
+                </Box>
+            </Box>
             {loading ?
                 <CustomLoader />
                 :
                 <>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
-                            Notices
-                        </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                            <Button
-                                variant="contained"
-                                startIcon={<AddIcon />}
-                                onClick={() => navigate("/Admin/addnotice")}
-                                sx={{
-                                    textTransform: 'none', fontWeight: 600, fontFamily: 'var(--font-family-sans)',
-                                    borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--color-primary-600)',
-                                    boxShadow: 'none', px: 2.5, whiteSpace: 'nowrap',
-                                    '&:hover': { backgroundColor: 'var(--color-primary-700)', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
-                                }}
-                            >
-                                Add Notice
-                            </Button>
-                        </Box>
-                    </Box>
                     {response ?
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
                             {/* Response content if needed, currently reusing button above or handling empty state differently */}
