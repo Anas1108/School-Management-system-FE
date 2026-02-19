@@ -101,7 +101,7 @@ const AdminDashboard = () => {
                             letterSpacing: '-1px'
                         }}
                     >
-                        School Admin
+                        TKS Kulluwal
                     </Typography>
                     <IconButton onClick={toggleDrawer} sx={{ color: 'var(--text-secondary)' }}>
                         <ChevronLeftIcon />

@@ -5,6 +5,9 @@ import { Button, Grid, Box, Typography, Paper, Checkbox, FormControlLabel, TextF
 import { ThemeProvider } from '@mui/material/styles';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import bgpic from "../assets/designlogin.jpg"
+import AdminImage from "../assets/admin.png";
+import StudentImage from "../assets/student.png";
+import TeacherImage from "../assets/teacher.png";
 import { LightPurpleButton } from '../components/buttonStyles';
 import styled from 'styled-components';
 import { loginUser } from '../redux/userRelated/userHandle';
@@ -72,6 +75,12 @@ const LoginPage = ({ role }) => {
     };
 
 
+
+    const roleImage = {
+        "Admin": AdminImage,
+        "Student": StudentImage,
+        "Teacher": TeacherImage
+    }
 
     useEffect(() => {
         if (status === 'success' || currentUser !== null) {
@@ -222,7 +231,7 @@ const LoginPage = ({ role }) => {
                     sm={4}
                     md={7}
                     sx={{
-                        backgroundImage: `url(${bgpic})`,
+                        backgroundImage: `url(${roleImage[role] || bgpic})`,
                         backgroundRepeat: 'no-repeat',
                         backgroundColor: 'var(--color-primary-50)',
                         backgroundSize: 'cover',
@@ -272,6 +281,11 @@ const StyledLink = styled(Link)`
   &:hover {
       color: var(--color-primary-800);
   }
+`;
+
+const LogoImage = styled.img`
+    width: 100px;
+    margin-bottom: 20px;
 `;
 
 

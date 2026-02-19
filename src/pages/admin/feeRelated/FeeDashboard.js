@@ -47,11 +47,6 @@ const FeeDashboard = () => {
     });
     const [uniqueStatus, setUniqueStatus] = useState([]);
 
-    useEffect(() => {
-        fetchStats();
-        fetchClasses();
-    }, [fetchStats, fetchClasses]);
-
     const fetchStats = useCallback(async () => {
         try {
             const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/FeeStats/${currentUser._id}`);
@@ -73,6 +68,11 @@ const FeeDashboard = () => {
             console.error(error);
         }
     }, [currentUser._id]);
+
+    useEffect(() => {
+        fetchStats();
+        fetchClasses();
+    }, [fetchStats, fetchClasses]);
 
     const handleGenerate = async () => {
         if (!generationData.classId) {
