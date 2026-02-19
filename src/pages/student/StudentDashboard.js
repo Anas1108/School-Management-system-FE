@@ -13,21 +13,41 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import StudentSideBar from './StudentSideBar';
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import StudentHomePage from './StudentHomePage';
 import StudentProfile from './StudentProfile';
 import StudentSubjects from './StudentSubjects';
 import ViewStdAttendance from './ViewStdAttendance';
 import StudentComplain from './StudentComplain';
-import Logout from '../Logout'
+import LogoutModal from '../../components/LogoutModal';
 import AccountMenu from '../../components/AccountMenu';
 import { AppBar, Drawer } from '../../components/styles';
+import { useDispatch } from 'react-redux';
+import { authLogout } from '../../redux/userRelated/userSlice';
 import BreadcrumbsNav from '../../components/BreadcrumbsNav';
 
 const StudentDashboard = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [open, setOpen] = useState(!isMobile);
+    const [logoutOpen, setLogoutOpen] = useState(false);
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const handleLogoutOpen = () => {
+        setLogoutOpen(true);
+    };
+
+    const handleLogoutClose = () => {
+        setLogoutOpen(false);
+    };
+
+    const handleLogoutConfirm = () => {
+        dispatch(authLogout());
+        setLogoutOpen(false);
+        navigate('/');
+    };
 
     // Toggle drawer
     const toggleDrawer = () => {
@@ -69,7 +89,7 @@ const StudentDashboard = () => {
                         >
                             Student Dashboard
                         </Typography>
-                        <AccountMenu />
+                        <AccountMenu onLogout={handleLogoutOpen} />
                     </Toolbar>
                 </AppBar>
                 <Drawer
@@ -91,7 +111,7 @@ const StudentDashboard = () => {
                     </Toolbar>
                     <Divider />
                     <List component="nav" sx={{ flex: 1, overflow: 'hidden' }}>
-                        <StudentSideBar />
+                        <StudentSideBar onLogout={handleLogoutOpen} />
                     </List>
                 </Drawer>
                 <Box component="main" sx={styles.boxStyled}>
@@ -113,8 +133,13 @@ const StudentDashboard = () => {
                             <Route path="/Student/attendance" element={<ViewStdAttendance />} />
                             <Route path="/Student/complain" element={<StudentComplain />} />
 
-                            <Route path="/logout" element={<Logout />} />
+                            <Route path="/Student/complain" element={<StudentComplain />} />
                         </Routes>
+                        <LogoutModal
+                            open={logoutOpen}
+                            handleClose={handleLogoutClose}
+                            handleLogout={handleLogoutConfirm}
+                        />
                     </Box>
                 </Box>
             </Box>

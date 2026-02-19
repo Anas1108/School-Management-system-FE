@@ -16,7 +16,7 @@ import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 
 import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined';
 
-const SideBar = ({ open }) => {
+const SideBar = ({ open, onLogout }) => {
     const location = useLocation();
 
     // Helper to check active path
@@ -41,15 +41,16 @@ const SideBar = ({ open }) => {
 
     const userMenuItems = [
         { text: 'Profile', icon: <AccountCircleOutlinedIcon />, link: '/Admin/profile' },
-        { text: 'Logout', icon: <ExitToAppIcon />, link: '/logout' },
+        { text: 'Logout', icon: <ExitToAppIcon />, action: onLogout },
     ];
 
     const renderMenuItem = (item) => (
         <StyledListItemButton
             key={item.text}
-            component={Link}
+            component={item.link ? Link : 'div'}
             to={item.link}
-            selected={isActive(item.link)}
+            onClick={item.action}
+            selected={item.link ? isActive(item.link) : false}
             sx={{
                 justifyContent: open ? 'initial' : 'center',
                 px: 2.5,
@@ -59,10 +60,10 @@ const SideBar = ({ open }) => {
                 minWidth: 0,
                 mr: open ? 3 : 'auto',
                 justifyContent: 'center',
-                color: isActive(item.link) ? 'var(--color-primary-600)' : 'inherit'
+                color: item.link && isActive(item.link) ? 'var(--color-primary-600)' : 'inherit'
             }}>
                 {React.cloneElement(item.icon, {
-                    color: isActive(item.link) ? 'primary' : 'inherit'
+                    color: item.link && isActive(item.link) ? 'primary' : 'inherit'
                 })}
             </ListItemIcon>
             <ListItemText

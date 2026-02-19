@@ -13,11 +13,13 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import TeacherSideBar from './TeacherSideBar';
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import Logout from '../Logout'
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import LogoutModal from '../../components/LogoutModal';
 import AccountMenu from '../../components/AccountMenu';
 import { AppBar, Drawer } from '../../components/styles';
 import StudentAttendance from '../admin/studentRelated/StudentAttendance';
+import { useDispatch } from 'react-redux';
+import { authLogout } from '../../redux/userRelated/userSlice';
 
 import TeacherClassDetails from './TeacherClassDetails';
 import TeacherComplain from './TeacherComplain';
@@ -31,6 +33,24 @@ const TeacherDashboard = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [open, setOpen] = useState(!isMobile);
+    const [logoutOpen, setLogoutOpen] = useState(false);
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const handleLogoutOpen = () => {
+        setLogoutOpen(true);
+    };
+
+    const handleLogoutClose = () => {
+        setLogoutOpen(false);
+    };
+
+    const handleLogoutConfirm = () => {
+        dispatch(authLogout());
+        setLogoutOpen(false);
+        navigate('/');
+    };
 
     // Toggle drawer
     const toggleDrawer = () => {
@@ -72,7 +92,7 @@ const TeacherDashboard = () => {
                         >
                             Teacher Dashboard
                         </Typography>
-                        <AccountMenu />
+                        <AccountMenu onLogout={handleLogoutOpen} />
                     </Toolbar>
                 </AppBar>
                 <Drawer
@@ -94,7 +114,7 @@ const TeacherDashboard = () => {
                     </Toolbar>
                     <Divider />
                     <List component="nav" sx={{ flex: 1, overflow: 'hidden' }}>
-                        <TeacherSideBar />
+                        <TeacherSideBar onLogout={handleLogoutOpen} />
                     </List>
                 </Drawer>
                 <Box component="main" sx={styles.boxStyled}>
@@ -120,8 +140,13 @@ const TeacherDashboard = () => {
                             <Route path="/Teacher/class/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
                             <Route path="/Teacher/class/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
 
-                            <Route path="/logout" element={<Logout />} />
+                            <Route path="/Teacher/class/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
                         </Routes>
+                        <LogoutModal
+                            open={logoutOpen}
+                            handleClose={handleLogoutClose}
+                            handleLogout={handleLogoutConfirm}
+                        />
                     </Box>
                 </Box>
             </Box>

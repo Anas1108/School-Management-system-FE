@@ -12,10 +12,12 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { AppBar, Drawer } from '../../components/styles';
-import Logout from '../Logout';
+import LogoutModal from '../../components/LogoutModal';
 import SideBar from './SideBar';
+import { useDispatch } from 'react-redux';
+import { authLogout } from '../../redux/userRelated/userSlice';
 import AdminProfile from './AdminProfile';
 import AdminHomePage from './AdminHomePage';
 import AdminSettings from './AdminSettings';
@@ -56,6 +58,24 @@ const AdminDashboard = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [open, setOpen] = useState(!isMobile);
+    const [logoutOpen, setLogoutOpen] = useState(false);
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const handleLogoutOpen = () => {
+        setLogoutOpen(true);
+    };
+
+    const handleLogoutClose = () => {
+        setLogoutOpen(false);
+    };
+
+    const handleLogoutConfirm = () => {
+        dispatch(authLogout());
+        setLogoutOpen(false);
+        navigate('/');
+    };
 
     // Toggle drawer
     const toggleDrawer = () => {
@@ -97,7 +117,7 @@ const AdminDashboard = () => {
                     >
                         Admin Dashboard
                     </Typography>
-                    <AccountMenu />
+                    <AccountMenu onLogout={handleLogoutOpen} />
                 </Toolbar>
             </AppBar>
             <Drawer
@@ -134,7 +154,7 @@ const AdminDashboard = () => {
                 </Toolbar>
                 <Divider />
                 <List component="nav" sx={{ flex: 1, overflow: 'hidden' }}>
-                    <SideBar open={open} />
+                    <SideBar open={open} onLogout={handleLogoutOpen} />
                 </List>
             </Drawer>
 
@@ -204,8 +224,13 @@ const AdminDashboard = () => {
                         <Route path="/Admin/fees/structure" element={<FeeStructure />} />
                         <Route path="/Admin/fees/search" element={<FeeSearch />} />
 
-                        <Route path="/logout" element={<Logout />} />
+                        <Route path="/Admin/fees/search" element={<FeeSearch />} />
                     </Routes>
+                    <LogoutModal
+                        open={logoutOpen}
+                        handleClose={handleLogoutClose}
+                        handleLogout={handleLogoutConfirm}
+                    />
                 </Box>
             </Box>
         </Box>

@@ -10,7 +10,7 @@ import AnnouncementOutlinedIcon from '@mui/icons-material/AnnouncementOutlined';
 import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 
-const StudentSideBar = () => {
+const StudentSideBar = ({ onLogout }) => {
     const location = useLocation();
 
     const isActive = (path) => {
@@ -62,9 +62,9 @@ const StudentSideBar = () => {
                         </ListItemIcon>
                         <ListItemText primary="Profile" />
                     </StyledListItemButton>
-                    <StyledListItemButton component={Link} to="/logout" $active={isActive('/logout')}>
+                    <StyledListItemButton onClick={onLogout}>
                         <ListItemIcon>
-                            <ExitToAppIcon sx={{ color: isActive('/logout') ? 'var(--color-primary-600)' : 'inherit' }} />
+                            <ExitToAppIcon />
                         </ListItemIcon>
                         <ListItemText primary="Logout" />
                     </StyledListItemButton>

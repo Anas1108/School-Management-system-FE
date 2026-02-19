@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import CustomMenu from './CustomMenu';
 
-const AccountMenu = () => {
+const AccountMenu = ({ onLogout }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const navigate = useNavigate();
 
@@ -29,7 +29,7 @@ const AccountMenu = () => {
 
     const handleLogout = () => {
         handleClose();
-        navigate('/logout');
+        onLogout();
     };
 
     const menuItems = [
