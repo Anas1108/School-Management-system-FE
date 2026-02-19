@@ -27,18 +27,7 @@ const Homepage = () => {
                   Login
                 </LightPurpleButton>
               </StyledLink>
-              <StyledLink to="/chooseasguest">
-                <GuestButton variant="outlined" fullWidth>
-                  Login as Guest
-                </GuestButton>
-              </StyledLink>
             </ButtonContainer>
-            <FooterText>
-              Don't have an account?{' '}
-              <Link to="/Adminregister" style={{ color: "var(--color-primary-600)", fontWeight: "600" }}>
-                Sign up
-              </Link>
-            </FooterText>
           </ContentWrapper>
         </Grid>
         <Grid item xs={12} md={6}>
@@ -147,29 +136,7 @@ const StyledLink = styled(Link)`
   max-width: 200px;
 `;
 
-const GuestButton = styled(Button)`
-  && {
-    color: var(--color-primary-600);
-    border-color: var(--color-primary-600);
-    padding: 12px 24px;
-    border-radius: var(--border-radius-lg);
-    font-weight: 600;
-    font-family: var(--font-family-sans);
-    
-    &:hover {
-      background-color: var(--color-primary-50);
-      border-color: var(--color-primary-700);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
-  }
-`;
 
-const FooterText = styled.p`
-  color: var(--text-tertiary);
-  font-size: 0.9rem;
-  margin-top: 1rem;
-`;
 
 const BackgroundShape1 = styled.div`
   position: absolute;
