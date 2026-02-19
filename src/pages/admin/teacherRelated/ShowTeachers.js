@@ -63,20 +63,6 @@ const ShowTeachers = () => {
     const [workloadLoading, setWorkloadLoading] = useState(false);
 
 
-    if (loading) {
-        return <CustomLoader />;
-    } else if (response) {
-        return (
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-                <GreenButton variant="contained" onClick={() => navigate("/Admin/teachers/add")}>
-                    Add Teacher
-                </GreenButton>
-            </Box>
-        );
-    } else if (error) {
-        console.log(error);
-    }
-
     const deleteHandler = (deleteID, address) => {
         setDeleteData({ deleteID, address });
         setConfirmOpen(true);
@@ -216,19 +202,34 @@ const ShowTeachers = () => {
                     </Button>
                 </Box>
             </Box>
-            <TableTemplate
-                buttonHaver={TeacherButtonHaver}
-                columns={teacherColumns}
-                rows={teacherRows}
-                count={totalTeachers}
-                page={page}
-                rowsPerPage={rowsPerPage}
-                onPageChange={(event, newPage) => setPage(newPage)}
-                onRowsPerPageChange={(event) => {
-                    setRowsPerPage(parseInt(event.target.value, 10));
-                    setPage(0);
-                }}
-            />
+
+            {loading ?
+                <CustomLoader />
+                :
+                <>
+                    {response ?
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+                            <GreenButton variant="contained" onClick={() => navigate("/Admin/teachers/add")}>
+                                Add Teacher
+                            </GreenButton>
+                        </Box>
+                        :
+                        <TableTemplate
+                            buttonHaver={TeacherButtonHaver}
+                            columns={teacherColumns}
+                            rows={teacherRows}
+                            count={totalTeachers}
+                            page={page}
+                            rowsPerPage={rowsPerPage}
+                            onPageChange={(event, newPage) => setPage(newPage)}
+                            onRowsPerPageChange={(event) => {
+                                setRowsPerPage(parseInt(event.target.value, 10));
+                                setPage(0);
+                            }}
+                        />
+                    }
+                </>
+            }
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} severity={severity} />
             <ConfirmationModal
                 open={confirmOpen}

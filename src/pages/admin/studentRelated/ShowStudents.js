@@ -148,62 +148,62 @@ const ShowStudents = () => {
 
     return (
         <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'stretch', md: 'center' }, mb: 2, gap: 2 }}>
+                <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                    Students
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexDirection: { xs: 'column', sm: 'row' }, width: { xs: '100%', md: 'auto' } }}>
+                    <TextField
+                        placeholder="Search students..."
+                        variant="outlined"
+                        size="small"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                setPage(0);
+                                dispatch(getAllStudents(currentUser._id, 1, rowsPerPage, searchTerm));
+                            }
+                        }}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={() => {
+                                        setPage(0);
+                                        dispatch(getAllStudents(currentUser._id, 1, rowsPerPage, searchTerm));
+                                    }}>
+                                        <SearchIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                            style: {
+                                borderRadius: 'var(--border-radius-md)',
+                                backgroundColor: 'var(--bg-paper)',
+                            }
+                        }}
+                        sx={{ width: { xs: '100%', md: '260px' } }}
+                    />
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={() => navigate("/Admin/addstudents")}
+                        sx={{
+                            textTransform: 'none', fontWeight: 600, fontFamily: 'var(--font-family-sans)',
+                            borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--color-primary-600)',
+                            boxShadow: 'none', px: 2.5, whiteSpace: 'nowrap',
+                            width: { xs: '100%', sm: 'auto' },
+                            '&:hover': { backgroundColor: 'var(--color-primary-700)', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
+                        }}
+                    >
+                        Add Student
+                    </Button>
+                </Box>
+            </Box>
+
             {loading ?
                 <CustomLoader />
                 :
                 <>
-                    <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'stretch', md: 'center' }, mb: 2, gap: 2 }}>
-                        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
-                            Students
-                        </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexDirection: { xs: 'column', sm: 'row' }, width: { xs: '100%', md: 'auto' } }}>
-                            <TextField
-                                placeholder="Search students..."
-                                variant="outlined"
-                                size="small"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        setPage(0);
-                                        dispatch(getAllStudents(currentUser._id, 1, rowsPerPage, searchTerm));
-                                    }
-                                }}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton onClick={() => {
-                                                setPage(0);
-                                                dispatch(getAllStudents(currentUser._id, 1, rowsPerPage, searchTerm));
-                                            }}>
-                                                <SearchIcon />
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                    style: {
-                                        borderRadius: 'var(--border-radius-md)',
-                                        backgroundColor: 'var(--bg-paper)',
-                                    }
-                                }}
-                                sx={{ width: { xs: '100%', md: '260px' } }}
-                            />
-                            <Button
-                                variant="contained"
-                                startIcon={<AddIcon />}
-                                onClick={() => navigate("/Admin/addstudents")}
-                                sx={{
-                                    textTransform: 'none', fontWeight: 600, fontFamily: 'var(--font-family-sans)',
-                                    borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--color-primary-600)',
-                                    boxShadow: 'none', px: 2.5, whiteSpace: 'nowrap',
-                                    width: { xs: '100%', sm: 'auto' },
-                                    '&:hover': { backgroundColor: 'var(--color-primary-700)', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
-                                }}
-                            >
-                                Add Student
-                            </Button>
-                        </Box>
-                    </Box>
-
                     {response ?
                         <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
                             <GreenButton variant="contained" onClick={() => navigate("/Admin/addstudents")}>

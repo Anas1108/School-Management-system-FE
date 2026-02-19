@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import StudentFeeHistoryModal from '../../../components/StudentFeeHistoryModal';
+import CustomLoader from '../../../components/CustomLoader';
 
 const FeeDefaulters = () => {
     const navigate = useNavigate();
@@ -105,47 +106,51 @@ const FeeDefaulters = () => {
                 </Grid>
             </Paper>
 
-            <TableContainer component={Paper} elevation={0} sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
-                <Table>
-                    <TableHead sx={{ bgcolor: 'action.hover' }}>
-                        <TableRow>
-                            <TableCell sx={{ fontWeight: 'bold' }}>Roll Num</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
-                            <TableCell align="right" sx={{ fontWeight: 'bold' }}>Total Due Amount</TableCell>
-                            <TableCell align="center" sx={{ fontWeight: 'bold' }}>Action</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {filteredInvoices.length > 0 ? (
-                            filteredInvoices.map((row) => (
-                                <TableRow key={row.studentId} hover>
-                                    <TableCell>{row.rollNum}</TableCell>
-                                    <TableCell>{row.studentName}</TableCell>
-                                    <TableCell align="right" sx={{ color: 'error.main', fontWeight: 'bold' }}>
-                                        {row.totalDue}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        <Button
-                                            variant="contained"
-                                            size="small"
-                                            onClick={() => { setHistoryStudentId(row.studentId); setHistoryOpen(true); }}
-                                            sx={{ borderRadius: 2 }}
-                                        >
-                                            View Details / Pay
-                                        </Button>
+            {loading ? (
+                <CustomLoader />
+            ) : (
+                <TableContainer component={Paper} elevation={0} sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
+                    <Table>
+                        <TableHead sx={{ bgcolor: 'action.hover' }}>
+                            <TableRow>
+                                <TableCell sx={{ fontWeight: 'bold' }}>Roll Num</TableCell>
+                                <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
+                                <TableCell align="right" sx={{ fontWeight: 'bold' }}>Total Due Amount</TableCell>
+                                <TableCell align="center" sx={{ fontWeight: 'bold' }}>Action</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {filteredInvoices.length > 0 ? (
+                                filteredInvoices.map((row) => (
+                                    <TableRow key={row.studentId} hover>
+                                        <TableCell>{row.rollNum}</TableCell>
+                                        <TableCell>{row.studentName}</TableCell>
+                                        <TableCell align="right" sx={{ color: 'error.main', fontWeight: 'bold' }}>
+                                            {row.totalDue}
+                                        </TableCell>
+                                        <TableCell align="center">
+                                            <Button
+                                                variant="contained"
+                                                size="small"
+                                                onClick={() => { setHistoryStudentId(row.studentId); setHistoryOpen(true); }}
+                                                sx={{ borderRadius: 2 }}
+                                            >
+                                                View Details / Pay
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
+                                        {selectedClass ? "No defaulters found" : "Please select a class to view defaulters"}
                                     </TableCell>
                                 </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
-                                    {loading ? "Loading..." : (selectedClass ? "No defaulters found" : "Please select a class to view defaulters")}
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            )}
 
             <StudentFeeHistoryModal
                 open={historyOpen}

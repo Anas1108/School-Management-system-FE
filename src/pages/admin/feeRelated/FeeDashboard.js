@@ -12,6 +12,7 @@ import CountUp from 'react-countup';
 import axios from 'axios';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import CustomModal from '../../../components/CustomModal';
+import CustomLoader from '../../../components/CustomLoader';
 
 const FeeDashboard = () => {
     const navigate = useNavigate();
@@ -214,253 +215,259 @@ const FeeDashboard = () => {
 
     return (
         <Box sx={{ mt: 2, mb: 4, px: 3 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-                <Typography variant="h4" fontWeight="bold">Fee Management</Typography>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Button variant="contained" startIcon={<MonetizationOnIcon />} onClick={() => setGenModalOpen(true)} sx={{ borderRadius: 2 }}>
-                        Generate Invoices
-                    </Button>
-                    <Button variant="outlined" onClick={() => navigate('/Admin/fees/defaulters')} sx={{ borderRadius: 2 }}>
-                        Defaulters
-                    </Button>
-                    <Button variant="outlined" onClick={() => navigate('/Admin/fees/structure')} sx={{ borderRadius: 2 }}>
-                        Config Fees
-                    </Button>
-                    <Button variant="contained" color="secondary" onClick={() => navigate('/Admin/fees/search')} startIcon={<SearchIcon />} sx={{ borderRadius: 2 }}>
-                        Search
-                    </Button>
-                </Box>
-            </Box>
-
-            <Grid container spacing={3} sx={{ mb: 4 }}>
-                <Grid item xs={12} sm={6} md={4}>
-                    <StatCard title="Expected Revenue" value={stats.totalExpected} color="#1976d2" icon={MonetizationOnIcon} />
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                    <StatCard title="Collected Revenue" value={stats.totalCollected} color="#2e7d32" icon={MonetizationOnIcon} />
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                    <StatCard title="Total Late Fines" value={stats.totalLateFines} color="#ed6c02" icon={MonetizationOnIcon} />
-                </Grid>
-            </Grid>
-
-            {/* Generated Invoices List */}
-            <Paper elevation={0} sx={{ p: 0, mb: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
-                <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="h6" fontWeight="bold">Monthly Invoices</Typography>
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                        <TextField
-                            select
-                            size="small"
-                            label="Class"
-                            value={generationData.classId}
-                            onChange={(e) => setGenerationData({ ...generationData, classId: e.target.value })}
-                            sx={{ minWidth: 150 }}
-                        >
-                            {classes.map((option) => (
-                                <MenuItem key={option._id} value={option._id}>
-                                    {option.sclassName}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                        <TextField
-                            select
-                            size="small"
-                            label="Month"
-                            value={generationData.month}
-                            onChange={(e) => setGenerationData({ ...generationData, month: e.target.value })}
-                            sx={{ minWidth: 120 }}
-                        >
-                            {Array.from({ length: 12 }, (_, i) => (
-                                <MenuItem key={i + 1} value={i + 1}>
-                                    {new Date(0, i).toLocaleString('default', { month: 'long' })}
-                                </MenuItem>
-                            ))}
-                        </TextField>
+            {loading ? (
+                <CustomLoader />
+            ) : (
+                <>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+                        <Typography variant="h4" fontWeight="bold">Fee Management</Typography>
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                            <Button variant="contained" startIcon={<MonetizationOnIcon />} onClick={() => setGenModalOpen(true)} sx={{ borderRadius: 2 }}>
+                                Generate Invoices
+                            </Button>
+                            <Button variant="outlined" onClick={() => navigate('/Admin/fees/defaulters')} sx={{ borderRadius: 2 }}>
+                                Defaulters
+                            </Button>
+                            <Button variant="outlined" onClick={() => navigate('/Admin/fees/structure')} sx={{ borderRadius: 2 }}>
+                                Config Fees
+                            </Button>
+                            <Button variant="contained" color="secondary" onClick={() => navigate('/Admin/fees/search')} startIcon={<SearchIcon />} sx={{ borderRadius: 2 }}>
+                                Search
+                            </Button>
+                        </Box>
                     </Box>
-                </Box>
-                <TableContainer>
-                    <Table>
-                        <TableHead sx={{ bgcolor: 'action.hover' }}>
-                            <TableRow>
-                                <TableCell sx={{ fontWeight: 'bold' }}>Roll Num</TableCell>
-                                <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
-                                <TableCell sx={{ fontWeight: 'bold' }}>Month/Year</TableCell>
-                                <TableCell sx={{ fontWeight: 'bold' }}>Challan #</TableCell>
-                                <TableCell align="right" sx={{ fontWeight: 'bold' }}>Due Amount</TableCell>
-                                <TableCell align="right" sx={{ fontWeight: 'bold' }}>Paid</TableCell>
-                                <TableCell align="right" sx={{ fontWeight: 'bold' }}>Balance</TableCell>
-                                <TableCell align="center" sx={{ fontWeight: 'bold' }}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        Status
-                                        <IconButton size="small" onClick={(e) => handleFilterClick(e, 'status')}>
-                                            <FilterListIcon fontSize="small" />
-                                        </IconButton>
-                                    </Box>
-                                </TableCell>
-                                <TableCell align="center" sx={{ fontWeight: 'bold' }}>Action</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {filteredInvoices.length > 0 ? (
-                                filteredInvoices.map((row) => {
-                                    const totalDue = row.totalAmount + row.lateFine;
-                                    const balance = totalDue - row.paidAmount;
-                                    const isPaid = row.status === 'Paid' || balance <= 0;
-                                    return (
-                                        <TableRow key={row._id} hover>
-                                            <TableCell>{row.studentId?.rollNum}</TableCell>
-                                            <TableCell>{row.studentId?.name}</TableCell>
-                                            <TableCell>
-                                                {new Date(0, row.month - 1).toLocaleString('default', { month: 'long' })} {row.year}
-                                            </TableCell>
-                                            <TableCell>{row.challanNumber}</TableCell>
-                                            <TableCell align="right">{totalDue}</TableCell>
-                                            <TableCell align="right">{row.paidAmount}</TableCell>
-                                            <TableCell align="right" sx={{ color: 'error.main', fontWeight: 'bold' }}>
-                                                {balance}
-                                            </TableCell>
-                                            <TableCell align="center">
-                                                <Chip
-                                                    label={row.status}
-                                                    size="small"
-                                                    color={row.status === 'Paid' ? 'success' : row.status === 'Partial' ? 'warning' : 'error'}
-                                                    sx={{ fontWeight: 'bold' }}
-                                                />
-                                            </TableCell>
-                                            <TableCell align="center">
-                                                <Button
-                                                    variant="contained"
-                                                    size="small"
-                                                    onClick={() => handlePayClick(row)}
-                                                    disabled={isPaid}
-                                                    sx={{ borderRadius: 2 }}
-                                                >
-                                                    Pay
-                                                </Button>
+
+                    <Grid container spacing={3} sx={{ mb: 4 }}>
+                        <Grid item xs={12} sm={6} md={4}>
+                            <StatCard title="Expected Revenue" value={stats.totalExpected} color="#1976d2" icon={MonetizationOnIcon} />
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={4}>
+                            <StatCard title="Collected Revenue" value={stats.totalCollected} color="#2e7d32" icon={MonetizationOnIcon} />
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={4}>
+                            <StatCard title="Total Late Fines" value={stats.totalLateFines} color="#ed6c02" icon={MonetizationOnIcon} />
+                        </Grid>
+                    </Grid>
+
+                    {/* Generated Invoices List */}
+                    <Paper elevation={0} sx={{ p: 0, mb: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
+                        <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Typography variant="h6" fontWeight="bold">Monthly Invoices</Typography>
+                            <Box sx={{ display: 'flex', gap: 2 }}>
+                                <TextField
+                                    select
+                                    size="small"
+                                    label="Class"
+                                    value={generationData.classId}
+                                    onChange={(e) => setGenerationData({ ...generationData, classId: e.target.value })}
+                                    sx={{ minWidth: 150 }}
+                                >
+                                    {classes.map((option) => (
+                                        <MenuItem key={option._id} value={option._id}>
+                                            {option.sclassName}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                                <TextField
+                                    select
+                                    size="small"
+                                    label="Month"
+                                    value={generationData.month}
+                                    onChange={(e) => setGenerationData({ ...generationData, month: e.target.value })}
+                                    sx={{ minWidth: 120 }}
+                                >
+                                    {Array.from({ length: 12 }, (_, i) => (
+                                        <MenuItem key={i + 1} value={i + 1}>
+                                            {new Date(0, i).toLocaleString('default', { month: 'long' })}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            </Box>
+                        </Box>
+                        <TableContainer>
+                            <Table>
+                                <TableHead sx={{ bgcolor: 'action.hover' }}>
+                                    <TableRow>
+                                        <TableCell sx={{ fontWeight: 'bold' }}>Roll Num</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold' }}>Month/Year</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold' }}>Challan #</TableCell>
+                                        <TableCell align="right" sx={{ fontWeight: 'bold' }}>Due Amount</TableCell>
+                                        <TableCell align="right" sx={{ fontWeight: 'bold' }}>Paid</TableCell>
+                                        <TableCell align="right" sx={{ fontWeight: 'bold' }}>Balance</TableCell>
+                                        <TableCell align="center" sx={{ fontWeight: 'bold' }}>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                Status
+                                                <IconButton size="small" onClick={(e) => handleFilterClick(e, 'status')}>
+                                                    <FilterListIcon fontSize="small" />
+                                                </IconButton>
+                                            </Box>
+                                        </TableCell>
+                                        <TableCell align="center" sx={{ fontWeight: 'bold' }}>Action</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {filteredInvoices.length > 0 ? (
+                                        filteredInvoices.map((row) => {
+                                            const totalDue = row.totalAmount + row.lateFine;
+                                            const balance = totalDue - row.paidAmount;
+                                            const isPaid = row.status === 'Paid' || balance <= 0;
+                                            return (
+                                                <TableRow key={row._id} hover>
+                                                    <TableCell>{row.studentId?.rollNum}</TableCell>
+                                                    <TableCell>{row.studentId?.name}</TableCell>
+                                                    <TableCell>
+                                                        {new Date(0, row.month - 1).toLocaleString('default', { month: 'long' })} {row.year}
+                                                    </TableCell>
+                                                    <TableCell>{row.challanNumber}</TableCell>
+                                                    <TableCell align="right">{totalDue}</TableCell>
+                                                    <TableCell align="right">{row.paidAmount}</TableCell>
+                                                    <TableCell align="right" sx={{ color: 'error.main', fontWeight: 'bold' }}>
+                                                        {balance}
+                                                    </TableCell>
+                                                    <TableCell align="center">
+                                                        <Chip
+                                                            label={row.status}
+                                                            size="small"
+                                                            color={row.status === 'Paid' ? 'success' : row.status === 'Partial' ? 'warning' : 'error'}
+                                                            sx={{ fontWeight: 'bold' }}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell align="center">
+                                                        <Button
+                                                            variant="contained"
+                                                            size="small"
+                                                            onClick={() => handlePayClick(row)}
+                                                            disabled={isPaid}
+                                                            sx={{ borderRadius: 2 }}
+                                                        >
+                                                            Pay
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                        })
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell colSpan={9} align="center" sx={{ py: 4 }}>
+                                                {loadingInvoices ? "Loading..." : "No invoices found for this selection."}
                                             </TableCell>
                                         </TableRow>
-                                    );
-                                })
-                            ) : (
-                                <TableRow>
-                                    <TableCell colSpan={9} align="center" sx={{ py: 4 }}>
-                                        {loadingInvoices ? "Loading..." : "No invoices found for this selection."}
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            </Paper>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Paper>
 
-            {/* Generate Invoices Modal */}
-            <Dialog open={genModalOpen} onClose={() => setGenModalOpen(false)} maxWidth="sm" fullWidth>
-                <DialogTitle sx={{ fontWeight: 'bold' }}>Generate Monthly Invoices</DialogTitle>
-                <DialogContent>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 1 }}>
-                        <TextField
-                            select
-                            label="Select Class"
-                            fullWidth
-                            value={generationData.classId}
-                            onChange={(e) => setGenerationData({ ...generationData, classId: e.target.value })}
-                        >
-                            {classes.map((option) => (
-                                <MenuItem key={option._id} value={option._id}>
-                                    {option.sclassName}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                        <Box sx={{ display: 'flex', gap: 2 }}>
-                            <TextField
-                                select
-                                label="Month"
-                                value={generationData.month}
-                                onChange={(e) => setGenerationData({ ...generationData, month: e.target.value })}
-                                sx={{ flex: 1 }}
-                            >
-                                {Array.from({ length: 12 }, (_, i) => (
-                                    <MenuItem key={i + 1} value={i + 1}>
-                                        {new Date(0, i).toLocaleString('default', { month: 'long' })}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
-                            <TextField
-                                label="Year"
-                                type="number"
-                                value={generationData.year}
-                                onChange={(e) => setGenerationData({ ...generationData, year: e.target.value })}
-                                sx={{ flex: 1 }}
-                            />
-                        </Box>
-                        <TextField
-                            label="Due Date"
-                            type="date"
-                            fullWidth
-                            value={generationData.dueDate}
-                            onChange={(e) => setGenerationData({ ...generationData, dueDate: e.target.value })}
-                            InputLabelProps={{ shrink: true }}
-                        />
-                    </Box>
-                </DialogContent>
-                <DialogActions sx={{ p: 3 }}>
-                    <Button onClick={() => setGenModalOpen(false)} color="inherit">Cancel</Button>
-                    <Button variant="contained" onClick={handleGenerate} startIcon={<MonetizationOnIcon />}>
-                        Generate Now
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                    {/* Generate Invoices Modal */}
+                    <Dialog open={genModalOpen} onClose={() => setGenModalOpen(false)} maxWidth="sm" fullWidth>
+                        <DialogTitle sx={{ fontWeight: 'bold' }}>Generate Monthly Invoices</DialogTitle>
+                        <DialogContent>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 1 }}>
+                                <TextField
+                                    select
+                                    label="Select Class"
+                                    fullWidth
+                                    value={generationData.classId}
+                                    onChange={(e) => setGenerationData({ ...generationData, classId: e.target.value })}
+                                >
+                                    {classes.map((option) => (
+                                        <MenuItem key={option._id} value={option._id}>
+                                            {option.sclassName}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                                <Box sx={{ display: 'flex', gap: 2 }}>
+                                    <TextField
+                                        select
+                                        label="Month"
+                                        value={generationData.month}
+                                        onChange={(e) => setGenerationData({ ...generationData, month: e.target.value })}
+                                        sx={{ flex: 1 }}
+                                    >
+                                        {Array.from({ length: 12 }, (_, i) => (
+                                            <MenuItem key={i + 1} value={i + 1}>
+                                                {new Date(0, i).toLocaleString('default', { month: 'long' })}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                    <TextField
+                                        label="Year"
+                                        type="number"
+                                        value={generationData.year}
+                                        onChange={(e) => setGenerationData({ ...generationData, year: e.target.value })}
+                                        sx={{ flex: 1 }}
+                                    />
+                                </Box>
+                                <TextField
+                                    label="Due Date"
+                                    type="date"
+                                    fullWidth
+                                    value={generationData.dueDate}
+                                    onChange={(e) => setGenerationData({ ...generationData, dueDate: e.target.value })}
+                                    InputLabelProps={{ shrink: true }}
+                                />
+                            </Box>
+                        </DialogContent>
+                        <DialogActions sx={{ p: 3 }}>
+                            <Button onClick={() => setGenModalOpen(false)} color="inherit">Cancel</Button>
+                            <Button variant="contained" onClick={handleGenerate} startIcon={<MonetizationOnIcon />}>
+                                Generate Now
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
 
-            <CustomModal
-                open={modalData.open}
-                handleClose={handleModalClose}
-                title={modalData.title}
-                message={modalData.message}
-                type={modalData.type}
-            />
+                    <CustomModal
+                        open={modalData.open}
+                        handleClose={handleModalClose}
+                        title={modalData.title}
+                        message={modalData.message}
+                        type={modalData.type}
+                    />
 
-            <Menu
-                anchorEl={anchorEl}
-                open={openFilter}
-                onClose={handleFilterClose}
-            >
-                {filterColumn === 'status' && uniqueStatus.map((status) => (
-                    <MenuItem key={status} onClick={() => handleFilterChange(status)}>
-                        <Checkbox checked={filters.status.includes(status)} />
-                        <ListItemText primary={status} />
-                    </MenuItem>
-                ))}
-            </Menu>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={openFilter}
+                        onClose={handleFilterClose}
+                    >
+                        {filterColumn === 'status' && uniqueStatus.map((status) => (
+                            <MenuItem key={status} onClick={() => handleFilterChange(status)}>
+                                <Checkbox checked={filters.status.includes(status)} />
+                                <ListItemText primary={status} />
+                            </MenuItem>
+                        ))}
+                    </Menu>
 
-            {/* Payment Dialog */}
-            <Dialog open={payDialogOpen} onClose={() => setPayDialogOpen(false)}>
-                <DialogTitle sx={{ fontWeight: 'bold' }}>Record Payment</DialogTitle>
-                <DialogContent>
-                    <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        <TextField
-                            autoFocus
-                            label="Amount"
-                            type="number"
-                            fullWidth
-                            value={paymentAmount}
-                            onChange={(e) => setPaymentAmount(e.target.value)}
-                        />
-                        <TextField
-                            label="Date"
-                            type="date"
-                            fullWidth
-                            value={paymentDate}
-                            onChange={(e) => setPaymentDate(e.target.value)}
-                            InputLabelProps={{ shrink: true }}
-                        />
-                    </Box>
-                </DialogContent>
-                <DialogActions sx={{ p: 3 }}>
-                    <Button onClick={() => setPayDialogOpen(false)} color="inherit">Cancel</Button>
-                    <Button onClick={submitPayment} variant="contained">Submit Payment</Button>
-                </DialogActions>
-            </Dialog>
+                    {/* Payment Dialog */}
+                    <Dialog open={payDialogOpen} onClose={() => setPayDialogOpen(false)}>
+                        <DialogTitle sx={{ fontWeight: 'bold' }}>Record Payment</DialogTitle>
+                        <DialogContent>
+                            <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                <TextField
+                                    autoFocus
+                                    label="Amount"
+                                    type="number"
+                                    fullWidth
+                                    value={paymentAmount}
+                                    onChange={(e) => setPaymentAmount(e.target.value)}
+                                />
+                                <TextField
+                                    label="Date"
+                                    type="date"
+                                    fullWidth
+                                    value={paymentDate}
+                                    onChange={(e) => setPaymentDate(e.target.value)}
+                                    InputLabelProps={{ shrink: true }}
+                                />
+                            </Box>
+                        </DialogContent>
+                        <DialogActions sx={{ p: 3 }}>
+                            <Button onClick={() => setPayDialogOpen(false)} color="inherit">Cancel</Button>
+                            <Button onClick={submitPayment} variant="contained">Submit Payment</Button>
+                        </DialogActions>
+                    </Dialog>
+                </>
+            )}
         </Box>
     );
 };

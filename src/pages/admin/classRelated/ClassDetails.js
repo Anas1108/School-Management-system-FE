@@ -18,6 +18,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
 import Popup from "../../../components/Popup";
 import styled from 'styled-components';
+import CustomLoader from '../../../components/CustomLoader';
 
 const ClassDetails = () => {
     const params = useParams()
@@ -277,7 +278,7 @@ const ClassDetails = () => {
     return (
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             {loading ? (
-                <div>Loading...</div>
+                <CustomLoader />
             ) : (
                 <>
                     <TabContext value={value}>
