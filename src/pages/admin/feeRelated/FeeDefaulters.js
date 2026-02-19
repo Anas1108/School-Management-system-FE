@@ -23,18 +23,6 @@ const FeeDefaulters = () => {
     const [historyOpen, setHistoryOpen] = useState(false);
     const [historyStudentId, setHistoryStudentId] = useState(null);
 
-    useEffect(() => {
-        if (currentUser && currentUser._id) {
-            fetchClasses();
-        }
-    }, [currentUser, fetchClasses]);
-
-    useEffect(() => {
-        if (selectedClass) {
-            fetchInvoices(selectedClass);
-        }
-    }, [selectedClass]);
-
     const fetchClasses = useCallback(async () => {
         try {
             const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/SclassList/${currentUser._id}`);
@@ -45,6 +33,12 @@ const FeeDefaulters = () => {
             console.error(error);
         }
     }, [currentUser._id]);
+
+    useEffect(() => {
+        if (currentUser && currentUser._id) {
+            fetchClasses();
+        }
+    }, [currentUser, fetchClasses]);
 
     const fetchInvoices = async (classId) => {
         setLoading(true);

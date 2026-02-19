@@ -25,12 +25,6 @@ const FeeSearch = () => {
     const [historyOpen, setHistoryOpen] = useState(false);
     const [historyStudentId, setHistoryStudentId] = useState(null);
 
-    useEffect(() => {
-        if (currentUser && currentUser._id) {
-            fetchClasses();
-        }
-    }, [currentUser, fetchClasses]);
-
     const fetchClasses = useCallback(async () => {
         try {
             const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/SclassList/${currentUser._id}`);
@@ -41,6 +35,12 @@ const FeeSearch = () => {
             console.error("Error fetching classes:", error);
         }
     }, [currentUser._id]);
+
+    useEffect(() => {
+        if (currentUser && currentUser._id) {
+            fetchClasses();
+        }
+    }, [currentUser, fetchClasses]);
 
     const handleSearch = async (e) => {
         if (e) e.preventDefault();

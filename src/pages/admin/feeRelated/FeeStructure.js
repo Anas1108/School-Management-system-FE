@@ -26,19 +26,6 @@ const FeeStructure = () => {
     const [structure, setStructure] = useState({ feeHeads: [], lateFee: 0, dueDay: 10 });
     const [loading] = useState(false);
 
-    useEffect(() => {
-        fetchClasses();
-        fetchFeeHeads();
-    }, [fetchClasses, fetchFeeHeads]);
-
-    useEffect(() => {
-        if (selectedClass) {
-            fetchStructure(selectedClass);
-        } else {
-            setStructure({ feeHeads: [], lateFee: 0, dueDay: 10 });
-        }
-    }, [selectedClass]);
-
     const fetchClasses = useCallback(async () => {
         try {
             const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/SclassList/${currentUser._id}`);
@@ -52,6 +39,19 @@ const FeeStructure = () => {
             setFeeHeads(result.data);
         } catch (error) { console.error(error); }
     }, [currentUser._id]);
+
+    useEffect(() => {
+        fetchClasses();
+        fetchFeeHeads();
+    }, [fetchClasses, fetchFeeHeads]);
+
+    useEffect(() => {
+        if (selectedClass) {
+            fetchStructure(selectedClass);
+        } else {
+            setStructure({ feeHeads: [], lateFee: 0, dueDay: 10 });
+        }
+    }, [selectedClass]);
 
     const createFeeHead = async () => {
         if (!newHeadName) return;
