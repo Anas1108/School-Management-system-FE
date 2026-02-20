@@ -198,7 +198,7 @@ const FeeDashboard = () => {
                             <Button variant="outlined" color="primary" onClick={() => navigate('/Admin/fees/structure')} startIcon={<SettingsIcon />} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none' }}>
                                 Config Fees
                             </Button>
-                            <Button variant="outlined" color="secondary" onClick={() => navigate('/Admin/fees/search')} startIcon={<SearchIcon />} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none' }}>
+                            <Button variant="contained" color="info" onClick={() => navigate('/Admin/fees/search')} startIcon={<SearchIcon />} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none', boxShadow: 'none' }}>
                                 Search
                             </Button>
                         </Box>

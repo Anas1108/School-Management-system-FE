@@ -76,7 +76,7 @@ const FeeDefaulters = () => {
                     </Button>
                     <Button
                         variant="contained"
-                        color="secondary"
+                        color="info"
                         startIcon={<SearchIcon />}
                         onClick={() => navigate('/Admin/fees/search')}
                         sx={{ borderRadius: 'var(--border-radius-md)', px: 2, textTransform: 'none', boxShadow: 'none' }}
