@@ -88,7 +88,7 @@ const AdminDashboard = () => {
         if (isMobile && open) {
             setOpen(false);
         }
-    }, [location.pathname]);
+    }, [location.pathname, isMobile, open]);
 
     return (
         <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>

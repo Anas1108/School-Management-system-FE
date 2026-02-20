@@ -10,13 +10,11 @@ import {
 } from '@mui/material';
 import { AccountCircle, School, Group } from '@mui/icons-material';
 import styled, { keyframes } from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
-import { loginUser } from '../redux/userRelated/userHandle';
+import { useSelector } from 'react-redux';
 import Popup from '../components/Popup';
 import TKSLogo from "../assets/tks-Kulluwal.png";
 
 const ChooseUser = () => {
-  const dispatch = useDispatch()
   const navigate = useNavigate()
 
   const { status, currentUser, currentRole } = useSelector(state => state.user);;

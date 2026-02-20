@@ -15,7 +15,7 @@ import { StyledTableCell, StyledTableRow } from '../../../components/styles';
 
 const SeeComplains = () => {
   const dispatch = useDispatch();
-  const { complainsList, loading, error, response } = useSelector((state) => state.complain);
+  const { complainsList, loading, error } = useSelector((state) => state.complain);
   const { currentUser } = useSelector(state => state.user)
 
   // Modal State
@@ -81,12 +81,7 @@ const SeeComplains = () => {
     setReply("");
   };
 
-  // Delete Handlers
-  const handleDeleteClick = (id) => {
-    setDeleteTargetId(id);
-    setDeleteType('single');
-    setConfirmOpen(true);
-  };
+
 
   const handleMultiDeleteClick = () => {
     setDeleteType('multi');

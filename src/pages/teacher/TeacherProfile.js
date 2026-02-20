@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Card, CardContent, Typography, Box, Tab, Tabs, Grid, Avatar } from '@mui/material';
+import { Card, Typography, Box, Tab, Tabs, Grid, Avatar } from '@mui/material';
 import { useSelector } from 'react-redux';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';

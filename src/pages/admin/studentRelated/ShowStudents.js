@@ -5,7 +5,7 @@ import { getAllStudents } from '../../../redux/studentRelated/studentHandle';
 import { removeStudent } from '../../../redux/studentRelated/studentSlice';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import {
-    Paper, Box, TextField, InputAdornment, Typography, Container, Tooltip, Button, IconButton
+    Box, TextField, InputAdornment, Typography, Container, Tooltip, Button, IconButton
 } from '@mui/material';
 
 import { ActionIconButtonPrimary, ActionIconButtonError, ActionIconButtonSuccess, ActionIconButtonInfo } from '../../../components/buttonStyles';

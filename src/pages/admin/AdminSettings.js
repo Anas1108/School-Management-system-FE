@@ -13,7 +13,7 @@ import {
     Snackbar,
     Divider
 } from '@mui/material';
-import { Settings as SettingsIcon, Security as SecurityIcon } from '@mui/icons-material';
+import { Security as SecurityIcon } from '@mui/icons-material';
 import { updateUser } from '../../redux/userRelated/userHandle';
 import { underControl } from '../../redux/userRelated/userSlice';
 

@@ -2,14 +2,14 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import {
-    Paper, Box, Tooltip, Button, Container, Typography
+    Box, Tooltip, Button, Container, Typography
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { getAllNotices } from '../../../redux/noticeRelated/noticeHandle';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import TableTemplate from '../../../components/TableTemplate';
-import { GreenButton, ActionIconButtonError } from '../../../components/buttonStyles';
+import { ActionIconButtonError } from '../../../components/buttonStyles';
 import CustomLoader from '../../../components/CustomLoader';
 
 const ShowNotices = () => {

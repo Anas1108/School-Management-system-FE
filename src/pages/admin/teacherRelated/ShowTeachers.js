@@ -25,7 +25,7 @@ import CustomLoader from '../../../components/CustomLoader';
 const ShowTeachers = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { teachersList, loading, error, response, totalTeachers } = useSelector((state) => state.teacher);
+    const { teachersList, loading, response, totalTeachers } = useSelector((state) => state.teacher);
     const { currentUser } = useSelector((state) => state.user);
 
     const [page, setPage] = useState(0);

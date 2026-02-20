@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Grid, Box, Typography, Paper, Checkbox, FormControlLabel, TextField, CssBaseline, IconButton, InputAdornment, CircularProgress, Backdrop } from '@mui/material';
+import { Grid, Box, Typography, Paper, Checkbox, FormControlLabel, TextField, CssBaseline, IconButton, InputAdornment, CircularProgress } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import bgpic from "../assets/designlogin.jpg"
@@ -272,20 +272,6 @@ const StyledTextField = styled(TextField)`
     }
 `;
 
-const StyledLink = styled(Link)`
-  text-decoration: none;
-  color: var(--color-primary-600);
-  font-weight: 600;
-  transition: color 0.2s;
-  
-  &:hover {
-      color: var(--color-primary-800);
-  }
-`;
 
-const LogoImage = styled.img`
-    width: 100px;
-    margin-bottom: 20px;
-`;
 
 

@@ -1,14 +1,14 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState, useCallback } from 'react';
 import {
-    Container, Box, Grid, Paper, Typography, Button, TextField, MenuItem, Table, TableBody, TableCell,
+    Container, Box, Typography, Button, TextField, MenuItem, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Chip, Dialog, DialogTitle,
-    DialogContent, DialogActions, Menu, Checkbox, ListItemText, IconButton, Tooltip, Divider
+    DialogContent, DialogActions, Menu, Checkbox, ListItemText, IconButton
 } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
 import { useSelector } from 'react-redux';
-import CountUp from 'react-countup';
+
 import axios from 'axios';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -24,7 +24,7 @@ const formatPKR = (amount) => {
 const FeeDashboard = () => {
     const navigate = useNavigate();
     const { currentUser } = useSelector(state => state.user);
-    const [stats, setStats] = useState({ totalExpected: 0, totalCollected: 0, totalLateFines: 0 });
+
     const [loading, setLoading] = useState(true);
 
     const [generationData, setGenerationData] = useState({

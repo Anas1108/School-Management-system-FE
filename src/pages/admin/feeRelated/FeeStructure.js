@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
-    Container, Box, Paper, Typography, TextField, MenuItem, Button, IconButton, Dialog,
+    Container, Box, Typography, TextField, MenuItem, Button, IconButton, Dialog,
     DialogTitle, DialogContent, DialogActions, Grid, InputAdornment, Table, TableBody,
     TableCell, TableContainer, TableHead, TableRow, CircularProgress
 } from '@mui/material';
@@ -27,7 +27,7 @@ const FeeStructure = () => {
     // Structure State
     const [selectedClass, setSelectedClass] = useState('');
     const [structure, setStructure] = useState({ feeHeads: [], lateFee: 0, dueDay: 10 });
-    const [loading] = useState(false);
+
 
     // Modal State
     const [modalData, setModalData] = useState({ open: false, title: '', message: '', type: 'info' });

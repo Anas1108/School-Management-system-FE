@@ -4,7 +4,7 @@ import { deleteUser } from '../../../redux/userRelated/userHandle';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Container, Typography, Box, Paper, Avatar, Grid, Chip, Tabs, Tab } from '@mui/material';
-import styled from 'styled-components';
+
 import ConfirmationModal from '../../../components/ConfirmationModal';
 import Popup from '../../../components/Popup';
 import axios from 'axios';
@@ -14,7 +14,7 @@ const TeacherDetails = () => {
     const params = useParams();
     const dispatch = useDispatch();
     const { loading, teacherDetails } = useSelector((state) => state.teacher);
-    const { error } = useSelector((state) => state.user);
+
     const [workload, setWorkload] = useState([]);
     const [workloadLoading, setWorkloadLoading] = useState(false);
 
