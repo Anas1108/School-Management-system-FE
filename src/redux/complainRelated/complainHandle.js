@@ -3,7 +3,8 @@ import {
     getRequest,
     getSuccess,
     getFailed,
-    getError
+    getError,
+    deleteComplainSuccess
 } from './complainSlice';
 
 export const getAllComplains = (id, address) => async (dispatch) => {
@@ -59,7 +60,7 @@ export const deleteComplain = (id, address) => async (dispatch) => {
         if (result.data.message) {
             dispatch(getFailed(result.data.message));
         } else {
-            dispatch(getFailed("Deleted Successfully"));
+            dispatch(deleteComplainSuccess(id));
         }
     } catch (error) {
         dispatch(getError(error));

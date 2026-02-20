@@ -25,6 +25,7 @@ const SeeComplains = () => {
 
   // Search State
   const [search, setSearch] = useState("");
+  const [filterStatus, setFilterStatus] = useState("All");
 
   // Table State
   const [page, setPage] = useState(0);
@@ -108,9 +109,10 @@ const SeeComplains = () => {
     }
 
     // Refresh list
-    setTimeout(() => {
-      dispatch(getAllComplains(currentUser._id, "Complain"));
-    }, 500);
+    // Refresh list handled by Redux optimistic update
+    // setTimeout(() => {
+    //   dispatch(getAllComplains(currentUser._id, "Complain"));
+    // }, 500);
 
     handleCloseConfirm();
   };
@@ -118,6 +120,20 @@ const SeeComplains = () => {
   // Filter complaints based on tab
   const studentComplains = complainsList?.filter(complain => complain.model_type === 'student') || [];
   const teacherComplains = complainsList?.filter(complain => complain.model_type === 'teacher') || [];
+
+  // Sort complaints by date (Latest first); if dates equal, use ID (creation time)
+  const sortComplains = (a, b) => {
+    const dateDiff = new Date(b.date) - new Date(a.date);
+    if (dateDiff !== 0) return dateDiff;
+    return String(b._id).localeCompare(String(a._id));
+  };
+
+  if (studentComplains.length > 0) {
+    studentComplains.sort(sortComplains);
+  }
+  if (teacherComplains.length > 0) {
+    teacherComplains.sort(sortComplains);
+  }
 
   const currentComplains = tabValue === 0 ? studentComplains : teacherComplains;
 
@@ -137,9 +153,12 @@ const SeeComplains = () => {
   });
 
   // Filter rows based on search
+  // Filter rows based on search and status
   const filteredRows = complainRows.filter((row) => {
-    return row.user.toLowerCase().includes(search.toLowerCase()) ||
+    const matchesSearch = row.user.toLowerCase().includes(search.toLowerCase()) ||
       row.complaint.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus = filterStatus === "All" || row.status === filterStatus;
+    return matchesSearch && matchesStatus;
   });
 
   // Pagination Logic
@@ -221,6 +240,19 @@ const SeeComplains = () => {
               }}
               sx={{ width: '260px' }}
             />
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <Select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                displayEmpty
+                inputProps={{ 'aria-label': 'Filter By Status' }}
+                sx={{ borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--bg-paper)' }}
+              >
+                <MenuItem value="All">All Status</MenuItem>
+                <MenuItem value="Pending">Pending</MenuItem>
+                <MenuItem value="Done">Done</MenuItem>
+              </Select>
+            </FormControl>
             <Tooltip title="Edit Mode">
               <IconButton onClick={() => setIsEdit(!isEdit)} color={isEdit ? "primary" : "default"}>
                 <EditIcon />

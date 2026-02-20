@@ -28,7 +28,13 @@ const complainSlice = createSlice({
         getError: (state, action) => {
             state.loading = false;
             state.error = action.payload;
-        }
+        },
+        deleteComplainSuccess: (state, action) => {
+            state.complainsList = state.complainsList.filter(complain => complain._id !== action.payload);
+            state.loading = false;
+            state.error = null;
+            state.response = "Deleted Successfully";
+        },
     },
 });
 
@@ -36,7 +42,8 @@ export const {
     getRequest,
     getSuccess,
     getFailed,
-    getError
+    getError,
+    deleteComplainSuccess
 } = complainSlice.actions;
 
 export const complainReducer = complainSlice.reducer;
