@@ -2,28 +2,27 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
     Dialog, DialogTitle, DialogContent, DialogActions, Button,
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-    Typography, Box, CircularProgress, Chip, Divider, TextField
+    Typography, Box, CircularProgress, Chip, Divider, TextField, InputAdornment
 } from '@mui/material';
 import axios from 'axios';
+import CustomModal from './CustomModal';
+
+const formatPKR = (amount) => {
+    return new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR', minimumFractionDigits: 0 }).format(amount);
+};
 
 const StudentFeeHistoryModal = ({ open, handleClose, studentId }) => {
     const [history, setHistory] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // Payment State
     const [payDialogOpen, setPayDialogOpen] = useState(false);
     const [selectedInvoice, setSelectedInvoice] = useState(null);
     const [paymentAmount, setPaymentAmount] = useState('');
     const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0]);
 
-    useEffect(() => {
-        if (open && studentId) {
-            fetchHistory();
-        } else {
-            setHistory(null); // Reset on close/change
-        }
-    }, [open, studentId, fetchHistory]);
+    // Modal State
+    const [modalData, setModalData] = useState({ open: false, title: '', message: '', type: 'info' });
 
     const fetchHistory = useCallback(async () => {
         if (!studentId) return;
@@ -39,6 +38,14 @@ const StudentFeeHistoryModal = ({ open, handleClose, studentId }) => {
             setLoading(false);
         }
     }, [studentId]);
+
+    useEffect(() => {
+        if (open && studentId) {
+            fetchHistory();
+        } else {
+            setHistory(null); // Reset on close/change
+        }
+    }, [open, studentId, fetchHistory]);
 
     const handlePayClick = (invoice) => {
         setSelectedInvoice(invoice);
@@ -56,10 +63,10 @@ const StudentFeeHistoryModal = ({ open, handleClose, studentId }) => {
             });
             setPayDialogOpen(false);
             fetchHistory(); // Refresh history
-            alert("Payment Recorded");
+            setModalData({ open: true, title: 'Success', message: "Payment Recorded", type: 'success' });
         } catch (error) {
             console.error(error);
-            alert("Payment Failed");
+            setModalData({ open: true, title: 'Error', message: "Payment Failed", type: 'error' });
         }
     };
 
@@ -85,8 +92,8 @@ const StudentFeeHistoryModal = ({ open, handleClose, studentId }) => {
                                 <Typography variant="subtitle1"><strong>Class:</strong> {history.className}</Typography>
                             </Box>
                             <Box sx={{ textAlign: 'right' }}>
-                                <Typography variant="subtitle1" color="error"><strong>Total Due:</strong> {history.totalDue}</Typography>
-                                <Typography variant="subtitle1" color="success.main"><strong>Total Paid:</strong> {history.totalPaid}</Typography>
+                                <Typography variant="subtitle1" color="error"><strong>Total Due:</strong> {formatPKR(history.totalDue)}</Typography>
+                                <Typography variant="subtitle1" color="success.main"><strong>Total Paid:</strong> {formatPKR(history.totalPaid)}</Typography>
                             </Box>
                         </Box>
                         <Divider sx={{ mb: 2 }} />
@@ -114,10 +121,10 @@ const StudentFeeHistoryModal = ({ open, handleClose, studentId }) => {
                                                         {monthNames[parseInt(inv.month) - 1]} {inv.year}
                                                     </TableCell>
                                                     <TableCell>{inv.challanNumber}</TableCell>
-                                                    <TableCell align="right">{inv.totalAmount + inv.lateFine}</TableCell>
-                                                    <TableCell align="right">{inv.paidAmount}</TableCell>
+                                                    <TableCell align="right">{formatPKR(inv.totalAmount + inv.lateFine)}</TableCell>
+                                                    <TableCell align="right">{formatPKR(inv.paidAmount)}</TableCell>
                                                     <TableCell align="right" sx={{ color: due > 0 ? 'error.main' : 'inherit', fontWeight: due > 0 ? 'bold' : 'normal' }}>
-                                                        {due}
+                                                        {formatPKR(due)}
                                                     </TableCell>
                                                     <TableCell align="center">
                                                         <Chip
@@ -171,6 +178,8 @@ const StudentFeeHistoryModal = ({ open, handleClose, studentId }) => {
                         fullWidth
                         value={paymentAmount}
                         onChange={(e) => setPaymentAmount(e.target.value)}
+                        inputProps={{ min: 1, step: "any" }}
+                        InputProps={{ startAdornment: <InputAdornment position="start">PKR</InputAdornment> }}
                     />
                     <TextField
                         margin="dense"
@@ -187,6 +196,14 @@ const StudentFeeHistoryModal = ({ open, handleClose, studentId }) => {
                     <Button onClick={submitPayment} variant="contained">Submit</Button>
                 </DialogActions>
             </Dialog>
+
+            <CustomModal
+                open={modalData.open}
+                handleClose={() => setModalData({ ...modalData, open: false })}
+                title={modalData.title}
+                message={modalData.message}
+                type={modalData.type}
+            />
         </Dialog >
     );
 };

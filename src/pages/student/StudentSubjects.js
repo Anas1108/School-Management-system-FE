@@ -165,7 +165,7 @@ const StyledPaper = styled(Paper)`
     border-radius: var(--border-radius-lg);
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-sm);
-    overflow: hidden;
+    overflow-x: auto;
 `;
 
 const MarksBadge = styled.span`
@@ -182,6 +182,10 @@ const ClassDetailsCard = styled(Paper)`
     border-radius: var(--border-radius-xl);
     background: var(--bg-paper);
     border: 1px solid var(--border-color);
+
+    @media (max-width: 600px) {
+        padding: 1.5rem;
+    }
 `;
 
 const SubjectsGrid = styled(Box)`

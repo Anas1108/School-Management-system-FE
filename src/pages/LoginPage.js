@@ -5,6 +5,9 @@ import { Button, Grid, Box, Typography, Paper, Checkbox, FormControlLabel, TextF
 import { ThemeProvider } from '@mui/material/styles';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import bgpic from "../assets/designlogin.jpg"
+import AdminImage from "../assets/admin.png";
+import StudentImage from "../assets/student.png";
+import TeacherImage from "../assets/teacher.png";
 import { LightPurpleButton } from '../components/buttonStyles';
 import styled from 'styled-components';
 import { loginUser } from '../redux/userRelated/userHandle';
@@ -19,7 +22,6 @@ const LoginPage = ({ role }) => {
     const { status, currentUser, response, error, currentRole } = useSelector(state => state.user);;
 
     const [toggle, setToggle] = useState(false)
-    const [guestLoader, setGuestLoader] = useState(false)
     const [loader, setLoader] = useState(false)
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
@@ -72,28 +74,12 @@ const LoginPage = ({ role }) => {
         if (name === 'studentName') setStudentNameError(false);
     };
 
-    const guestModeHandler = () => {
-        const password = "zxc"
 
-        if (role === "Admin") {
-            const email = "yogendra@12"
-            const fields = { email, password }
-            setGuestLoader(true)
-            dispatch(loginUser(fields, role))
-        }
-        else if (role === "Student") {
-            const rollNum = "1"
-            const studentName = "Dipesh Awasthi"
-            const fields = { rollNum, studentName, password }
-            setGuestLoader(true)
-            dispatch(loginUser(fields, role))
-        }
-        else if (role === "Teacher") {
-            const email = "tony@12"
-            const fields = { email, password }
-            setGuestLoader(true)
-            dispatch(loginUser(fields, role))
-        }
+
+    const roleImage = {
+        "Admin": AdminImage,
+        "Student": StudentImage,
+        "Teacher": TeacherImage
     }
 
     useEffect(() => {
@@ -116,7 +102,6 @@ const LoginPage = ({ role }) => {
             setMessage("Network Error")
             setShowPopup(true)
             setLoader(false)
-            setGuestLoader(false)
         }
     }, [status, currentRole, navigate, error, response, currentUser]);
 
@@ -225,9 +210,6 @@ const LoginPage = ({ role }) => {
                                     control={<Checkbox value="remember" color="primary" />}
                                     label={<Typography sx={{ color: 'var(--text-secondary)' }}>Remember me</Typography>}
                                 />
-                                <StyledLink href="#" variant="body2">
-                                    Forgot password?
-                                </StyledLink>
                             </Grid>
                             <LightPurpleButton
                                 type="submit"
@@ -239,26 +221,7 @@ const LoginPage = ({ role }) => {
                                     <CircularProgress size={24} color="inherit" />
                                     : "Login"}
                             </LightPurpleButton>
-                            <StyledGuestButton
-                                fullWidth
-                                onClick={guestModeHandler}
-                                variant="outlined"
-                            >
-                                Login as Guest
-                            </StyledGuestButton>
-                            {role === "Admin" &&
-                                <Grid container justifyContent="center" sx={{ mt: 3 }}>
-                                    <Grid item>
-                                        <Typography variant="body2" sx={{ color: 'var(--text-secondary)', mr: 1, display: 'inline' }}>
-                                            Don't have an account?
-                                        </Typography>
 
-                                        <StyledLink to="/Adminregister">
-                                            Sign up
-                                        </StyledLink>
-                                    </Grid>
-                                </Grid>
-                            }
                         </Box>
                     </Box>
                 </Grid>
@@ -268,7 +231,7 @@ const LoginPage = ({ role }) => {
                     sm={4}
                     md={7}
                     sx={{
-                        backgroundImage: `url(${bgpic})`,
+                        backgroundImage: `url(${roleImage[role] || bgpic})`,
                         backgroundRepeat: 'no-repeat',
                         backgroundColor: 'var(--color-primary-50)',
                         backgroundSize: 'cover',
@@ -277,13 +240,7 @@ const LoginPage = ({ role }) => {
                     }}
                 />
             </Grid>
-            <Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={guestLoader}
-            >
-                <CircularProgress color="primary" />
-                Please Wait
-            </Backdrop>
+
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
         </ThemeProvider>
     );
@@ -326,16 +283,9 @@ const StyledLink = styled(Link)`
   }
 `;
 
-const StyledGuestButton = styled(Button)`
-    && {
-        border-color: var(--color-primary-600);
-        color: var(--color-primary-600);
-        border-radius: var(--border-radius-lg);
-        padding: 10px;
-        
-        &:hover {
-            border-color: var(--color-primary-800);
-            background-color: var(--color-primary-50);
-        }
-    }
+const LogoImage = styled.img`
+    width: 100px;
+    margin-bottom: 20px;
 `;
+
+

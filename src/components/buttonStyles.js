@@ -144,6 +144,16 @@ const baseIconBtnStyles = `
     &:active {
       transform: translateY(0);
     }
+
+    /* Mobile Adjustment */
+    @media (max-width: 600px) {
+      width: 30px;
+      height: 30px;
+      
+      .MuiSvgIcon-root {
+        font-size: 1rem;
+      }
+    }
   }
 `;
 

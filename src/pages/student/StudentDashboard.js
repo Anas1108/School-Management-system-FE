@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     CssBaseline,
     Box,
@@ -7,26 +7,60 @@ import {
     Typography,
     Divider,
     IconButton,
+    useMediaQuery,
+    useTheme,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import StudentSideBar from './StudentSideBar';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import StudentHomePage from './StudentHomePage';
 import StudentProfile from './StudentProfile';
 import StudentSubjects from './StudentSubjects';
 import ViewStdAttendance from './ViewStdAttendance';
 import StudentComplain from './StudentComplain';
-import Logout from '../Logout'
+import LogoutModal from '../../components/LogoutModal';
 import AccountMenu from '../../components/AccountMenu';
 import { AppBar, Drawer } from '../../components/styles';
+import { useDispatch } from 'react-redux';
+import { authLogout } from '../../redux/userRelated/userSlice';
 import BreadcrumbsNav from '../../components/BreadcrumbsNav';
 
 const StudentDashboard = () => {
-    const [open, setOpen] = useState(true);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const [open, setOpen] = useState(!isMobile);
+    const [logoutOpen, setLogoutOpen] = useState(false);
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const handleLogoutOpen = () => {
+        setLogoutOpen(true);
+    };
+
+    const handleLogoutClose = () => {
+        setLogoutOpen(false);
+    };
+
+    const handleLogoutConfirm = () => {
+        dispatch(authLogout());
+        setLogoutOpen(false);
+        navigate('/');
+    };
+
+    // Toggle drawer
     const toggleDrawer = () => {
         setOpen(!open);
     };
+
+    // Auto-close overlay drawer on route change
+    const location = useLocation();
+    useEffect(() => {
+        if (isMobile && open) {
+            setOpen(false);
+        }
+    }, [location.pathname]);
 
     return (
         <>
@@ -41,7 +75,7 @@ const StudentDashboard = () => {
                             onClick={toggleDrawer}
                             sx={{
                                 marginRight: '36px',
-                                ...(open && { display: 'none' }),
+                                ...(open && !isMobile && { display: 'none' }),
                             }}
                         >
                             <MenuIcon />
@@ -55,10 +89,21 @@ const StudentDashboard = () => {
                         >
                             Student Dashboard
                         </Typography>
-                        <AccountMenu />
+                        <AccountMenu onLogout={handleLogoutOpen} />
                     </Toolbar>
                 </AppBar>
-                <Drawer variant="permanent" open={open} sx={open ? styles.drawerStyled : styles.hideDrawer}>
+                <Drawer
+                    variant={isMobile ? "temporary" : "permanent"}
+                    open={open}
+                    onClose={toggleDrawer}
+                    sx={styles.drawerStyled}
+                    PaperProps={{
+                        sx: {
+                            backgroundColor: 'var(--bg-paper)',
+                            width: isMobile ? '260px' : undefined
+                        }
+                    }}
+                >
                     <Toolbar sx={styles.toolBarStyled}>
                         <IconButton onClick={toggleDrawer}>
                             <ChevronLeftIcon />
@@ -66,12 +111,17 @@ const StudentDashboard = () => {
                     </Toolbar>
                     <Divider />
                     <List component="nav" sx={{ flex: 1, overflow: 'hidden' }}>
-                        <StudentSideBar />
+                        <StudentSideBar onLogout={handleLogoutOpen} />
                     </List>
                 </Drawer>
                 <Box component="main" sx={styles.boxStyled}>
                     <Toolbar />
-                    <Box sx={{ flex: 1, overflow: 'hidden', background: 'var(--bg-body)', p: 4 }}>
+                    <Box sx={{
+                        flex: 1,
+                        overflow: 'hidden',
+                        background: 'var(--bg-body)',
+                        p: { xs: 2, sm: 3, md: 4 } // Responsive padding
+                    }}>
                         <BreadcrumbsNav />
                         <Routes>
                             <Route path="/" element={<StudentHomePage />} />
@@ -83,8 +133,13 @@ const StudentDashboard = () => {
                             <Route path="/Student/attendance" element={<ViewStdAttendance />} />
                             <Route path="/Student/complain" element={<StudentComplain />} />
 
-                            <Route path="/logout" element={<Logout />} />
+                            <Route path="/Student/complain" element={<StudentComplain />} />
                         </Routes>
+                        <LogoutModal
+                            open={logoutOpen}
+                            handleClose={handleLogoutClose}
+                            handleLogout={handleLogoutConfirm}
+                        />
                     </Box>
                 </Box>
             </Box>
@@ -114,11 +169,5 @@ const styles = {
     },
     drawerStyled: {
         display: "flex"
-    },
-    hideDrawer: {
-        display: 'flex',
-        '@media (max-width: 600px)': {
-            display: 'none',
-        },
     },
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     CssBaseline,
     Box,
@@ -7,15 +7,20 @@ import {
     Typography,
     Divider,
     IconButton,
+    useMediaQuery,
+    useTheme,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { AppBar, Drawer } from '../../components/styles';
-import Logout from '../Logout';
+import LogoutModal from '../../components/LogoutModal';
 import SideBar from './SideBar';
+import { useDispatch } from 'react-redux';
+import { authLogout } from '../../redux/userRelated/userSlice';
 import AdminProfile from './AdminProfile';
 import AdminHomePage from './AdminHomePage';
+import AdminSettings from './AdminSettings';
 
 import AddStudent from './studentRelated/AddStudent';
 import SeeComplains from './studentRelated/SeeComplains';
@@ -50,10 +55,40 @@ import FeeSearch from './feeRelated/FeeSearch';
 import BreadcrumbsNav from '../../components/BreadcrumbsNav';
 
 const AdminDashboard = () => {
-    const [open, setOpen] = useState(true);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const [open, setOpen] = useState(!isMobile);
+    const [logoutOpen, setLogoutOpen] = useState(false);
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const handleLogoutOpen = () => {
+        setLogoutOpen(true);
+    };
+
+    const handleLogoutClose = () => {
+        setLogoutOpen(false);
+    };
+
+    const handleLogoutConfirm = () => {
+        dispatch(authLogout());
+        setLogoutOpen(false);
+        navigate('/');
+    };
+
+    // Toggle drawer
     const toggleDrawer = () => {
         setOpen(!open);
     };
+
+    // Auto-close overlay drawer on route change
+    const location = useLocation();
+    useEffect(() => {
+        if (isMobile && open) {
+            setOpen(false);
+        }
+    }, [location.pathname]);
 
     return (
         <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
@@ -67,7 +102,7 @@ const AdminDashboard = () => {
                         onClick={toggleDrawer}
                         sx={{
                             marginRight: '36px',
-                            ...(open && { display: 'none' }),
+                            ...(open && !isMobile && { display: 'none' }),
                             color: 'var(--color-primary-600)'
                         }}
                     >
@@ -82,10 +117,21 @@ const AdminDashboard = () => {
                     >
                         Admin Dashboard
                     </Typography>
-                    <AccountMenu />
+                    <AccountMenu onLogout={handleLogoutOpen} />
                 </Toolbar>
             </AppBar>
-            <Drawer variant="permanent" open={open} sx={open ? styles.drawerStyled : styles.hideDrawer}>
+            <Drawer
+                variant={isMobile ? "temporary" : "permanent"}
+                open={open}
+                onClose={toggleDrawer}
+                sx={styles.drawerStyled}
+                PaperProps={{
+                    sx: {
+                        backgroundColor: 'var(--bg-paper)',
+                        width: isMobile ? '260px' : undefined
+                    }
+                }}
+            >
                 <Toolbar sx={styles.toolBarStyled}>
                     <Typography
                         variant="h5"
@@ -100,7 +146,7 @@ const AdminDashboard = () => {
                             letterSpacing: '-1px'
                         }}
                     >
-                        School Admin
+                        TKS Kulluwal
                     </Typography>
                     <IconButton onClick={toggleDrawer} sx={{ color: 'var(--text-secondary)' }}>
                         <ChevronLeftIcon />
@@ -108,19 +154,25 @@ const AdminDashboard = () => {
                 </Toolbar>
                 <Divider />
                 <List component="nav" sx={{ flex: 1, overflow: 'hidden' }}>
-                    <SideBar open={open} />
+                    <SideBar open={open} onLogout={handleLogoutOpen} />
                 </List>
             </Drawer>
 
             <Box component="main" sx={styles.boxStyled}>
                 <Toolbar />
-                <Box sx={{ flex: 1, overflow: 'auto', background: 'var(--bg-body)', p: 4 }}>
+                <Box sx={{
+                    flex: 1,
+                    overflow: 'auto',
+                    background: 'var(--bg-body)',
+                    p: { xs: 2, sm: 3, md: 4 } // Responsive padding
+                }}>
                     <BreadcrumbsNav />
                     <Routes>
                         <Route path="/" element={<AdminHomePage />} />
                         <Route path='*' element={<Navigate to="/" />} />
                         <Route path="/Admin/dashboard" element={<AdminHomePage />} />
                         <Route path="/Admin/profile" element={<AdminProfile />} />
+                        <Route path="/Admin/settings" element={<AdminSettings />} />
                         <Route path="/Admin/complains" element={<SeeComplains />} />
 
                         {/* Notice */}
@@ -172,8 +224,13 @@ const AdminDashboard = () => {
                         <Route path="/Admin/fees/structure" element={<FeeStructure />} />
                         <Route path="/Admin/fees/search" element={<FeeSearch />} />
 
-                        <Route path="/logout" element={<Logout />} />
+                        <Route path="/Admin/fees/search" element={<FeeSearch />} />
                     </Routes>
+                    <LogoutModal
+                        open={logoutOpen}
+                        handleClose={handleLogoutClose}
+                        handleLogout={handleLogoutConfirm}
+                    />
                 </Box>
             </Box>
         </Box>
@@ -202,11 +259,5 @@ const styles = {
     },
     drawerStyled: {
         display: "flex"
-    },
-    hideDrawer: {
-        display: 'flex',
-        '@media (max-width: 600px)': {
-            display: 'none',
-        },
     },
 }

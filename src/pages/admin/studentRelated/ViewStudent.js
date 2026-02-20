@@ -144,77 +144,79 @@ const ViewStudent = () => {
             return (
                 <>
                     <Typography variant="h5" gutterBottom>Attendance</Typography>
-                    <Table>
-                        <TableHead>
-                            <StyledTableRow>
-                                <StyledTableCell>Subject</StyledTableCell>
-                                <StyledTableCell>Present</StyledTableCell>
-                                <StyledTableCell>Total Sessions</StyledTableCell>
-                                <StyledTableCell>Attendance Percentage</StyledTableCell>
-                                <StyledTableCell align="center">Actions</StyledTableCell>
-                            </StyledTableRow>
-                        </TableHead>
-                        {Object.entries(groupAttendanceBySubject(subjectAttendance)).map(([subName, { present, allData, subId, sessions }], index) => {
-                            const subjectAttendancePercentage = calculateSubjectAttendancePercentage(present, sessions);
-                            return (
-                                <TableBody key={index}>
-                                    <StyledTableRow>
-                                        <StyledTableCell>{subName}</StyledTableCell>
-                                        <StyledTableCell>{present}</StyledTableCell>
-                                        <StyledTableCell>{sessions}</StyledTableCell>
-                                        <StyledTableCell>{subjectAttendancePercentage}%</StyledTableCell>
-                                        <StyledTableCell align="center">
-                                            <Button variant="contained"
-                                                onClick={() => handleOpen(subId)}>
-                                                {openStates[subId] ? <KeyboardArrowUp /> : <KeyboardArrowDown />}Details
-                                            </Button>
-                                            <IconButton onClick={() => removeSubAttendance(subId)}>
-                                                <DeleteIcon color="error" />
-                                            </IconButton>
-                                            <Button variant="contained" sx={styles.attendanceButton}
-                                                onClick={() => navigate(`/Admin/subject/student/attendance/${studentID}/${subId}`)}>
-                                                Change
-                                            </Button>
-                                        </StyledTableCell>
-                                    </StyledTableRow>
-                                    <StyledTableRow>
-                                        <StyledTableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                                            <Collapse in={openStates[subId]} timeout="auto" unmountOnExit>
-                                                <Box sx={{ margin: 1 }}>
-                                                    <Typography variant="h6" gutterBottom component="div">
-                                                        Attendance Details
-                                                    </Typography>
-                                                    <Table size="small" aria-label="purchases">
-                                                        <TableHead>
-                                                            <StyledTableRow>
-                                                                <StyledTableCell>Date</StyledTableCell>
-                                                                <StyledTableCell align="right">Status</StyledTableCell>
-                                                            </StyledTableRow>
-                                                        </TableHead>
-                                                        <TableBody>
-                                                            {allData.map((data, index) => {
-                                                                const date = new Date(data.date);
-                                                                const dateString = date.toString() !== "Invalid Date" ? date.toISOString().substring(0, 10) : "Invalid Date";
-                                                                return (
-                                                                    <StyledTableRow key={index}>
-                                                                        <StyledTableCell component="th" scope="row">
-                                                                            {dateString}
-                                                                        </StyledTableCell>
-                                                                        <StyledTableCell align="right">{data.status}</StyledTableCell>
-                                                                    </StyledTableRow>
-                                                                )
-                                                            })}
-                                                        </TableBody>
-                                                    </Table>
-                                                </Box>
-                                            </Collapse>
-                                        </StyledTableCell>
-                                    </StyledTableRow>
-                                </TableBody>
-                            )
-                        }
-                        )}
-                    </Table>
+                    <Box sx={{ overflowX: 'auto' }}>
+                        <Table sx={{ minWidth: 650 }}>
+                            <TableHead>
+                                <StyledTableRow>
+                                    <StyledTableCell>Subject</StyledTableCell>
+                                    <StyledTableCell>Present</StyledTableCell>
+                                    <StyledTableCell>Total Sessions</StyledTableCell>
+                                    <StyledTableCell>Attendance Percentage</StyledTableCell>
+                                    <StyledTableCell align="center">Actions</StyledTableCell>
+                                </StyledTableRow>
+                            </TableHead>
+                            {Object.entries(groupAttendanceBySubject(subjectAttendance)).map(([subName, { present, allData, subId, sessions }], index) => {
+                                const subjectAttendancePercentage = calculateSubjectAttendancePercentage(present, sessions);
+                                return (
+                                    <TableBody key={index}>
+                                        <StyledTableRow>
+                                            <StyledTableCell>{subName}</StyledTableCell>
+                                            <StyledTableCell>{present}</StyledTableCell>
+                                            <StyledTableCell>{sessions}</StyledTableCell>
+                                            <StyledTableCell>{subjectAttendancePercentage}%</StyledTableCell>
+                                            <StyledTableCell align="center">
+                                                <Button variant="contained"
+                                                    onClick={() => handleOpen(subId)}>
+                                                    {openStates[subId] ? <KeyboardArrowUp /> : <KeyboardArrowDown />}Details
+                                                </Button>
+                                                <IconButton onClick={() => removeSubAttendance(subId)}>
+                                                    <DeleteIcon color="error" />
+                                                </IconButton>
+                                                <Button variant="contained" sx={styles.attendanceButton}
+                                                    onClick={() => navigate(`/Admin/subject/student/attendance/${studentID}/${subId}`)}>
+                                                    Change
+                                                </Button>
+                                            </StyledTableCell>
+                                        </StyledTableRow>
+                                        <StyledTableRow>
+                                            <StyledTableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                                                <Collapse in={openStates[subId]} timeout="auto" unmountOnExit>
+                                                    <Box sx={{ margin: 1 }}>
+                                                        <Typography variant="h6" gutterBottom component="div">
+                                                            Attendance Details
+                                                        </Typography>
+                                                        <Table size="small" aria-label="purchases">
+                                                            <TableHead>
+                                                                <StyledTableRow>
+                                                                    <StyledTableCell>Date</StyledTableCell>
+                                                                    <StyledTableCell align="right">Status</StyledTableCell>
+                                                                </StyledTableRow>
+                                                            </TableHead>
+                                                            <TableBody>
+                                                                {allData.map((data, index) => {
+                                                                    const date = new Date(data.date);
+                                                                    const dateString = date.toString() !== "Invalid Date" ? date.toISOString().substring(0, 10) : "Invalid Date";
+                                                                    return (
+                                                                        <StyledTableRow key={index}>
+                                                                            <StyledTableCell component="th" scope="row">
+                                                                                {dateString}
+                                                                            </StyledTableCell>
+                                                                            <StyledTableCell align="right">{data.status}</StyledTableCell>
+                                                                        </StyledTableRow>
+                                                                    )
+                                                                })}
+                                                            </TableBody>
+                                                        </Table>
+                                                    </Box>
+                                                </Collapse>
+                                            </StyledTableCell>
+                                        </StyledTableRow>
+                                    </TableBody>
+                                )
+                            }
+                            )}
+                        </Table>
+                    </Box>
                     <Box sx={{ mt: 2 }}>
                         <Typography variant="subtitle1">Overall Attendance Percentage: {overallAttendancePercentage.toFixed(2)}%</Typography>
                     </Box>
@@ -477,8 +479,8 @@ const styles = {
 }
 
 const ProfileCard = styled(Box)`
-    background: var(--bg-paper);
-    border-radius: var(--border-radius-lg);
-    padding: 2rem;
-    border: 1px solid var(--border-color);
-`;
+                background: var(--bg-paper);
+                border-radius: var(--border-radius-lg);
+                padding: 2rem;
+                border: 1px solid var(--border-color);
+                `;

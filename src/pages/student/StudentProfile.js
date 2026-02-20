@@ -130,6 +130,10 @@ const ProfileCard = styled(Paper)`
   border-radius: var(--border-radius-xl);
   background: var(--bg-paper);
   border: 1px solid var(--border-color);
+
+  @media (max-width: 600px) {
+    padding: 1.5rem;
+  }
 `;
 
 const StyledAvatar = styled(Avatar)`

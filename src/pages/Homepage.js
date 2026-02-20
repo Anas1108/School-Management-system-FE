@@ -2,7 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Grid, Button, Typography } from '@mui/material';
 import styled, { keyframes } from 'styled-components';
-import Students from "../assets/students.svg";
+import SchoolImage from "../assets/school.png";
+import TKSLogo from "../assets/tks-Kulluwal.png";
 import { LightPurpleButton } from '../components/buttonStyles';
 
 const Homepage = () => {
@@ -11,10 +12,11 @@ const Homepage = () => {
       <Grid container spacing={4} alignItems="center" justifyContent="center">
         <Grid item xs={12} md={6}>
           <ContentWrapper>
+            <LogoImage src={TKSLogo} alt="TKS Logo" />
             <StyledTitle variant="h1">
-              Welcome to the <br />
-              <GradientText>School Management</GradientText> <br />
-              System
+              Welcome to <br />
+              <GradientText>The Knowledge School</GradientText> <br />
+              Kulluwal Campus
             </StyledTitle>
             <StyledText>
               Streamline school management, class organization, and add students and faculty.
@@ -27,23 +29,12 @@ const Homepage = () => {
                   Login
                 </LightPurpleButton>
               </StyledLink>
-              <StyledLink to="/chooseasguest">
-                <GuestButton variant="outlined" fullWidth>
-                  Login as Guest
-                </GuestButton>
-              </StyledLink>
             </ButtonContainer>
-            <FooterText>
-              Don't have an account?{' '}
-              <Link to="/Adminregister" style={{ color: "var(--color-primary-600)", fontWeight: "600" }}>
-                Sign up
-              </Link>
-            </FooterText>
           </ContentWrapper>
         </Grid>
         <Grid item xs={12} md={6}>
           <ImageWrapper>
-            <StyledImage src={Students} alt="students" />
+            <StyledImage src={SchoolImage} alt="school" />
           </ImageWrapper>
         </Grid>
       </Grid>
@@ -87,15 +78,19 @@ const ImageWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  animation: ${float} 6s ease-in-out infinite;
   z-index: 10;
   position: relative;
 `;
 
 const StyledImage = styled.img`
   width: 100%;
-  max-width: 600px;
+  max-width: 800px;
   filter: drop-shadow(0 20px 30px rgba(0,0,0,0.1));
+`;
+
+const LogoImage = styled.img`
+  width: 120px;
+  margin-bottom: 20px;
 `;
 
 const StyledTitle = styled(Typography)`
@@ -147,29 +142,7 @@ const StyledLink = styled(Link)`
   max-width: 200px;
 `;
 
-const GuestButton = styled(Button)`
-  && {
-    color: var(--color-primary-600);
-    border-color: var(--color-primary-600);
-    padding: 12px 24px;
-    border-radius: var(--border-radius-lg);
-    font-weight: 600;
-    font-family: var(--font-family-sans);
-    
-    &:hover {
-      background-color: var(--color-primary-50);
-      border-color: var(--color-primary-700);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
-  }
-`;
 
-const FooterText = styled.p`
-  color: var(--text-tertiary);
-  font-size: 0.9rem;
-  margin-top: 1rem;
-`;
 
 const BackgroundShape1 = styled.div`
   position: absolute;

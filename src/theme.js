@@ -10,15 +10,15 @@ const getVar = (variable) => getComputedStyle(document.documentElement).getPrope
 const theme = createTheme({
     palette: {
         primary: {
-            main: '#7c3aed', // --color-primary-600
-            light: '#a78bfa', // --color-primary-400
-            dark: '#5b21b6', // --color-primary-800
+            main: '#9b1b30', // --color-primary-600
+            light: '#f87171', // --color-primary-400
+            dark: '#6b101e', // --color-primary-800
             contrastText: '#ffffff',
         },
         secondary: {
-            main: '#2dd4bf', // --color-secondary-400
-            light: '#5eead4', // --color-secondary-300
-            dark: '#0f766e', // --color-secondary-700
+            main: '#fbbf24', // --color-secondary-400
+            light: '#fcd34d', // --color-secondary-300
+            dark: '#b45309', // --color-secondary-700
             contrastText: '#ffffff',
         },
         background: {
@@ -101,10 +101,10 @@ const theme = createTheme({
                     transition: 'all 0.2s ease-in-out',
                 },
                 containedPrimary: {
-                    background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)', // gradient-primary
+                    background: 'linear-gradient(135deg, #9b1b30 0%, #6b101e 100%)', // gradient-primary
                 },
                 containedSecondary: {
-                    background: 'linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%)', // gradient-accent
+                    background: 'linear-gradient(135deg, #fbbf24 0%, #d97706 100%)', // gradient-accent
                 },
             },
         },
@@ -143,10 +143,10 @@ const theme = createTheme({
                         transition: 'all 0.2s',
                         '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                             borderWidth: '2px',
-                            borderColor: '#7c3aed',
+                            borderColor: '#9b1b30',
                         },
                         '&:hover .MuiOutlinedInput-notchedOutline': {
-                            borderColor: '#a78bfa',
+                            borderColor: '#f87171',
                         }
                     },
                 },

@@ -157,7 +157,9 @@ const WelcomeHero = styled.div`
   @media (max-width: 900px) {
     flex-direction: column;
     text-align: center;
-    padding: 20px;
+    padding: 24px 20px;
+    align-items: center;
+    gap: 16px;
   }
 `;
 

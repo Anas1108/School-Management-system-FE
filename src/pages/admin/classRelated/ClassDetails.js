@@ -18,6 +18,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
 import Popup from "../../../components/Popup";
 import styled from 'styled-components';
+import CustomLoader from '../../../components/CustomLoader';
 
 const ClassDetails = () => {
     const params = useParams()
@@ -277,7 +278,7 @@ const ClassDetails = () => {
     return (
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             {loading ? (
-                <div>Loading...</div>
+                <CustomLoader />
             ) : (
                 <>
                     <TabContext value={value}>
@@ -290,16 +291,16 @@ const ClassDetails = () => {
                                     <Tab label="Teachers" value="4" />
                                 </TabList>
                             </Box>
-                            <TabPanel value="1" sx={{ p: 4 }}>
+                            <TabPanel value="1" sx={{ p: { xs: 2, md: 4 } }}>
                                 <ClassDetailsSection />
                             </TabPanel>
-                            <TabPanel value="2" sx={{ p: 4 }}>
+                            <TabPanel value="2" sx={{ p: { xs: 2, md: 4 } }}>
                                 <ClassSubjectsSection />
                             </TabPanel>
-                            <TabPanel value="3" sx={{ p: 4 }}>
+                            <TabPanel value="3" sx={{ p: { xs: 2, md: 4 } }}>
                                 <ClassStudentsSection />
                             </TabPanel>
-                            <TabPanel value="4" sx={{ p: 4 }}>
+                            <TabPanel value="4" sx={{ p: { xs: 2, md: 4 } }}>
                                 <ClassTeachersSection />
                             </TabPanel>
                         </Paper>

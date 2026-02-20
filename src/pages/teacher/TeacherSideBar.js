@@ -9,7 +9,7 @@ import AnnouncementOutlinedIcon from '@mui/icons-material/AnnouncementOutlined';
 import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
 import { useSelector } from 'react-redux';
 
-const TeacherSideBar = () => {
+const TeacherSideBar = ({ onLogout }) => {
     const { currentUser } = useSelector((state) => state.user);
     const sclassName = currentUser.teachSclass
 
@@ -50,9 +50,9 @@ const TeacherSideBar = () => {
                         </ListItemIcon>
                         <ListItemText primary="Profile" />
                     </ListItemButton>
-                    <ListItemButton component={Link} to="/logout">
+                    <ListItemButton onClick={onLogout}>
                         <ListItemIcon>
-                            <ExitToAppIcon color={location.pathname.startsWith("/logout") ? 'primary' : 'inherit'} />
+                            <ExitToAppIcon />
                         </ListItemIcon>
                         <ListItemText primary="Logout" />
                     </ListItemButton>

@@ -63,20 +63,6 @@ const ShowTeachers = () => {
     const [workloadLoading, setWorkloadLoading] = useState(false);
 
 
-    if (loading) {
-        return <CustomLoader />;
-    } else if (response) {
-        return (
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-                <GreenButton variant="contained" onClick={() => navigate("/Admin/teachers/add")}>
-                    Add Teacher
-                </GreenButton>
-            </Box>
-        );
-    } else if (error) {
-        console.log(error);
-    }
-
     const deleteHandler = (deleteID, address) => {
         setDeleteData({ deleteID, address });
         setConfirmOpen(true);
@@ -173,11 +159,11 @@ const ShowTeachers = () => {
 
     return (
         <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'stretch', md: 'center' }, mb: 2, gap: 2 }}>
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
                     Teachers
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexDirection: { xs: 'column', sm: 'row' }, width: { xs: '100%', md: 'auto' } }}>
                     <TextField
                         placeholder="Search teachers..."
                         variant="outlined"
@@ -198,7 +184,7 @@ const ShowTeachers = () => {
                                 backgroundColor: 'var(--bg-paper)',
                             }
                         }}
-                        sx={{ width: '260px' }}
+                        sx={{ width: { xs: '100%', md: '260px' } }}
                     />
                     <Button
                         variant="contained"
@@ -208,6 +194,7 @@ const ShowTeachers = () => {
                             textTransform: 'none', fontWeight: 600, fontFamily: 'var(--font-family-sans)',
                             borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--color-primary-600)',
                             boxShadow: 'none', px: 2.5, whiteSpace: 'nowrap',
+                            width: { xs: '100%', sm: 'auto' },
                             '&:hover': { backgroundColor: 'var(--color-primary-700)', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
                         }}
                     >
@@ -215,19 +202,34 @@ const ShowTeachers = () => {
                     </Button>
                 </Box>
             </Box>
-            <TableTemplate
-                buttonHaver={TeacherButtonHaver}
-                columns={teacherColumns}
-                rows={teacherRows}
-                count={totalTeachers}
-                page={page}
-                rowsPerPage={rowsPerPage}
-                onPageChange={(event, newPage) => setPage(newPage)}
-                onRowsPerPageChange={(event) => {
-                    setRowsPerPage(parseInt(event.target.value, 10));
-                    setPage(0);
-                }}
-            />
+
+            {loading ?
+                <CustomLoader />
+                :
+                <>
+                    {response ?
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+                            <GreenButton variant="contained" onClick={() => navigate("/Admin/teachers/add")}>
+                                Add Teacher
+                            </GreenButton>
+                        </Box>
+                        :
+                        <TableTemplate
+                            buttonHaver={TeacherButtonHaver}
+                            columns={teacherColumns}
+                            rows={teacherRows}
+                            count={totalTeachers}
+                            page={page}
+                            rowsPerPage={rowsPerPage}
+                            onPageChange={(event, newPage) => setPage(newPage)}
+                            onRowsPerPageChange={(event) => {
+                                setRowsPerPage(parseInt(event.target.value, 10));
+                                setPage(0);
+                            }}
+                        />
+                    }
+                </>
+            }
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} severity={severity} />
             <ConfirmationModal
                 open={confirmOpen}

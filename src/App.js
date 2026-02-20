@@ -23,8 +23,7 @@ const App = () => {
         {currentRole === null &&
           <Routes>
             <Route path="/" element={<Homepage />} />
-            <Route path="/choose" element={<ChooseUser visitor="normal" />} />
-            <Route path="/chooseasguest" element={<ChooseUser visitor="guest" />} />
+            <Route path="/choose" element={<ChooseUser />} />
 
             <Route path="/Adminlogin" element={<LoginPage role="Admin" />} />
             <Route path="/Studentlogin" element={<LoginPage role="Student" />} />

@@ -149,8 +149,8 @@ const TeacherDetails = () => {
                             {workloadLoading ? (
                                 <Typography variant="body1">Loading workload...</Typography>
                             ) : workload.length > 0 ? (
-                                <Paper variant="outlined" sx={{ overflow: 'hidden', mt: 2 }}>
-                                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <Paper variant="outlined" sx={{ overflowX: 'auto', mt: 2 }}>
+                                    <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
                                         <thead>
                                             <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'var(--bg-light)' }}>
                                                 <th style={{ padding: '12px', textAlign: 'left', fontWeight: 600 }}>Class</th>

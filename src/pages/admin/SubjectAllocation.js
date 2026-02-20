@@ -58,6 +58,19 @@ const SubjectAllocation = () => {
         dispatch(getAllTeachers(adminID));
     }, [adminID, dispatch]);
 
+    const fetchClassAllocations = useCallback((classId) => {
+        axios.get(`${process.env.REACT_APP_BASE_URL}/ClassAllocations/${classId}`, {
+            params: { schoolId: adminID, academicYear }
+        })
+            .then(response => {
+                setClassAllocations(response.data);
+            })
+            .catch(error => {
+                console.error("Error fetching class allocations:", error);
+                setClassAllocations([]);
+            });
+    }, [adminID, academicYear]);
+
     // Fetch subjects and allocations when Class is selected
     useEffect(() => {
         if (sclass) {
@@ -78,18 +91,7 @@ const SubjectAllocation = () => {
         }
     }, [sclass, fetchClassAllocations]);
 
-    const fetchClassAllocations = useCallback((classId) => {
-        axios.get(`${process.env.REACT_APP_BASE_URL}/ClassAllocations/${classId}`, {
-            params: { schoolId: adminID, academicYear }
-        })
-            .then(response => {
-                setClassAllocations(response.data);
-            })
-            .catch(error => {
-                console.error("Error fetching class allocations:", error);
-                setClassAllocations([]);
-            });
-    }, [adminID, academicYear]);
+
 
     // Fetch Workload when Teacher is selected
     useEffect(() => {
