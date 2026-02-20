@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
 
 import {
-    Paper, Box, Container, Typography, TextField, InputAdornment, Tooltip, Button
+    Box, Container, Typography, TextField, InputAdornment, Tooltip, Button
 } from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';

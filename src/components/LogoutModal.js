@@ -5,8 +5,7 @@ import {
     DialogContent,
     DialogContentText,
     DialogActions,
-    Button,
-    Box
+    Button
 } from '@mui/material';
 
 const LogoutModal = ({ open, handleClose, handleLogout }) => {

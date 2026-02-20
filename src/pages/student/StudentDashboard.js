@@ -60,7 +60,7 @@ const StudentDashboard = () => {
         if (isMobile && open) {
             setOpen(false);
         }
-    }, [location.pathname]);
+    }, [location.pathname, isMobile, open]);
 
     return (
         <>

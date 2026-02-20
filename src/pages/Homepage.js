@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Container, Grid, Button, Typography } from '@mui/material';
-import styled, { keyframes } from 'styled-components';
+import { Container, Grid, Typography } from '@mui/material';
+import styled from 'styled-components';
 import SchoolImage from "../assets/school.png";
 import TKSLogo from "../assets/tks-Kulluwal.png";
 import { LightPurpleButton } from '../components/buttonStyles';
@@ -46,11 +46,7 @@ const Homepage = () => {
 
 export default Homepage;
 
-const float = keyframes`
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
-  100% { transform: translateY(0px); }
-`;
+
 
 const StyledContainer = styled(Container)`
   display: flex;

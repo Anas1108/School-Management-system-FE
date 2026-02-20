@@ -2,21 +2,6 @@ import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { Box, Typography } from '@mui/material';
 
-const pulse = keyframes`
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(155, 27, 48, 0.7);
-  }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 10px rgba(155, 27, 48, 0);
-  }
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(155, 27, 48, 0);
-  }
-`;
-
 const spin = keyframes`
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }

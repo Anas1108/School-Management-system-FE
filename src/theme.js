@@ -1,8 +1,6 @@
 import { createTheme } from '@mui/material/styles';
 
-// Helper to get CSS variable value
-const getVar = (variable) => getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
-
+// Helper removed
 // Note: We use hardcoded values here for the initial setup to ensure MUI works correctly 
 // before CSS vars are fully loaded/parsed by JS in some environments.
 // Detailed customization effectively happens via the CSS overrides and class names.
