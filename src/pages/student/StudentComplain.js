@@ -113,7 +113,7 @@ const StudentComplain = () => {
                                 My Complaints History
                             </Typography>
                             {/* Simple List or Table */}
-                            <Stack spacing={2}>
+                            <Stack spacing={2} sx={{ maxHeight: '420px', overflowY: 'auto', pr: 1 }}>
                                 {Array.isArray(complainsList) && complainsList.length > 0 ? complainsList.map((c, index) => (
                                     <Paper key={index} elevation={1} sx={{ p: 2, bgcolor: '#f9f9f9' }}>
                                         <Typography variant="subtitle2" color="textSecondary">

@@ -8,6 +8,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SearchIcon from '@mui/icons-material/Search';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { getAllComplains, updateComplain, deleteComplain } from '../../../redux/complainRelated/complainHandle';
 import CustomLoader from '../../../components/CustomLoader';
 import { StyledTableCell, StyledTableRow } from '../../../components/styles';
@@ -44,6 +45,10 @@ const SeeComplains = () => {
   useEffect(() => {
     dispatch(getAllComplains(currentUser._id, "Complain"));
   }, [currentUser._id, dispatch]);
+
+  const handleRefresh = () => {
+    dispatch(getAllComplains(currentUser._id, "Complain"));
+  };
 
   if (error) {
     console.log(error);
@@ -253,6 +258,11 @@ const SeeComplains = () => {
                 <MenuItem value="Done">Done</MenuItem>
               </Select>
             </FormControl>
+            <Tooltip title="Refresh">
+              <IconButton onClick={handleRefresh} color="primary">
+                <RefreshIcon />
+              </IconButton>
+            </Tooltip>
             <Tooltip title="Edit Mode">
               <IconButton onClick={() => setIsEdit(!isEdit)} color={isEdit ? "primary" : "default"}>
                 <EditIcon />
