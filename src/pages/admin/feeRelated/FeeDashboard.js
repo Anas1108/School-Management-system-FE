@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState, useCallback } from 'react';
 import {
-    Box, Grid, Paper, Typography, Button, TextField, MenuItem, Table, TableBody, TableCell,
+    Container, Box, Grid, Paper, Typography, Button, TextField, MenuItem, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Chip, Dialog, DialogTitle,
-    DialogContent, DialogActions, Menu, Checkbox, ListItemText, IconButton, Tooltip
+    DialogContent, DialogActions, Menu, Checkbox, ListItemText, IconButton, Tooltip, Divider
 } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
@@ -11,8 +11,15 @@ import { useSelector } from 'react-redux';
 import CountUp from 'react-countup';
 import axios from 'axios';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import SettingsIcon from '@mui/icons-material/Settings';
+import PaymentsIcon from '@mui/icons-material/Payments';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import CustomModal from '../../../components/CustomModal';
 import CustomLoader from '../../../components/CustomLoader';
+
+const formatPKR = (amount) => {
+    return new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR', minimumFractionDigits: 0 }).format(amount);
+};
 
 const FeeDashboard = () => {
     const navigate = useNavigate();
@@ -23,8 +30,7 @@ const FeeDashboard = () => {
     const [generationData, setGenerationData] = useState({
         classId: '',
         month: new Date().getMonth() + 1,
-        year: new Date().getFullYear(),
-        dueDate: new Date().toISOString().split('T')[0]
+        year: new Date().getFullYear()
     });
     const [classes, setClasses] = useState([]);
     const [generatedInvoices, setGeneratedInvoices] = useState([]);
@@ -48,16 +54,7 @@ const FeeDashboard = () => {
     });
     const [uniqueStatus, setUniqueStatus] = useState([]);
 
-    const fetchStats = useCallback(async () => {
-        try {
-            const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/FeeStats/${currentUser._id}`);
-            setStats(result.data);
-            setLoading(false);
-        } catch (error) {
-            console.error(error);
-            setLoading(false);
-        }
-    }, [currentUser._id]);
+
 
     const fetchClasses = useCallback(async () => {
         try {
@@ -71,9 +68,9 @@ const FeeDashboard = () => {
     }, [currentUser._id]);
 
     useEffect(() => {
-        fetchStats();
         fetchClasses();
-    }, [fetchStats, fetchClasses]);
+        setLoading(false);
+    }, [fetchClasses]);
 
     const handleGenerate = async () => {
         if (!generationData.classId) {
@@ -86,7 +83,6 @@ const FeeDashboard = () => {
 
             setModalData({ open: true, title: 'Success', message: response.data.message || "Invoices Generation Processed", type: 'success' });
             setGenModalOpen(false);
-            fetchStats();
             fetchInvoices(generationData.classId);
         } catch (error) {
             console.error(error);
@@ -174,7 +170,6 @@ const FeeDashboard = () => {
             });
             setPayDialogOpen(false);
             fetchInvoices();
-            fetchStats();
             setModalData({ open: true, title: 'Success', message: "Payment Recorded", type: 'success' });
         } catch (error) {
             console.error(error);
@@ -182,110 +177,72 @@ const FeeDashboard = () => {
         }
     };
 
-    const StatCard = ({ title, value, color, icon: Icon }) => (
-        <Paper
-            elevation={0}
-            sx={{
-                p: 3,
-                display: 'flex',
-                flexDirection: 'column',
-                position: 'relative',
-                overflow: 'hidden',
-                borderRadius: 4,
-                border: '1px solid',
-                borderColor: 'divider',
-                '&:hover': {
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
-                    transform: 'translateY(-4px)',
-                    transition: 'all 0.3s ease'
-                }
-            }}
-        >
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="subtitle2" color="text.secondary" fontWeight="600">{title}</Typography>
-                <Box sx={{ p: 1, borderRadius: 2, bgcolor: `${color}15`, color: color }}>
-                    <Icon />
-                </Box>
-            </Box>
-            <Typography variant="h4" fontWeight="800" sx={{ color: color }}>
-                <CountUp start={0} end={value} duration={2.5} separator="," prefix="PKR " />
-            </Typography>
-        </Paper>
-    );
 
     return (
-        <Box sx={{ mt: 2, mb: 4, px: 3 }}>
+        <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
             {loading ? (
                 <CustomLoader />
             ) : (
                 <>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-                        <Typography variant="h4" fontWeight="bold">Fee Management</Typography>
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                            <Button variant="contained" startIcon={<MonetizationOnIcon />} onClick={() => setGenModalOpen(true)} sx={{ borderRadius: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                            Fee Management
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <Button variant="contained" startIcon={<PaymentsIcon />} onClick={() => setGenModalOpen(true)} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none', boxShadow: 'none' }}>
                                 Generate Invoices
                             </Button>
-                            <Button variant="outlined" onClick={() => navigate('/Admin/fees/defaulters')} sx={{ borderRadius: 2 }}>
+                            <Button variant="outlined" color="error" onClick={() => navigate('/Admin/fees/defaulters')} startIcon={<WarningAmberIcon />} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none' }}>
                                 Defaulters
                             </Button>
-                            <Button variant="outlined" onClick={() => navigate('/Admin/fees/structure')} sx={{ borderRadius: 2 }}>
+                            <Button variant="outlined" color="primary" onClick={() => navigate('/Admin/fees/structure')} startIcon={<SettingsIcon />} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none' }}>
                                 Config Fees
                             </Button>
-                            <Button variant="contained" color="secondary" onClick={() => navigate('/Admin/fees/search')} startIcon={<SearchIcon />} sx={{ borderRadius: 2 }}>
+                            <Button variant="outlined" color="secondary" onClick={() => navigate('/Admin/fees/search')} startIcon={<SearchIcon />} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none' }}>
                                 Search
                             </Button>
                         </Box>
                     </Box>
 
-                    <Grid container spacing={3} sx={{ mb: 4 }}>
-                        <Grid item xs={12} sm={6} md={4}>
-                            <StatCard title="Expected Revenue" value={stats.totalExpected} color="#1976d2" icon={MonetizationOnIcon} />
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={4}>
-                            <StatCard title="Collected Revenue" value={stats.totalCollected} color="#2e7d32" icon={MonetizationOnIcon} />
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={4}>
-                            <StatCard title="Total Late Fines" value={stats.totalLateFines} color="#ed6c02" icon={MonetizationOnIcon} />
-                        </Grid>
-                    </Grid>
-
                     {/* Generated Invoices List */}
-                    <Paper elevation={0} sx={{ p: 0, mb: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
-                        <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Typography variant="h6" fontWeight="bold">Monthly Invoices</Typography>
-                            <Box sx={{ display: 'flex', gap: 2 }}>
-                                <TextField
-                                    select
-                                    size="small"
-                                    label="Class"
-                                    value={generationData.classId}
-                                    onChange={(e) => setGenerationData({ ...generationData, classId: e.target.value })}
-                                    sx={{ minWidth: 150 }}
-                                >
-                                    {classes.map((option) => (
-                                        <MenuItem key={option._id} value={option._id}>
-                                            {option.sclassName}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-                                <TextField
-                                    select
-                                    size="small"
-                                    label="Month"
-                                    value={generationData.month}
-                                    onChange={(e) => setGenerationData({ ...generationData, month: e.target.value })}
-                                    sx={{ minWidth: 120 }}
-                                >
-                                    {Array.from({ length: 12 }, (_, i) => (
-                                        <MenuItem key={i + 1} value={i + 1}>
-                                            {new Date(0, i).toLocaleString('default', { month: 'long' })}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-                            </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                        <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>Monthly Invoices</Typography>
+                        <Box sx={{ display: 'flex', gap: 2 }}>
+                            <TextField
+                                select
+                                size="small"
+                                label="Class"
+                                value={generationData.classId}
+                                onChange={(e) => setGenerationData({ ...generationData, classId: e.target.value })}
+                                sx={{ minWidth: 150 }}
+                                InputProps={{ style: { borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--bg-paper)' } }}
+                            >
+                                {classes.map((option) => (
+                                    <MenuItem key={option._id} value={option._id}>
+                                        {option.sclassName}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                            <TextField
+                                select
+                                size="small"
+                                label="Month"
+                                value={generationData.month}
+                                onChange={(e) => setGenerationData({ ...generationData, month: e.target.value })}
+                                sx={{ minWidth: 120 }}
+                                InputProps={{ style: { borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--bg-paper)' } }}
+                            >
+                                {Array.from({ length: 12 }, (_, i) => (
+                                    <MenuItem key={i + 1} value={i + 1}>
+                                        {new Date(0, i).toLocaleString('default', { month: 'long' })}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
                         </Box>
-                        <TableContainer>
-                            <Table>
+                    </Box>
+                    <Box sx={{ borderRadius: 'var(--border-radius-lg)', overflow: 'hidden', border: '1px solid var(--border-color)', background: 'var(--bg-paper)' }}>
+                        <TableContainer sx={{ maxHeight: '75vh', overflowX: 'auto' }}>
+                            <Table stickyHeader>
                                 <TableHead sx={{ bgcolor: 'action.hover' }}>
                                     <TableRow>
                                         <TableCell sx={{ fontWeight: 'bold' }}>Roll Num</TableCell>
@@ -320,10 +277,10 @@ const FeeDashboard = () => {
                                                         {new Date(0, row.month - 1).toLocaleString('default', { month: 'long' })} {row.year}
                                                     </TableCell>
                                                     <TableCell>{row.challanNumber}</TableCell>
-                                                    <TableCell align="right">{totalDue}</TableCell>
-                                                    <TableCell align="right">{row.paidAmount}</TableCell>
+                                                    <TableCell align="right">{formatPKR(totalDue)}</TableCell>
+                                                    <TableCell align="right" sx={{ color: 'success.main', fontWeight: 'bold' }}>{formatPKR(row.paidAmount)}</TableCell>
                                                     <TableCell align="right" sx={{ color: 'error.main', fontWeight: 'bold' }}>
-                                                        {balance}
+                                                        {formatPKR(balance)}
                                                     </TableCell>
                                                     <TableCell align="center">
                                                         <Chip
@@ -357,7 +314,7 @@ const FeeDashboard = () => {
                                 </TableBody>
                             </Table>
                         </TableContainer>
-                    </Paper>
+                    </Box>
 
                     {/* Generate Invoices Modal */}
                     <Dialog open={genModalOpen} onClose={() => setGenModalOpen(false)} maxWidth="sm" fullWidth>
@@ -399,14 +356,6 @@ const FeeDashboard = () => {
                                         sx={{ flex: 1 }}
                                     />
                                 </Box>
-                                <TextField
-                                    label="Due Date"
-                                    type="date"
-                                    fullWidth
-                                    value={generationData.dueDate}
-                                    onChange={(e) => setGenerationData({ ...generationData, dueDate: e.target.value })}
-                                    InputLabelProps={{ shrink: true }}
-                                />
                             </Box>
                         </DialogContent>
                         <DialogActions sx={{ p: 3 }}>
@@ -450,6 +399,7 @@ const FeeDashboard = () => {
                                     fullWidth
                                     value={paymentAmount}
                                     onChange={(e) => setPaymentAmount(e.target.value)}
+                                    inputProps={{ min: 1, step: "any" }}
                                 />
                                 <TextField
                                     label="Date"
@@ -468,7 +418,7 @@ const FeeDashboard = () => {
                     </Dialog>
                 </>
             )}
-        </Box>
+        </Container>
     );
 };
 

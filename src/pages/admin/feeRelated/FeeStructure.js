@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
-    Box, Paper, Typography, TextField, MenuItem, Button, IconButton, Dialog,
-    DialogTitle, DialogContent, DialogActions, Grid
+    Container, Box, Paper, Typography, TextField, MenuItem, Button, IconButton, Dialog,
+    DialogTitle, DialogContent, DialogActions, Grid, InputAdornment
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -9,6 +9,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import CustomModal from '../../../components/CustomModal';
 
 const FeeStructure = () => {
     const navigate = useNavigate();
@@ -25,6 +26,9 @@ const FeeStructure = () => {
     const [selectedClass, setSelectedClass] = useState('');
     const [structure, setStructure] = useState({ feeHeads: [], lateFee: 0, dueDay: 10 });
     const [loading] = useState(false);
+
+    // Modal State
+    const [modalData, setModalData] = useState({ open: false, title: '', message: '', type: 'info' });
 
     const fetchClasses = useCallback(async () => {
         try {
@@ -90,11 +94,14 @@ const FeeStructure = () => {
                 classId: selectedClass,
                 adminID: currentUser._id,
                 feeHeads: structure.feeHeads,
-                lateFee: structure.lateFee,
-                dueDay: structure.dueDay
+                lateFee: Number(structure.lateFee),
+                dueDay: Number(structure.dueDay)
             });
-            alert("Fee Structure Saved");
-        } catch (error) { console.error(error); alert("Failed to save"); }
+            setModalData({ open: true, title: 'Success', message: "Fee Structure Saved", type: 'success' });
+        } catch (error) {
+            console.error(error);
+            setModalData({ open: true, title: 'Error', message: "Failed to save", type: 'error' });
+        }
     }
 
     const addHeadToStructure = () => {
@@ -103,7 +110,7 @@ const FeeStructure = () => {
 
     const updateStructureHead = (index, field, value) => {
         const newHeads = [...structure.feeHeads];
-        newHeads[index][field] = value;
+        newHeads[index][field] = field === 'amount' ? Number(value) : value;
         setStructure({ ...structure, feeHeads: newHeads });
     }
 
@@ -114,15 +121,17 @@ const FeeStructure = () => {
     }
 
     return (
-        <Box sx={{ mt: 2, mb: 4, px: 3 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-                <Typography variant="h4" fontWeight="bold">Fee Configuration</Typography>
-                <Box sx={{ display: 'flex', gap: 1 }}>
+        <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                    Fee Configuration
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 2 }}>
                     <Button
                         variant="outlined"
                         startIcon={<ArrowBackIcon />}
                         onClick={() => navigate('/Admin/fees')}
-                        sx={{ borderRadius: 2 }}
+                        sx={{ borderRadius: 'var(--border-radius-md)', px: 2, textTransform: 'none', borderColor: 'var(--border-color)' }}
                     >
                         Back to Dashboard
                     </Button>
@@ -130,7 +139,7 @@ const FeeStructure = () => {
                         variant="contained"
                         startIcon={<AddIcon />}
                         onClick={() => setHeadModalOpen(true)}
-                        sx={{ borderRadius: 2 }}
+                        sx={{ borderRadius: 'var(--border-radius-md)', px: 2, textTransform: 'none', boxShadow: 'none' }}
                     >
                         Create Fee Head
                     </Button>
@@ -139,7 +148,7 @@ const FeeStructure = () => {
 
             <Grid container spacing={4}>
                 <Grid item xs={12} md={4}>
-                    <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                    <Box sx={{ p: 3, borderRadius: 'var(--border-radius-lg)', border: '1px solid var(--border-color)', background: 'var(--bg-paper)' }}>
                         <Typography variant="h6" fontWeight="bold" gutterBottom>Fee Heads</Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                             Define global fee categories (e.g., Tuition, Sports).
@@ -154,11 +163,11 @@ const FeeStructure = () => {
                                 <Typography variant="body2" color="text.secondary" align="center">No fee heads created yet.</Typography>
                             )}
                         </Box>
-                    </Paper>
+                    </Box>
                 </Grid>
 
                 <Grid item xs={12} md={8}>
-                    <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                    <Box sx={{ p: 4, borderRadius: 'var(--border-radius-lg)', border: '1px solid var(--border-color)', background: 'var(--bg-paper)' }}>
                         <Typography variant="h6" fontWeight="bold" gutterBottom>Class Fee Structure</Typography>
                         <TextField
                             select
@@ -168,6 +177,7 @@ const FeeStructure = () => {
                             onChange={(e) => setSelectedClass(e.target.value)}
                             sx={{ mb: 4 }}
                             size="small"
+                            InputProps={{ style: { borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--bg-paper)' } }}
                         >
                             {classes.map((option) => (
                                 <MenuItem key={option._id} value={option._id}>
@@ -205,6 +215,8 @@ const FeeStructure = () => {
                                                 onChange={(e) => updateStructureHead(index, 'amount', e.target.value)}
                                                 sx={{ width: 180 }}
                                                 size="small"
+                                                inputProps={{ min: 0 }}
+                                                InputProps={{ startAdornment: <InputAdornment position="start">PKR</InputAdornment> }}
                                             />
                                             <IconButton onClick={() => removeHeadFromStructure(index)} color="error" size="small">
                                                 <DeleteIcon />
@@ -229,6 +241,8 @@ const FeeStructure = () => {
                                             onChange={(e) => setStructure({ ...structure, lateFee: e.target.value })}
                                             helperText="Fine amount if paid after due date"
                                             size="small"
+                                            inputProps={{ min: 0 }}
+                                            InputProps={{ startAdornment: <InputAdornment position="start">PKR</InputAdornment> }}
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
@@ -245,7 +259,7 @@ const FeeStructure = () => {
                                     </Grid>
                                 </Grid>
 
-                                <Button variant="contained" color="primary" fullWidth onClick={handleSaveStructure} size="large" sx={{ borderRadius: 2 }}>
+                                <Button variant="contained" color="primary" fullWidth onClick={handleSaveStructure} size="large" sx={{ borderRadius: 3, textTransform: 'none', py: 1.5, boxShadow: 'none' }}>
                                     Save Class Structure
                                 </Button>
                             </>
@@ -254,7 +268,7 @@ const FeeStructure = () => {
                                 <Typography color="text.secondary">Select a class to configure its fee structure</Typography>
                             </Box>
                         )}
-                    </Paper>
+                    </Box>
                 </Grid>
             </Grid>
 
@@ -284,7 +298,15 @@ const FeeStructure = () => {
                     <Button variant="contained" onClick={createFeeHead}>Create Head</Button>
                 </DialogActions>
             </Dialog>
-        </Box>
+
+            <CustomModal
+                open={modalData.open}
+                handleClose={() => setModalData({ ...modalData, open: false })}
+                title={modalData.title}
+                message={modalData.message}
+                type={modalData.type}
+            />
+        </Container>
     );
 };
 
