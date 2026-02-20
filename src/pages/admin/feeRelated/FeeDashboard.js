@@ -184,11 +184,11 @@ const FeeDashboard = () => {
                 <CustomLoader />
             ) : (
                 <>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, gap: 2, mb: 2 }}>
                         <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
                             Fee Management
                         </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
                             <Button variant="contained" startIcon={<PaymentsIcon />} onClick={() => setGenModalOpen(true)} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none', boxShadow: 'none' }}>
                                 Generate Invoices
                             </Button>
@@ -205,16 +205,16 @@ const FeeDashboard = () => {
                     </Box>
 
                     {/* Generated Invoices List */}
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: 2, mb: 2 }}>
                         <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>Monthly Invoices</Typography>
-                        <Box sx={{ display: 'flex', gap: 2 }}>
+                        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', width: { xs: '100%', sm: 'auto' } }}>
                             <TextField
                                 select
                                 size="small"
                                 label="Class"
                                 value={generationData.classId}
                                 onChange={(e) => setGenerationData({ ...generationData, classId: e.target.value })}
-                                sx={{ minWidth: 150 }}
+                                sx={{ minWidth: 150, flexGrow: { xs: 1, sm: 0 } }}
                                 InputProps={{ style: { borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--bg-paper)' } }}
                             >
                                 {classes.map((option) => (
@@ -229,7 +229,7 @@ const FeeDashboard = () => {
                                 label="Month"
                                 value={generationData.month}
                                 onChange={(e) => setGenerationData({ ...generationData, month: e.target.value })}
-                                sx={{ minWidth: 120 }}
+                                sx={{ minWidth: 120, flexGrow: { xs: 1, sm: 0 } }}
                                 InputProps={{ style: { borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--bg-paper)' } }}
                             >
                                 {Array.from({ length: 12 }, (_, i) => (
@@ -334,7 +334,7 @@ const FeeDashboard = () => {
                                         </MenuItem>
                                     ))}
                                 </TextField>
-                                <Box sx={{ display: 'flex', gap: 2 }}>
+                                <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
                                     <TextField
                                         select
                                         label="Month"

@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
     Container, Box, Paper, Typography, TextField, MenuItem, Button, IconButton, Dialog,
-    DialogTitle, DialogContent, DialogActions, Grid, InputAdornment
+    DialogTitle, DialogContent, DialogActions, Grid, InputAdornment, Table, TableBody,
+    TableCell, TableContainer, TableHead, TableRow, CircularProgress
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ListAltIcon from '@mui/icons-material/ListAlt';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -29,6 +31,11 @@ const FeeStructure = () => {
 
     // Modal State
     const [modalData, setModalData] = useState({ open: false, title: '', message: '', type: 'info' });
+
+    // View All State
+    const [viewAllOpen, setViewAllOpen] = useState(false);
+    const [fetchingAll, setFetchingAll] = useState(false);
+    const [allStructures, setAllStructures] = useState([]);
 
     const fetchClasses = useCallback(async () => {
         try {
@@ -120,13 +127,57 @@ const FeeStructure = () => {
         setStructure({ ...structure, feeHeads: newHeads });
     }
 
+    const handleViewAll = async () => {
+        setViewAllOpen(true);
+        setFetchingAll(true);
+        try {
+            const structurePromises = classes.map(cls =>
+                axios.get(`${process.env.REACT_APP_BASE_URL}/FeeStructure/${cls._id}`)
+            );
+            const results = await Promise.all(structurePromises);
+
+            const summarized = results.map((res, index) => {
+                const cls = classes[index];
+                const structData = res.data;
+
+                if (!structData || !structData.feeHeads) {
+                    return {
+                        id: cls._id,
+                        className: cls.sclassName,
+                        totalFee: 0,
+                        lateFee: 0,
+                        dueDay: '-'
+                    };
+                }
+
+                const totalFee = structData.feeHeads.reduce((sum, h) => sum + (h.amount || 0), 0);
+
+                return {
+                    id: cls._id,
+                    className: cls.sclassName,
+                    totalFee: totalFee,
+                    lateFee: structData.lateFee || 0,
+                    dueDay: structData.dueDay || 10
+                };
+            });
+
+            setAllStructures(summarized);
+        } catch (error) {
+            console.error("Error fetching all structures summary:", error);
+            setModalData({ open: true, title: 'Error', message: "Failed to load sumary.", type: 'error' });
+            setViewAllOpen(false);
+        } finally {
+            setFetchingAll(false);
+        }
+    }
+
     return (
         <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: 2, mb: 2 }}>
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
                     Fee Configuration
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 2 }}>
+                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                     <Button
                         variant="outlined"
                         startIcon={<ArrowBackIcon />}
@@ -134,6 +185,15 @@ const FeeStructure = () => {
                         sx={{ borderRadius: 'var(--border-radius-md)', px: 2, textTransform: 'none', borderColor: 'var(--border-color)' }}
                     >
                         Back to Dashboard
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        startIcon={<ListAltIcon />}
+                        onClick={handleViewAll}
+                        sx={{ borderRadius: 'var(--border-radius-md)', px: 2, textTransform: 'none' }}
+                    >
+                        View All Structures
                     </Button>
                     <Button
                         variant="contained"
@@ -195,32 +255,34 @@ const FeeStructure = () => {
 
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 4 }}>
                                     {structure.feeHeads.map((item, index) => (
-                                        <Box key={index} sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                                        <Box key={index} sx={{ display: 'flex', gap: 2, alignItems: 'center', flexDirection: { xs: 'column', sm: 'row' } }}>
                                             <TextField
                                                 select
                                                 label="Head"
                                                 value={item.headId}
                                                 onChange={(e) => updateStructureHead(index, 'headId', e.target.value)}
-                                                sx={{ flex: 1 }}
+                                                sx={{ flex: 1, width: { xs: '100%', sm: 'auto' } }}
                                                 size="small"
                                             >
                                                 {feeHeads.map(head => (
                                                     <MenuItem key={head._id} value={head._id}>{head.name}</MenuItem>
                                                 ))}
                                             </TextField>
-                                            <TextField
-                                                label="Amount"
-                                                type="number"
-                                                value={item.amount}
-                                                onChange={(e) => updateStructureHead(index, 'amount', e.target.value)}
-                                                sx={{ width: 180 }}
-                                                size="small"
-                                                inputProps={{ min: 0 }}
-                                                InputProps={{ startAdornment: <InputAdornment position="start">PKR</InputAdornment> }}
-                                            />
-                                            <IconButton onClick={() => removeHeadFromStructure(index)} color="error" size="small">
-                                                <DeleteIcon />
-                                            </IconButton>
+                                            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', width: { xs: '100%', sm: 'auto' } }}>
+                                                <TextField
+                                                    label="Amount"
+                                                    type="number"
+                                                    value={item.amount}
+                                                    onChange={(e) => updateStructureHead(index, 'amount', e.target.value)}
+                                                    sx={{ width: { xs: '100%', sm: 180 } }}
+                                                    size="small"
+                                                    inputProps={{ min: 0 }}
+                                                    InputProps={{ startAdornment: <InputAdornment position="start">PKR</InputAdornment> }}
+                                                />
+                                                <IconButton onClick={() => removeHeadFromStructure(index)} color="error" size="small">
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </Box>
                                         </Box>
                                     ))}
                                     {structure.feeHeads.length === 0 && (
@@ -296,6 +358,55 @@ const FeeStructure = () => {
                 <DialogActions sx={{ p: 3 }}>
                     <Button onClick={() => setHeadModalOpen(false)} color="inherit">Cancel</Button>
                     <Button variant="contained" onClick={createFeeHead}>Create Head</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* View All Structures Modal */}
+            <Dialog open={viewAllOpen} onClose={() => setViewAllOpen(false)} maxWidth="md" fullWidth>
+                <DialogTitle sx={{ fontWeight: 'bold' }}>All Class Fee Structures</DialogTitle>
+                <DialogContent dividers>
+                    {fetchingAll ? (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 5, gap: 2 }}>
+                            <CircularProgress size={24} />
+                            <Typography>Fetching fee data...</Typography>
+                        </Box>
+                    ) : (
+                        <Box sx={{ borderRadius: 'var(--border-radius-md)', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+                            <TableContainer sx={{ maxHeight: 400 }}>
+                                <Table stickyHeader>
+                                    <TableHead sx={{ bgcolor: 'action.hover' }}>
+                                        <TableRow>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Class</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Total Fees (PKR)</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Late Fine</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Due Day</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {allStructures.length > 0 ? (
+                                            allStructures.map((row) => (
+                                                <TableRow key={row.id} hover>
+                                                    <TableCell>{row.className}</TableCell>
+                                                    <TableCell>{row.totalFee}</TableCell>
+                                                    <TableCell>{row.lateFee}</TableCell>
+                                                    <TableCell>{row.dueDay}</TableCell>
+                                                </TableRow>
+                                            ))
+                                        ) : (
+                                            <TableRow>
+                                                <TableCell colSpan={4} align="center">No classes found.</TableCell>
+                                            </TableRow>
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Box>
+                    )}
+                </DialogContent>
+                <DialogActions sx={{ p: 2 }}>
+                    <Button variant="contained" onClick={() => setViewAllOpen(false)} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none', boxShadow: 'none' }}>
+                        Close
+                    </Button>
                 </DialogActions>
             </Dialog>
 

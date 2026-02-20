@@ -72,11 +72,11 @@ const FeeSearch = () => {
 
     return (
         <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: 2, mb: 2 }}>
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
                     Search Student Fees
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 2 }}>
+                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                     <Button
                         variant="outlined"
                         startIcon={<ArrowBackIcon />}
@@ -97,7 +97,7 @@ const FeeSearch = () => {
             </Box>
 
             <Box component="form" onSubmit={handleSearch} sx={{ mb: 3 }}>
-                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, alignItems: { xs: 'stretch', md: 'center' }, flexWrap: 'wrap' }}>
                     <TextField
                         label="Roll Number"
                         value={rollNum}
@@ -111,7 +111,7 @@ const FeeSearch = () => {
                             ),
                             style: { borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--bg-paper)' }
                         }}
-                        sx={{ minWidth: 200 }}
+                        sx={{ minWidth: { md: 200 }, width: { xs: '100%', md: 'auto' } }}
                     />
                     <TextField
                         select
@@ -119,7 +119,7 @@ const FeeSearch = () => {
                         value={selectedClass}
                         onChange={(e) => setSelectedClass(e.target.value)}
                         size="small"
-                        sx={{ minWidth: 200 }}
+                        sx={{ minWidth: { md: 200 }, width: { xs: '100%', md: 'auto' } }}
                         InputProps={{ style: { borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--bg-paper)' } }}
                     >
                         <MenuItem value="">All Classes</MenuItem>

@@ -61,11 +61,11 @@ const FeeDefaulters = () => {
 
     return (
         <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: 2, mb: 2 }}>
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'error.main' }}>
                     Fee Defaulters List
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 2 }}>
+                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                     <Button
                         variant="outlined"
                         startIcon={<ArrowBackIcon />}
@@ -86,7 +86,7 @@ const FeeDefaulters = () => {
                 </Box>
             </Box>
 
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: 2, mb: 2 }}>
                 <Typography variant="body1" color="text.secondary">
                     Total Defaulters: <strong>{filteredInvoices.length}</strong>
                 </Typography>
@@ -99,7 +99,7 @@ const FeeDefaulters = () => {
                         fetchInvoices(e.target.value);
                     }}
                     size="small"
-                    sx={{ minWidth: 200 }}
+                    sx={{ minWidth: 200, width: { xs: '100%', sm: 'auto' } }}
                     InputProps={{ style: { borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--bg-paper)' } }}
                 >
                     {classes.map((option) => (
