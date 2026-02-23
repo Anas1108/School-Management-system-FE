@@ -53,6 +53,7 @@ const FeeDashboard = () => {
         status: [],
     });
     const [uniqueStatus, setUniqueStatus] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
 
 
 
@@ -143,7 +144,26 @@ const FeeDashboard = () => {
     const getFilteredInvoices = () => {
         return generatedInvoices.filter(row => {
             const statusMatch = filters.status.length === 0 || filters.status.includes(row.status);
-            return statusMatch;
+
+            let searchMatch = true;
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                const rollNum = row.studentId?.rollNum?.toString().toLowerCase() || '';
+                const name = row.studentId?.name?.toLowerCase() || '';
+                const challan = row.challanNumber?.toLowerCase() || '';
+                const statusStr = row.status?.toLowerCase() || '';
+                const monthName = new Date(0, row.month - 1).toLocaleString('default', { month: 'long' }).toLowerCase();
+                const yearStr = row.year?.toString() || '';
+
+                searchMatch = rollNum.includes(query) ||
+                    name.includes(query) ||
+                    challan.includes(query) ||
+                    statusStr.includes(query) ||
+                    monthName.includes(query) ||
+                    yearStr.includes(query);
+            }
+
+            return statusMatch && searchMatch;
         });
     };
 
@@ -208,6 +228,17 @@ const FeeDashboard = () => {
                     <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: 2, mb: 2 }}>
                         <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>Monthly Invoices</Typography>
                         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', width: { xs: '100%', sm: 'auto' } }}>
+                            <TextField
+                                size="small"
+                                placeholder="Search Invoices..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                InputProps={{
+                                    startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />,
+                                    style: { borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--bg-paper)' }
+                                }}
+                                sx={{ minWidth: 200, flexGrow: { xs: 1, sm: 0 } }}
+                            />
                             <TextField
                                 select
                                 size="small"
