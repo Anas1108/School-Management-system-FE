@@ -7,6 +7,7 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -76,23 +77,17 @@ const FeeSearch = () => {
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
                     Search Student Fees
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                    <Button
-                        variant="outlined"
-                        startIcon={<ArrowBackIcon />}
-                        onClick={() => navigate('/Admin/fees')}
-                        sx={{ borderRadius: 'var(--border-radius-md)', px: 2, textTransform: 'none', borderColor: 'var(--border-color)' }}
-                    >
-                        Back to Dashboard
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        color="error"
-                        onClick={() => navigate('/Admin/fees/defaulters')}
-                        sx={{ borderRadius: 'var(--border-radius-md)', px: 2, textTransform: 'none' }}
-                    >
-                        Defaulters
-                    </Button>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+                    <Tooltip title="Back to Dashboard">
+                        <IconButton size="small" onClick={() => navigate('/Admin/fees')} sx={{ border: '1px solid var(--border-color)', borderRadius: 'var(--border-radius-md)' }}>
+                            <ArrowBackIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Defaulters">
+                        <IconButton size="small" color="error" onClick={() => navigate('/Admin/fees/defaulters')} sx={{ border: '1px solid', borderColor: 'error.main', borderRadius: 'var(--border-radius-md)' }}>
+                            <WarningAmberIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
                 </Box>
             </Box>
 

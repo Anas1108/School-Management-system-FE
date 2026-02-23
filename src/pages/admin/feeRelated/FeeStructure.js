@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
     Container, Box, Typography, TextField, MenuItem, Button, IconButton, Dialog,
     DialogTitle, DialogContent, DialogActions, Grid, InputAdornment, Table, TableBody,
-    TableCell, TableContainer, TableHead, TableRow, CircularProgress
+    TableCell, TableContainer, TableHead, TableRow, CircularProgress, Tooltip
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -218,32 +218,22 @@ const FeeStructure = () => {
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
                     Fee Configuration
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                    <Button
-                        variant="outlined"
-                        startIcon={<ArrowBackIcon />}
-                        onClick={() => navigate('/Admin/fees')}
-                        sx={{ borderRadius: 'var(--border-radius-md)', px: 2, textTransform: 'none', borderColor: 'var(--border-color)' }}
-                    >
-                        Back to Dashboard
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        color="secondary"
-                        startIcon={<ListAltIcon />}
-                        onClick={handleViewAll}
-                        sx={{ borderRadius: 'var(--border-radius-md)', px: 2, textTransform: 'none' }}
-                    >
-                        View All Structures
-                    </Button>
-                    <Button
-                        variant="contained"
-                        startIcon={<AddIcon />}
-                        onClick={handleOpenCreateHeadModal}
-                        sx={{ borderRadius: 'var(--border-radius-md)', px: 2, textTransform: 'none', boxShadow: 'none' }}
-                    >
-                        Create Fee Head
-                    </Button>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+                    <Tooltip title="Back to Dashboard">
+                        <IconButton size="small" onClick={() => navigate('/Admin/fees')} sx={{ border: '1px solid var(--border-color)', borderRadius: 'var(--border-radius-md)' }}>
+                            <ArrowBackIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="View All Structures">
+                        <IconButton size="small" color="secondary" onClick={handleViewAll} sx={{ border: '1px solid', borderColor: 'secondary.main', borderRadius: 'var(--border-radius-md)' }}>
+                            <ListAltIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Create Fee Head">
+                        <IconButton size="small" onClick={handleOpenCreateHeadModal} sx={{ bgcolor: 'primary.main', color: 'white', '&:hover': { bgcolor: 'primary.dark' }, borderRadius: 'var(--border-radius-md)' }}>
+                            <AddIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
                 </Box>
             </Box>
 

@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
     Container, Box, Typography, Button, TextField, MenuItem, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Chip, Dialog, DialogTitle,
-    DialogContent, DialogActions, Menu, Checkbox, ListItemText, IconButton
+    DialogContent, DialogActions, Menu, Checkbox, ListItemText, IconButton, Tooltip
 } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
@@ -209,22 +209,32 @@ const FeeDashboard = () => {
                         <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
                             Fee Management
                         </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-                            <Button variant="contained" startIcon={<PaymentsIcon />} onClick={() => setGenModalOpen(true)} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none', boxShadow: 'none' }}>
-                                Generate Invoices
-                            </Button>
-                            <Button variant="outlined" color="error" onClick={() => navigate('/Admin/fees/defaulters')} startIcon={<WarningAmberIcon />} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none' }}>
-                                Defaulters
-                            </Button>
-                            <Button variant="outlined" color="primary" onClick={() => navigate('/Admin/fees/structure')} startIcon={<SettingsIcon />} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none' }}>
-                                Config Fees
-                            </Button>
-                            <Button variant="contained" color="secondary" onClick={() => navigate('/Admin/fees/discounts')} startIcon={<LocalOfferIcon />} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none', boxShadow: 'none' }}>
-                                Discounts
-                            </Button>
-                            <Button variant="contained" color="info" onClick={() => navigate('/Admin/fees/search')} startIcon={<SearchIcon />} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none', boxShadow: 'none' }}>
-                                Search
-                            </Button>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+                            <Tooltip title="Generate Invoices">
+                                <IconButton size="small" onClick={() => setGenModalOpen(true)} sx={{ bgcolor: 'primary.main', color: 'white', '&:hover': { bgcolor: 'primary.dark' }, borderRadius: 'var(--border-radius-md)' }}>
+                                    <PaymentsIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Defaulters">
+                                <IconButton size="small" color="error" onClick={() => navigate('/Admin/fees/defaulters')} sx={{ border: '1px solid', borderColor: 'error.main', borderRadius: 'var(--border-radius-md)' }}>
+                                    <WarningAmberIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Config Fees">
+                                <IconButton size="small" color="primary" onClick={() => navigate('/Admin/fees/structure')} sx={{ border: '1px solid', borderColor: 'primary.main', borderRadius: 'var(--border-radius-md)' }}>
+                                    <SettingsIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Discounts">
+                                <IconButton size="small" onClick={() => navigate('/Admin/fees/discounts')} sx={{ bgcolor: 'secondary.main', color: 'white', '&:hover': { bgcolor: 'secondary.dark' }, borderRadius: 'var(--border-radius-md)' }}>
+                                    <LocalOfferIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Search">
+                                <IconButton size="small" onClick={() => navigate('/Admin/fees/search')} sx={{ bgcolor: 'info.main', color: 'white', '&:hover': { bgcolor: 'info.dark' }, borderRadius: 'var(--border-radius-md)' }}>
+                                    <SearchIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
                         </Box>
                     </Box>
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
     Container, Box, Typography, Button, TextField, MenuItem, Table, TableBody, TableCell,
-    TableContainer, TableHead, TableRow
+    TableContainer, TableHead, TableRow, IconButton, Tooltip
 } from '@mui/material';
 
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -65,24 +65,17 @@ const FeeDefaulters = () => {
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'error.main' }}>
                     Fee Defaulters List
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                    <Button
-                        variant="outlined"
-                        startIcon={<ArrowBackIcon />}
-                        onClick={() => navigate('/Admin/fees')}
-                        sx={{ borderRadius: 'var(--border-radius-md)', px: 2, textTransform: 'none', borderColor: 'var(--border-color)' }}
-                    >
-                        Back to Dashboard
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="info"
-                        startIcon={<SearchIcon />}
-                        onClick={() => navigate('/Admin/fees/search')}
-                        sx={{ borderRadius: 'var(--border-radius-md)', px: 2, textTransform: 'none', boxShadow: 'none' }}
-                    >
-                        Search
-                    </Button>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+                    <Tooltip title="Back to Dashboard">
+                        <IconButton size="small" onClick={() => navigate('/Admin/fees')} sx={{ border: '1px solid var(--border-color)', borderRadius: 'var(--border-radius-md)' }}>
+                            <ArrowBackIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Search">
+                        <IconButton size="small" onClick={() => navigate('/Admin/fees/search')} sx={{ bgcolor: 'info.main', color: 'white', '&:hover': { bgcolor: 'info.dark' }, borderRadius: 'var(--border-radius-md)' }}>
+                            <SearchIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
                 </Box>
             </Box>
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
     Container, Box, Typography, Button, IconButton, Dialog,
     DialogTitle, DialogContent, DialogActions, TextField, Grid,
-    Card, CardContent, MenuItem
+    Card, CardContent, MenuItem, Tooltip
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -106,23 +106,17 @@ const FeeDiscounts = () => {
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
                     Manage Discounts
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                    <Button
-                        variant="outlined"
-                        startIcon={<ArrowBackIcon />}
-                        onClick={() => navigate('/Admin/fees')}
-                        sx={{ borderRadius: 'var(--border-radius-md)', px: 2, textTransform: 'none' }}
-                    >
-                        Back
-                    </Button>
-                    <Button
-                        variant="contained"
-                        startIcon={<AddIcon />}
-                        onClick={() => handleOpenModal()}
-                        sx={{ borderRadius: 'var(--border-radius-md)', px: 2, textTransform: 'none', boxShadow: 'none' }}
-                    >
-                        Create Discount Group
-                    </Button>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+                    <Tooltip title="Back to Dashboard">
+                        <IconButton size="small" onClick={() => navigate('/Admin/fees')} sx={{ border: '1px solid var(--border-color)', borderRadius: 'var(--border-radius-md)' }}>
+                            <ArrowBackIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Create Discount Group">
+                        <IconButton size="small" onClick={() => handleOpenModal()} sx={{ bgcolor: 'primary.main', color: 'white', '&:hover': { bgcolor: 'primary.dark' }, borderRadius: 'var(--border-radius-md)' }}>
+                            <AddIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
                 </Box>
             </Box>
 
