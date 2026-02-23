@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Tooltip, Box, TextField, InputAdornment, Typography, Container, Button } from '@mui/material';
+import { Tooltip, Box, TextField, InputAdornment, Typography, Container, Button, IconButton } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -121,19 +121,18 @@ const ShowClasses = () => {
             }}
             sx={{ width: '260px' }}
           />
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => navigate("/Admin/addclass")}
-            sx={{
-              textTransform: 'none', fontWeight: 600, fontFamily: 'var(--font-family-sans)',
-              borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--color-primary-600)',
-              boxShadow: 'none', px: 2.5, whiteSpace: 'nowrap',
-              '&:hover': { backgroundColor: 'var(--color-primary-700)', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
-            }}
-          >
-            Add Class
-          </Button>
+          <Tooltip title="Add Class">
+            <IconButton
+              onClick={() => navigate("/Admin/addclass")}
+              sx={{
+                bgcolor: 'var(--color-primary-600)', color: 'white',
+                '&:hover': { bgcolor: 'var(--color-primary-700)' },
+                borderRadius: 'var(--border-radius-md)'
+              }}
+            >
+              <AddIcon />
+            </IconButton>
+          </Tooltip>
         </Box>
       </Box>
       {loading ?

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
 
 import {
-    Box, Container, Typography, TextField, InputAdornment, Tooltip, Button
+    Box, Container, Typography, TextField, InputAdornment, Tooltip, Button, IconButton
 } from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
@@ -112,19 +112,18 @@ const ShowSubjects = () => {
                         }}
                         sx={{ width: '260px' }}
                     />
-                    <Button
-                        variant="contained"
-                        startIcon={<AddIcon />}
-                        onClick={() => navigate("/Admin/subjects/chooseclass")}
-                        sx={{
-                            textTransform: 'none', fontWeight: 600, fontFamily: 'var(--font-family-sans)',
-                            borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--color-primary-600)',
-                            boxShadow: 'none', px: 2.5, whiteSpace: 'nowrap',
-                            '&:hover': { backgroundColor: 'var(--color-primary-700)', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
-                        }}
-                    >
-                        Add Subject
-                    </Button>
+                    <Tooltip title="Add Subject">
+                        <IconButton
+                            onClick={() => navigate("/Admin/subjects/chooseclass")}
+                            sx={{
+                                bgcolor: 'var(--color-primary-600)', color: 'white',
+                                '&:hover': { bgcolor: 'var(--color-primary-700)' },
+                                borderRadius: 'var(--border-radius-md)'
+                            }}
+                        >
+                            <AddIcon />
+                        </IconButton>
+                    </Tooltip>
                 </Box>
             </Box>
             {loading ?
