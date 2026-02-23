@@ -1,23 +1,30 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
     CssBaseline,
     Box,
     Toolbar,
-    List,
     Typography,
-    Divider,
     IconButton,
-    useMediaQuery,
-    useTheme,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
-import { AppBar, Drawer } from '../../components/styles';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import TopNavBar from '../../components/TopNavBar';
+import AccountMenu from '../../components/AccountMenu';
+import { AppBar } from '../../components/styles';
 import LogoutModal from '../../components/LogoutModal';
-import SideBar from './SideBar';
 import { useDispatch } from 'react-redux';
 import { authLogout } from '../../redux/userRelated/userSlice';
+
+// Icons for TopNavBar
+import HomeIcon from "@mui/icons-material/Home";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import AnnouncementOutlinedIcon from '@mui/icons-material/AnnouncementOutlined';
+import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
+import SupervisorAccountOutlinedIcon from '@mui/icons-material/SupervisorAccountOutlined';
+import ReportIcon from '@mui/icons-material/Report';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined';
 import AdminProfile from './AdminProfile';
 import AdminHomePage from './AdminHomePage';
 import AdminSettings from './AdminSettings';
@@ -46,7 +53,7 @@ import TeacherDetails from './teacherRelated/TeacherDetails';
 import AddClass from './classRelated/AddClass';
 import ClassDetails from './classRelated/ClassDetails';
 import ShowClasses from './classRelated/ShowClasses';
-import AccountMenu from '../../components/AccountMenu';
+
 
 import FeeDashboard from './feeRelated/FeeDashboard';
 import FeeDefaulters from './feeRelated/FeeDefaulters';
@@ -56,11 +63,7 @@ import FeeDiscounts from './feeRelated/FeeDiscounts';
 import BreadcrumbsNav from '../../components/BreadcrumbsNav';
 
 const AdminDashboard = () => {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-    const [open, setOpen] = useState(!isMobile);
     const [logoutOpen, setLogoutOpen] = useState(false);
-
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -78,89 +81,63 @@ const AdminDashboard = () => {
         navigate('/');
     };
 
-    // Toggle drawer
-    const toggleDrawer = () => {
-        setOpen(!open);
-    };
-
-    // Auto-close overlay drawer on route change
-    const location = useLocation();
-    useEffect(() => {
-        if (isMobile && open) {
-            setOpen(false);
-        }
-    }, [location.pathname, isMobile, open]);
+    const adminLinks = [
+        { title: 'Home', icon: <HomeIcon />, path: '/' },
+        { title: 'Classes', icon: <ClassOutlinedIcon />, path: '/Admin/classes' },
+        { title: 'Subjects', icon: <AssignmentIcon />, path: '/Admin/subjects' },
+        { title: 'Teachers', icon: <SupervisorAccountOutlinedIcon />, path: '/Admin/teachers' },
+        { title: 'Students', icon: <PersonOutlineIcon />, path: '/Admin/students' },
+        { title: 'Notices', icon: <AnnouncementOutlinedIcon />, path: '/Admin/notices' },
+        { title: 'Complains', icon: <ReportIcon />, path: '/Admin/complains' },
+        { title: 'Subject Allocation', icon: <AssignmentIndIcon />, path: '/Admin/subject-allocation' },
+        { title: 'Fee Management', icon: <MonetizationOnOutlinedIcon />, path: '/Admin/fees' },
+    ];
 
     return (
         <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
             <CssBaseline />
-            <AppBar open={open} position='absolute'>
-                <Toolbar sx={{ pr: '24px' }}>
-                    <IconButton
-                        edge="start"
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={toggleDrawer}
-                        sx={{
-                            marginRight: '36px',
-                            ...(open && !isMobile && { display: 'none' }),
-                            color: 'var(--color-primary-600)'
-                        }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography
-                        component="h1"
-                        variant="h6"
-                        color="var(--text-primary)"
-                        noWrap
-                        sx={{ flexGrow: 1, fontWeight: 700, letterSpacing: '-0.5px' }}
-                    >
-                        Admin Dashboard
-                    </Typography>
+            <AppBar position='absolute' open={false}>
+                <Toolbar sx={{ pr: '24px', display: 'flex', alignItems: 'center' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+                        <img
+                            src="/favicon.png"
+                            alt="TKS Logo"
+                            style={{ height: '32px', marginRight: '12px' }}
+                        />
+                        <Box>
+                            <Typography
+                                component="h1"
+                                variant="h6"
+                                color="var(--text-primary)"
+                                noWrap
+                                sx={{
+                                    fontWeight: 700,
+                                    letterSpacing: '-0.5px',
+                                    lineHeight: 1.2,
+                                    fontSize: { xs: '0.9rem', sm: '1.25rem' }
+                                }}
+                            >
+                                The Knowledge School
+                            </Typography>
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                    color: 'var(--color-primary-600)',
+                                    fontWeight: 600,
+                                    display: { xs: 'none', sm: 'block' }
+                                }}
+                            >
+                                Kulluwal Campus
+                            </Typography>
+                        </Box>
+                    </Box>
                     <AccountMenu onLogout={handleLogoutOpen} />
                 </Toolbar>
             </AppBar>
-            <Drawer
-                variant={isMobile ? "temporary" : "permanent"}
-                open={open}
-                onClose={toggleDrawer}
-                sx={styles.drawerStyled}
-                PaperProps={{
-                    sx: {
-                        backgroundColor: 'var(--bg-paper)',
-                        width: isMobile ? '260px' : undefined
-                    }
-                }}
-            >
-                <Toolbar sx={styles.toolBarStyled}>
-                    <Typography
-                        variant="h5"
-                        color="primary"
-                        sx={{
-                            fontWeight: 'bold',
-                            flexGrow: 1,
-                            ml: 2,
-                            background: 'var(--gradient-primary)',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            letterSpacing: '-1px'
-                        }}
-                    >
-                        TKS Kulluwal
-                    </Typography>
-                    <IconButton onClick={toggleDrawer} sx={{ color: 'var(--text-secondary)' }}>
-                        <ChevronLeftIcon />
-                    </IconButton>
-                </Toolbar>
-                <Divider />
-                <List component="nav" sx={{ flex: 1, overflow: 'hidden' }}>
-                    <SideBar open={open} onLogout={handleLogoutOpen} />
-                </List>
-            </Drawer>
 
             <Box component="main" sx={styles.boxStyled}>
                 <Toolbar />
+                <TopNavBar links={adminLinks} title="TKS Kulluwal" />
                 <Box sx={{
                     flex: 1,
                     overflow: 'auto',
@@ -256,8 +233,5 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'flex-end',
         px: [1],
-    },
-    drawerStyled: {
-        display: "flex"
-    },
+    }
 }

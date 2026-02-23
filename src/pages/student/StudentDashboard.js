@@ -1,37 +1,34 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
     CssBaseline,
     Box,
     Toolbar,
-    List,
     Typography,
-    Divider,
     IconButton,
-    useMediaQuery,
-    useTheme,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import StudentSideBar from './StudentSideBar';
-import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import StudentHomePage from './StudentHomePage';
 import StudentProfile from './StudentProfile';
 import StudentSubjects from './StudentSubjects';
 import ViewStdAttendance from './ViewStdAttendance';
 import StudentComplain from './StudentComplain';
 import LogoutModal from '../../components/LogoutModal';
+import TopNavBar from '../../components/TopNavBar';
 import AccountMenu from '../../components/AccountMenu';
-import { AppBar, Drawer } from '../../components/styles';
+import { AppBar } from '../../components/styles';
 import { useDispatch } from 'react-redux';
 import { authLogout } from '../../redux/userRelated/userSlice';
+
+// Icons for TopNavBar
+import HomeIcon from '@mui/icons-material/Home';
+import AnnouncementOutlinedIcon from '@mui/icons-material/AnnouncementOutlined';
+import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 import BreadcrumbsNav from '../../components/BreadcrumbsNav';
 
 const StudentDashboard = () => {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-    const [open, setOpen] = useState(!isMobile);
     const [logoutOpen, setLogoutOpen] = useState(false);
-
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -49,73 +46,65 @@ const StudentDashboard = () => {
         navigate('/');
     };
 
-    // Toggle drawer
-    const toggleDrawer = () => {
-        setOpen(!open);
-    };
+    const studentLinks = [
+        { title: 'Home', icon: <HomeIcon />, path: '/' },
+        { title: 'Subjects', icon: <AssignmentIcon />, path: '/Student/subjects' },
+        { title: 'Attendance', icon: <ClassOutlinedIcon />, path: '/Student/attendance' },
+        { title: 'Complain', icon: <AnnouncementOutlinedIcon />, path: '/Student/complain' },
+    ];
 
-    // Auto-close overlay drawer on route change
-    const location = useLocation();
-    useEffect(() => {
-        if (isMobile && open) {
-            setOpen(false);
-        }
-    }, [location.pathname, isMobile, open]);
+    const [mobileOpen, setMobileOpen] = useState(false);
+
+    const handleDrawerToggle = () => {
+        setMobileOpen(!mobileOpen);
+    };
 
     return (
         <>
             <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
                 <CssBaseline />
-                <AppBar open={open} position='absolute'>
-                    <Toolbar sx={{ pr: '24px' }}>
-                        <IconButton
-                            edge="start"
-                            color="inherit"
-                            aria-label="open drawer"
-                            onClick={toggleDrawer}
-                            sx={{
-                                marginRight: '36px',
-                                ...(open && !isMobile && { display: 'none' }),
-                            }}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Typography
-                            component="h1"
-                            variant="h6"
-                            color="inherit"
-                            noWrap
-                            sx={{ flexGrow: 1 }}
-                        >
-                            Student Dashboard
-                        </Typography>
+                <AppBar position='absolute' open={false}>
+                    <Toolbar sx={{ pr: '24px', display: 'flex', alignItems: 'center' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+                            <img
+                                src="/favicon.png"
+                                alt="TKS Logo"
+                                style={{ height: '32px', marginRight: '12px' }}
+                            />
+                            <Box>
+                                <Typography
+                                    component="h1"
+                                    variant="h6"
+                                    color="var(--text-primary)"
+                                    noWrap
+                                    sx={{
+                                        fontWeight: 700,
+                                        letterSpacing: '-0.5px',
+                                        lineHeight: 1.2,
+                                        fontSize: { xs: '0.9rem', sm: '1.25rem' }
+                                    }}
+                                >
+                                    The Knowledge School
+                                </Typography>
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: 'var(--color-primary-600)',
+                                        fontWeight: 600,
+                                        display: { xs: 'none', sm: 'block' }
+                                    }}
+                                >
+                                    Kulluwal Campus | Student
+                                </Typography>
+                            </Box>
+                        </Box>
                         <AccountMenu onLogout={handleLogoutOpen} />
                     </Toolbar>
                 </AppBar>
-                <Drawer
-                    variant={isMobile ? "temporary" : "permanent"}
-                    open={open}
-                    onClose={toggleDrawer}
-                    sx={styles.drawerStyled}
-                    PaperProps={{
-                        sx: {
-                            backgroundColor: 'var(--bg-paper)',
-                            width: isMobile ? '260px' : undefined
-                        }
-                    }}
-                >
-                    <Toolbar sx={styles.toolBarStyled}>
-                        <IconButton onClick={toggleDrawer}>
-                            <ChevronLeftIcon />
-                        </IconButton>
-                    </Toolbar>
-                    <Divider />
-                    <List component="nav" sx={{ flex: 1, overflow: 'hidden' }}>
-                        <StudentSideBar onLogout={handleLogoutOpen} />
-                    </List>
-                </Drawer>
+
                 <Box component="main" sx={styles.boxStyled}>
                     <Toolbar />
+                    <TopNavBar links={studentLinks} title="Student Dashboard" />
                     <Box sx={{
                         flex: 1,
                         overflow: 'hidden',
@@ -166,8 +155,5 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'flex-end',
         px: [1],
-    },
-    drawerStyled: {
-        display: "flex"
-    },
+    }
 }
