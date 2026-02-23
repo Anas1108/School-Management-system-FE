@@ -210,11 +210,7 @@ const FeeDashboard = () => {
                             Fee Management
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
-                            <Tooltip title="Generate Invoices">
-                                <IconButton size="small" onClick={() => setGenModalOpen(true)} sx={{ bgcolor: 'primary.main', color: 'white', '&:hover': { bgcolor: 'primary.dark' }, borderRadius: 'var(--border-radius-md)' }}>
-                                    <PaymentsIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
+
                             <Tooltip title="Defaulters">
                                 <IconButton size="small" color="error" onClick={() => navigate('/Admin/fees/defaulters')} sx={{ border: '1px solid', borderColor: 'error.main', borderRadius: 'var(--border-radius-md)' }}>
                                     <WarningAmberIcon fontSize="small" />
@@ -241,7 +237,7 @@ const FeeDashboard = () => {
                     {/* Generated Invoices List */}
                     <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: 2, mb: 2 }}>
                         <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>Monthly Invoices</Typography>
-                        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', width: { xs: '100%', sm: 'auto' } }}>
+                        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap', width: { xs: '100%', sm: 'auto' } }}>
                             <TextField
                                 size="small"
                                 placeholder="Search Invoices..."
@@ -283,6 +279,11 @@ const FeeDashboard = () => {
                                     </MenuItem>
                                 ))}
                             </TextField>
+                            <Tooltip title="Generate Invoices">
+                                <IconButton onClick={() => setGenModalOpen(true)} sx={{ bgcolor: 'primary.main', color: 'white', '&:hover': { bgcolor: 'primary.dark' }, borderRadius: 'var(--border-radius-md)' }}>
+                                    <PaymentsIcon />
+                                </IconButton>
+                            </Tooltip>
                         </Box>
                     </Box>
                     <Box sx={{ borderRadius: 'var(--border-radius-lg)', overflow: 'hidden', border: '1px solid var(--border-color)', background: 'var(--bg-paper)' }}>
