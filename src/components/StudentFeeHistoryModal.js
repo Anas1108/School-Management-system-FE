@@ -2,8 +2,9 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
     Dialog, DialogTitle, DialogContent, DialogActions, Button,
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-    Typography, Box, CircularProgress, Chip, Divider, TextField, InputAdornment
+    Typography, Box, CircularProgress, Chip, Divider, TextField, InputAdornment, IconButton, Tooltip
 } from '@mui/material';
+import PrintIcon from '@mui/icons-material/Print';
 import axios from 'axios';
 import CustomModal from './CustomModal';
 
@@ -74,6 +75,125 @@ const StudentFeeHistoryModal = ({ open, handleClose, studentId }) => {
         "July", "August", "September", "October", "November", "December"
     ];
 
+    const handlePrint = (invoice) => {
+        const printWindow = window.open('', '_blank');
+        const due = (invoice.totalAmount + invoice.lateFine) - invoice.paidAmount;
+
+        const htmlContent = `
+            <html>
+                <head>
+                    <title>Fee Invoice - ${history?.studentName}</title>
+                    <style>
+                        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; color: #333; }
+                        .invoice-box { max-width: 800px; margin: auto; padding: 30px; border: 1px solid #eee; box-shadow: 0 0 10px rgba(0, 0, 0, 0.15); font-size: 16px; line-height: 24px; }
+                        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
+                        .school-name { font-size: 24px; font-weight: bold; color: #1976d2; }
+                        .invoice-title { font-size: 28px; font-weight: bold; text-align: right; color: #555; }
+                        .details { display: flex; justify-content: space-between; margin-bottom: 30px; }
+                        .details-section { width: 45%; }
+                        table { width: 100%; line-height: inherit; text-align: left; border-collapse: collapse; margin-bottom: 20px; }
+                        table th, table td { padding: 12px; border: 1px solid #ddd; }
+                        table th { background-color: #f5f5f5; font-weight: bold; }
+                        .total-section { display: flex; justify-content: flex-end; }
+                        .total-box { width: 300px; }
+                        .total-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #ddd; }
+                        .total-row.grand-total { font-weight: bold; font-size: 18px; border-bottom: 2px solid #333; padding-top: 12px; }
+                        .footer { margin-top: 50px; text-align: center; font-size: 14px; color: #777; border-top: 1px solid #eee; padding-top: 20px; }
+                        @media print {
+                            .invoice-box { box-shadow: none; border: none; padding: 0; }
+                            body { -webkit-print-color-adjust: exact; padding: 0; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="invoice-box">
+                        <div class="header">
+                            <div>
+                                <div class="school-name">The Knowledge School Kulluwal Campus</div>
+                                <div>Fee Department</div>
+                            </div>
+                            <div class="invoice-title">INVOICE</div>
+                        </div>
+                        
+                        <div class="details">
+                            <div class="details-section">
+                                <strong>Billed To:</strong><br>
+                                Student Name: ${history?.studentName}<br>
+                                Class: ${history?.className}<br>
+                                Roll Number: ${history?.rollNum || 'N/A'}
+                            </div>
+                            <div class="details-section" style="text-align: right;">
+                                <strong>Invoice Details:</strong><br>
+                                Challan #: ${invoice.challanNumber}<br>
+                                Month: ${monthNames[parseInt(invoice.month) - 1]} ${invoice.year}<br>
+                                Status: <span style="color: ${invoice.status === 'Paid' ? 'green' : invoice.status === 'Partial' ? 'orange' : 'red'}; font-weight: bold;">${invoice.status}</span>
+                            </div>
+                        </div>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th style="text-align: right;">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${invoice.feeBreakdown && invoice.feeBreakdown.length > 0 ?
+                invoice.feeBreakdown.map(head => `
+                                    <tr>
+                                        <td>${head.headName}</td>
+                                        <td style="text-align: right;">${formatPKR(head.amount)}</td>
+                                    </tr>
+                                    `).join('')
+                : `
+                                <tr>
+                                    <td>Tuition Fee - ${monthNames[parseInt(invoice.month) - 1]} ${invoice.year}</td>
+                                    <td style="text-align: right;">${formatPKR(invoice.totalAmount)}</td>
+                                </tr>
+                                `}
+                                ${invoice.lateFine > 0 ? `
+                                <tr>
+                                    <td>Late Fine</td>
+                                    <td style="text-align: right;">${formatPKR(invoice.lateFine)}</td>
+                                </tr>
+                                ` : ''}
+                            </tbody>
+                        </table>
+
+                        <div class="total-section">
+                            <div class="total-box">
+                                <div class="total-row">
+                                    <span>Total Amount:</span>
+                                    <span>${formatPKR(invoice.totalAmount + invoice.lateFine)}</span>
+                                </div>
+                                <div class="total-row">
+                                    <span>Paid Amount:</span>
+                                    <span>${formatPKR(invoice.paidAmount)}</span>
+                                </div>
+                                <div class="total-row grand-total" style="color: ${due > 0 ? 'red' : 'green'};">
+                                    <span>Balance Due:</span>
+                                    <span>${formatPKR(due)}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="footer">
+                            <p>This is a computer generated invoice and does not require a physical signature.</p>
+                        </div>
+                    </div>
+                </body>
+            </html>
+        `;
+
+        printWindow.document.open();
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+
+        setTimeout(() => {
+            printWindow.print();
+        }, 250);
+    };
+
     return (
         <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
             <DialogTitle>Student Fee History</DialogTitle>
@@ -135,16 +255,23 @@ const StudentFeeHistoryModal = ({ open, handleClose, studentId }) => {
                                                         />
                                                     </TableCell>
                                                     <TableCell align="center">
-                                                        {inv.status !== 'Paid' && (
-                                                            <Button
-                                                                variant="contained"
-                                                                color="primary"
-                                                                size="small"
-                                                                onClick={() => handlePayClick(inv)}
-                                                            >
-                                                                Pay
-                                                            </Button>
-                                                        )}
+                                                        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+                                                            {inv.status !== 'Paid' && (
+                                                                <Button
+                                                                    variant="contained"
+                                                                    color="primary"
+                                                                    size="small"
+                                                                    onClick={() => handlePayClick(inv)}
+                                                                >
+                                                                    Pay
+                                                                </Button>
+                                                            )}
+                                                            <Tooltip title="Print Invoice">
+                                                                <IconButton color="info" size="small" onClick={() => handlePrint(inv)}>
+                                                                    <PrintIcon fontSize="small" />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                        </Box>
                                                     </TableCell>
                                                 </TableRow>
                                             );
