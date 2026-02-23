@@ -52,6 +52,7 @@ import FeeDashboard from './feeRelated/FeeDashboard';
 import FeeDefaulters from './feeRelated/FeeDefaulters';
 import FeeStructure from './feeRelated/FeeStructure';
 import FeeSearch from './feeRelated/FeeSearch';
+import FeeDiscounts from './feeRelated/FeeDiscounts';
 import BreadcrumbsNav from '../../components/BreadcrumbsNav';
 
 const AdminDashboard = () => {
@@ -223,8 +224,7 @@ const AdminDashboard = () => {
                         <Route path="/Admin/fees/defaulters" element={<FeeDefaulters />} />
                         <Route path="/Admin/fees/structure" element={<FeeStructure />} />
                         <Route path="/Admin/fees/search" element={<FeeSearch />} />
-
-                        <Route path="/Admin/fees/search" element={<FeeSearch />} />
+                        <Route path="/Admin/fees/discounts" element={<FeeDiscounts />} />
                     </Routes>
                     <LogoutModal
                         open={logoutOpen}

@@ -4,7 +4,7 @@ import { getUserDetails } from '../../../redux/userRelated/userHandle';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import { useNavigate, useParams } from 'react-router-dom'
 import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
-import { Box, Button, Collapse, IconButton, Table, TableBody, TableHead, Typography, Tab, Paper, BottomNavigation, BottomNavigationAction, Container, Grid, Avatar } from '@mui/material';
+import { Box, Button, Collapse, IconButton, Table, TableBody, TableHead, Typography, Tab, Paper, BottomNavigation, BottomNavigationAction, Container, Grid, Avatar, Dialog, DialogTitle, DialogContent, TextField, MenuItem, DialogActions, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
@@ -22,12 +22,13 @@ import Popup from '../../../components/Popup';
 import styled from 'styled-components';
 import ConfirmationModal from '../../../components/ConfirmationModal';
 import CustomLoader from '../../../components/CustomLoader';
+import axios from 'axios';
 
 const ViewStudent = () => {
     const navigate = useNavigate()
     const params = useParams()
     const dispatch = useDispatch()
-    const { userDetails, response, loading, error } = useSelector((state) => state.user);
+    const { currentUser, userDetails, response, loading, error } = useSelector((state) => state.user);
 
     const studentID = params.id
     const address = "Student"
@@ -67,6 +68,24 @@ const ViewStudent = () => {
             [subId]: !prevState[subId],
         }));
     };
+
+    const [studentDiscounts, setStudentDiscounts] = useState([]);
+    const [fetchDiscountsTrigger, setFetchDiscountsTrigger] = useState(0);
+
+    const fetchDiscounts = React.useCallback(async () => {
+        try {
+            const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/StudentDiscounts/${studentID}`);
+            if (result.data) {
+                setStudentDiscounts(result.data);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }, [studentID]);
+
+    useEffect(() => {
+        fetchDiscounts();
+    }, [fetchDiscounts, fetchDiscountsTrigger]);
 
     const [value, setValue] = useState('1');
 
@@ -384,6 +403,185 @@ const ViewStudent = () => {
         )
     }
 
+    const StudentDiscountsSection = () => {
+        const [discountGroups, setDiscountGroups] = useState([]);
+        const [openAssignModal, setOpenAssignModal] = useState(false);
+        const [discountMode, setDiscountMode] = useState('preset'); // 'preset' or 'custom'
+        const [newDiscount, setNewDiscount] = useState({ discountGroup: '', customName: '', type: 'Percentage', value: 0 });
+
+        useEffect(() => {
+            const fetchGroups = async () => {
+                if (currentUser?._id) {
+                    try {
+                        const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/DiscountGroups/${currentUser._id}`);
+                        setDiscountGroups(res.data);
+                    } catch (e) { console.error(e); }
+                }
+            };
+            fetchGroups();
+        }, [currentUser]);
+
+        const handleAssignDiscount = async () => {
+            try {
+                await axios.post(`${process.env.REACT_APP_BASE_URL}/StudentDiscountAssign`, {
+                    studentId: studentID,
+                    adminID: currentUser._id,
+                    ...newDiscount
+                });
+                setOpenAssignModal(false);
+                setFetchDiscountsTrigger(prev => prev + 1);
+                setMessage("Discount Assigned Successfully");
+                setSeverity("success");
+                setShowPopup(true);
+            } catch (err) {
+                console.error(err);
+                setMessage(err.response?.data?.message || "Failed to assign discount");
+                setSeverity("error");
+                setShowPopup(true);
+            }
+        };
+
+        const handleRemoveDiscount = async (id) => {
+            if (!window.confirm("Remove this discount?")) return;
+            try {
+                await axios.delete(`${process.env.REACT_APP_BASE_URL}/StudentDiscountRemove/${id}`);
+                setFetchDiscountsTrigger(prev => prev + 1);
+                setMessage("Discount Removed");
+                setSeverity("success");
+                setShowPopup(true);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        return (
+            <>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="h6" fontWeight="bold">Active Discounts</Typography>
+                    <Button variant="contained" onClick={() => setOpenAssignModal(true)} sx={{ borderRadius: 2, textTransform: 'none', boxShadow: 'none' }}>Assign Discount</Button>
+                </Box>
+
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {studentDiscounts.length > 0 ? studentDiscounts.map(d => (
+                        <Box key={d._id} sx={{ p: 2, border: '1px solid var(--border-color)', borderRadius: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Box>
+                                <Typography variant="subtitle1" fontWeight="bold">
+                                    {d.discountGroup ? d.discountGroup.name : d.customName}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    {d.type}: {d.value}{d.type === 'Percentage' ? '%' : ' PKR'}
+                                </Typography>
+                            </Box>
+                            <IconButton color="error" onClick={() => handleRemoveDiscount(d._id)}>
+                                <DeleteIcon />
+                            </IconButton>
+                        </Box>
+                    )) : (
+                        <Typography color="text.secondary">No active discounts.</Typography>
+                    )}
+                </Box>
+
+                <Dialog open={openAssignModal} onClose={() => setOpenAssignModal(false)} maxWidth="sm" fullWidth>
+                    <DialogTitle sx={{ fontWeight: 'bold' }}>Assign Discount to Student</DialogTitle>
+                    <DialogContent>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                                <ToggleButtonGroup
+                                    color="primary"
+                                    value={discountMode}
+                                    exclusive
+                                    onChange={(e, newMode) => {
+                                        if (newMode !== null) {
+                                            setDiscountMode(newMode);
+                                            // Reset fields when switching modes
+                                            setNewDiscount({ discountGroup: '', customName: '', type: 'Percentage', value: 0 });
+                                        }
+                                    }}
+                                    aria-label="Discount Mode"
+                                >
+                                    <ToggleButton value="preset">Preset Discount</ToggleButton>
+                                    <ToggleButton value="custom">Custom Discount</ToggleButton>
+                                </ToggleButtonGroup>
+                            </Box>
+
+                            {discountMode === 'preset' ? (
+                                <TextField
+                                    select
+                                    label="Discount Preset"
+                                    value={newDiscount.discountGroup}
+                                    onChange={(e) => {
+                                        const selectedId = e.target.value;
+                                        if (selectedId === '') {
+                                            setNewDiscount({ discountGroup: '', customName: '', type: 'Percentage', value: 0 });
+                                        } else {
+                                            const group = discountGroups.find(g => g._id === selectedId);
+                                            setNewDiscount({
+                                                discountGroup: selectedId,
+                                                customName: '',
+                                                type: group.type,
+                                                value: group.value
+                                            });
+                                        }
+                                    }}
+                                    fullWidth
+                                    helperText={newDiscount.discountGroup ? "Values are auto-populated from the preset and locked securely." : "Select a predefined preset."}
+                                >
+                                    <MenuItem value=""><em>-- Select a Preset --</em></MenuItem>
+                                    {discountGroups.map(g => (
+                                        <MenuItem key={g._id} value={g._id}>{g.name} ({g.type === 'Percentage' ? g.value + '%' : 'PKR ' + g.value})</MenuItem>
+                                    ))}
+                                </TextField>
+                            ) : (
+                                <TextField
+                                    label="Custom Discount Name"
+                                    value={newDiscount.customName}
+                                    onChange={(e) => setNewDiscount({ ...newDiscount, customName: e.target.value })}
+                                    fullWidth
+                                    required
+                                />
+                            )}
+
+                            <TextField
+                                select
+                                label="Discount Type"
+                                value={newDiscount.type}
+                                onChange={(e) => setNewDiscount({ ...newDiscount, type: e.target.value })}
+                                fullWidth
+                                disabled={discountMode === 'preset'}
+                            >
+                                <MenuItem value="Percentage">Percentage (%)</MenuItem>
+                                <MenuItem value="FixedAmount">Fixed Amount (PKR)</MenuItem>
+                            </TextField>
+
+                            <TextField
+                                label="Value"
+                                type="number"
+                                value={newDiscount.value}
+                                onChange={(e) => {
+                                    let val = Number(e.target.value);
+                                    if (newDiscount.type === 'Percentage') {
+                                        if (val < 0) val = 0;
+                                        if (val > 100) val = 100;
+                                    } else {
+                                        if (val < 0) val = 0;
+                                    }
+                                    setNewDiscount({ ...newDiscount, value: val });
+                                }}
+                                fullWidth
+                                inputProps={newDiscount.type === 'Percentage' ? { min: 0, max: 100 } : { min: 0 }}
+                                disabled={discountMode === 'preset'}
+                            />
+                        </Box>
+                    </DialogContent>
+                    <DialogActions sx={{ p: 3 }}>
+                        <Button onClick={() => setOpenAssignModal(false)} color="inherit">Cancel</Button>
+                        <Button variant="contained" onClick={handleAssignDiscount}>Assign</Button>
+                    </DialogActions>
+                </Dialog>
+            </>
+        )
+    }
+
     return (
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             {loading
@@ -428,6 +626,7 @@ const ViewStudent = () => {
                                     <Tab label="Details" value="1" />
                                     <Tab label="Attendance" value="2" />
                                     <Tab label="Marks" value="3" />
+                                    <Tab label="Discounts" value="4" />
                                 </TabList>
                             </Box>
 
@@ -439,6 +638,9 @@ const ViewStudent = () => {
                             </TabPanel>
                             <TabPanel value="3" sx={{ p: 4 }}>
                                 <StudentMarksSection />
+                            </TabPanel>
+                            <TabPanel value="4" sx={{ p: 4 }}>
+                                <StudentDiscountsSection />
                             </TabPanel>
                         </Paper>
                     </TabContext>

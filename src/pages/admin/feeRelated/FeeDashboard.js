@@ -14,6 +14,7 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PaymentsIcon from '@mui/icons-material/Payments';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import CustomModal from '../../../components/CustomModal';
 import CustomLoader from '../../../components/CustomLoader';
 
@@ -217,6 +218,9 @@ const FeeDashboard = () => {
                             </Button>
                             <Button variant="outlined" color="primary" onClick={() => navigate('/Admin/fees/structure')} startIcon={<SettingsIcon />} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none' }}>
                                 Config Fees
+                            </Button>
+                            <Button variant="contained" color="secondary" onClick={() => navigate('/Admin/fees/discounts')} startIcon={<LocalOfferIcon />} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none', boxShadow: 'none' }}>
+                                Discounts
                             </Button>
                             <Button variant="contained" color="info" onClick={() => navigate('/Admin/fees/search')} startIcon={<SearchIcon />} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none', boxShadow: 'none' }}>
                                 Search

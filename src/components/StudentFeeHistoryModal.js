@@ -152,6 +152,13 @@ const StudentFeeHistoryModal = ({ open, handleClose, studentId }) => {
                                     <td style="text-align: right;">${formatPKR(invoice.totalAmount)}</td>
                                 </tr>
                                 `}
+                                ${invoice.discountBreakdown && invoice.discountBreakdown.length > 0 ?
+                invoice.discountBreakdown.map(discount => `
+                                    <tr>
+                                        <td>Discount: ${discount.discountName}</td>
+                                        <td style="text-align: right; color: green;">-${formatPKR(discount.amount)}</td>
+                                    </tr>
+                                    `).join('') : ''}
                                 ${invoice.lateFine > 0 ? `
                                 <tr>
                                     <td>Late Fine</td>
