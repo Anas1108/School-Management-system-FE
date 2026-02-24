@@ -1,25 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
     CssBaseline,
     Box,
     Toolbar,
-    List,
     Typography,
-    Divider,
-    IconButton,
-    useMediaQuery,
-    useTheme,
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import TeacherSideBar from './TeacherSideBar';
-import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import LogoutModal from '../../components/LogoutModal';
+import TopNavBar from '../../components/TopNavBar';
 import AccountMenu from '../../components/AccountMenu';
-import { AppBar, Drawer } from '../../components/styles';
+import { AppBar } from '../../components/styles';
 import StudentAttendance from '../admin/studentRelated/StudentAttendance';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { authLogout } from '../../redux/userRelated/userSlice';
+
+// Icons for TopNavBar
+import HomeIcon from '@mui/icons-material/Home';
+import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
+import AnnouncementOutlinedIcon from '@mui/icons-material/AnnouncementOutlined';
 
 import TeacherClassDetails from './TeacherClassDetails';
 import TeacherComplain from './TeacherComplain';
@@ -30,13 +28,11 @@ import StudentExamMarks from '../admin/studentRelated/StudentExamMarks';
 import BreadcrumbsNav from '../../components/BreadcrumbsNav';
 
 const TeacherDashboard = () => {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-    const [open, setOpen] = useState(!isMobile);
     const [logoutOpen, setLogoutOpen] = useState(false);
-
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { currentUser } = useSelector((state) => state.user);
+    const sclassName = currentUser.teachSclass;
 
     const handleLogoutOpen = () => {
         setLogoutOpen(true);
@@ -52,96 +48,86 @@ const TeacherDashboard = () => {
         navigate('/');
     };
 
-    // Toggle drawer
-    const toggleDrawer = () => {
-        setOpen(!open);
-    };
+    const teacherLinks = [
+        { title: 'Home', icon: <HomeIcon />, path: '/' },
+        { title: `Class ${sclassName?.sclassName || ''}`, icon: <ClassOutlinedIcon />, path: '/Teacher/class' },
+        { title: 'Complain', icon: <AnnouncementOutlinedIcon />, path: '/Teacher/complain' },
+    ];
 
-    // Auto-close overlay drawer on route change
-    const location = useLocation();
-    useEffect(() => {
-        if (isMobile && open) {
-            setOpen(false);
-        }
-    }, [location.pathname, isMobile, open]);
+
 
     return (
         <>
             <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
                 <CssBaseline />
-                <AppBar open={open} position='absolute'>
-                    <Toolbar sx={{ pr: '24px' }}>
-                        <IconButton
-                            edge="start"
-                            color="inherit"
-                            aria-label="open drawer"
-                            onClick={toggleDrawer}
-                            sx={{
-                                marginRight: '36px',
-                                ...(open && !isMobile && { display: 'none' }),
-                            }}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Typography
-                            component="h1"
-                            variant="h6"
-                            color="inherit"
-                            noWrap
-                            sx={{ flexGrow: 1 }}
-                        >
-                            Teacher Dashboard
-                        </Typography>
+                <AppBar position='absolute' open={false}>
+                    <Toolbar sx={{ pr: '24px', display: 'flex', alignItems: 'center' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+                            <img
+                                src="/favicon.png"
+                                alt="TKS Logo"
+                                style={{ height: '32px', marginRight: '12px' }}
+                            />
+                            <Box>
+                                <Typography
+                                    component="h1"
+                                    variant="h6"
+                                    color="var(--text-primary)"
+                                    noWrap
+                                    sx={{
+                                        fontWeight: 700,
+                                        letterSpacing: '-0.5px',
+                                        lineHeight: 1.2,
+                                        fontSize: { xs: '0.9rem', sm: '1.25rem' }
+                                    }}
+                                >
+                                    The Knowledge School
+                                </Typography>
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: 'var(--color-primary-600)',
+                                        fontWeight: 600,
+                                        display: { xs: 'none', sm: 'block' }
+                                    }}
+                                >
+                                    Kulluwal Campus | Teacher
+                                </Typography>
+                            </Box>
+                        </Box>
                         <AccountMenu onLogout={handleLogoutOpen} />
                     </Toolbar>
                 </AppBar>
-                <Drawer
-                    variant={isMobile ? "temporary" : "permanent"}
-                    open={open}
-                    onClose={toggleDrawer}
-                    sx={styles.drawerStyled}
-                    PaperProps={{
-                        sx: {
-                            backgroundColor: 'var(--bg-paper)',
-                            width: isMobile ? '260px' : undefined
-                        }
-                    }}
-                >
-                    <Toolbar sx={styles.toolBarStyled}>
-                        <IconButton onClick={toggleDrawer}>
-                            <ChevronLeftIcon />
-                        </IconButton>
-                    </Toolbar>
-                    <Divider />
-                    <List component="nav" sx={{ flex: 1, overflow: 'hidden' }}>
-                        <TeacherSideBar onLogout={handleLogoutOpen} />
-                    </List>
-                </Drawer>
+
                 <Box component="main" sx={styles.boxStyled}>
-                    <Toolbar />
+                    <Box sx={{ minHeight: '64px' }} />
+                    <TopNavBar links={teacherLinks} title="Teacher Dashboard" />
                     <Box sx={{
                         flex: 1,
-                        overflow: 'hidden',
+                        overflow: 'auto',
                         background: 'var(--bg-body)',
-                        p: { xs: 2, sm: 3, md: 4 } // Responsive padding
+                        px: { xs: 2, sm: 3, md: 4 },
+                        pb: { xs: 2, sm: 3, md: 4 },
                     }}>
                         <BreadcrumbsNav />
-                        <Routes>
-                            <Route path="/" element={<TeacherHomePage />} />
-                            <Route path='*' element={<Navigate to="/" />} />
-                            <Route path="/Teacher/dashboard" element={<TeacherHomePage />} />
-                            <Route path="/Teacher/profile" element={<TeacherProfile />} />
+                        <Box sx={{ pt: 0 }}>
+                            <Routes>
+                                <Route path="/" element={<TeacherHomePage />} />
+                                <Route path='*' element={<Navigate to="/" />} />
+                                <Route path="/Teacher/dashboard" element={<TeacherHomePage />} />
+                                <Route path="/Teacher/profile" element={<TeacherProfile />} />
 
-                            <Route path="/Teacher/complain" element={<TeacherComplain />} />
+                                <Route path="/Teacher/complain" element={<TeacherComplain />} />
 
-                            <Route path="/Teacher/class" element={<TeacherClassDetails />} />
-                            <Route path="/Teacher/class/student/:id" element={<TeacherViewStudent />} />
+                                <Route path="/Teacher/class" element={<TeacherClassDetails />} />
+                                <Route path="/Teacher/class/student/:id" element={<TeacherViewStudent />} />
 
-                            <Route path="/Teacher/class/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
-                            <Route path="/Teacher/class/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
+                                <Route path="/Teacher/class/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
+                                <Route path="/Teacher/class/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
 
-                            <Route path="/Teacher/class/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
-                        </Routes>
+                                <Route path="/Teacher/class/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
+                            </Routes>
+                        </Box>
                         <LogoutModal
                             open={logoutOpen}
                             handleClose={handleLogoutClose}
@@ -173,8 +159,5 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'flex-end',
         px: [1],
-    },
-    drawerStyled: {
-        display: "flex"
-    },
+    }
 }

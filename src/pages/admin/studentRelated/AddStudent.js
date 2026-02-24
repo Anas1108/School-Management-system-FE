@@ -5,7 +5,7 @@ import { registerUser, updateUser, getUserDetails } from '../../../redux/userRel
 import Popup from '../../../components/Popup';
 import { underControl } from '../../../redux/userRelated/userSlice';
 import { getAllSclasses } from '../../../redux/sclassRelated/sclassHandle';
-import { CircularProgress, Container, Paper, Typography, TextField, MenuItem, Button, Box, Grid, Stepper, Step, StepLabel } from '@mui/material';
+import { CircularProgress, Container, Paper, Typography, TextField, MenuItem, Button, Box, Grid, Stepper, Step, StepLabel, Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText, ListItemButton, Divider } from '@mui/material';
 import styled from 'styled-components';
 import axios from 'axios';
 
@@ -24,6 +24,7 @@ const AddStudent = ({ situation }) => {
     // Family State
     const [familyId, setFamilyId] = useState('');
     const [familyDetails, setFamilyDetails] = useState({
+        familyName: '',
         fatherName: '',
         fatherCNIC: '',
         fatherPhone: '',
@@ -35,6 +36,8 @@ const AddStudent = ({ situation }) => {
     });
     const [familyFound, setFamilyFound] = useState(false);
     const [searching, setSearching] = useState(false);
+    const [searchDialogOpen, setSearchDialogOpen] = useState(false);
+    const [familySearchResults, setFamilySearchResults] = useState([]);
 
     // Student State
     const [studentDetails, setStudentDetails] = useState({
@@ -104,6 +107,7 @@ const AddStudent = ({ situation }) => {
                 // Assuming backend populates familyId now as per plan
                 const fam = userDetails.familyId;
                 setFamilyDetails({
+                    familyName: fam.familyName || '',
                     fatherName: fam.fatherName || '',
                     fatherCNIC: fam.fatherCNIC || '',
                     fatherPhone: fam.fatherPhone || '',
@@ -160,22 +164,18 @@ const AddStudent = ({ situation }) => {
     };
 
     const searchFamily = async () => {
-        if (!familyDetails.fatherCNIC) {
-            setMessage("Please enter Father's CNIC");
+        if (!familyDetails.familyName) {
+            setMessage("Please enter Family Name");
             setSeverity("error");
             setShowPopup(true);
             return;
         }
         setSearching(true);
         try {
-            const result = await axios.post(`${process.env.REACT_APP_BASE_URL}/SearchFamily`, { cnic: familyDetails.fatherCNIC });
+            const result = await axios.post(`${process.env.REACT_APP_BASE_URL}/SearchFamily`, { familyName: familyDetails.familyName });
             if (result.data.message === "Family found") {
-                setFamilyId(result.data.family._id);
-                setFamilyDetails(result.data.family);
-                setFamilyFound(true);
-                setMessage("Family Found! Linked automatically.");
-                setSeverity("success");
-                setShowPopup(true);
+                setFamilySearchResults(result.data.families);
+                setSearchDialogOpen(true);
             } else {
                 setFamilyFound(false);
                 setFamilyId('');
@@ -192,14 +192,24 @@ const AddStudent = ({ situation }) => {
         setSearching(false);
     };
 
+    const handleSelectFamily = (family) => {
+        setFamilyId(family._id);
+        setFamilyDetails(family);
+        setFamilyFound(true);
+        setSearchDialogOpen(false);
+        setMessage("Family Found! Linked automatically.");
+        setSeverity("success");
+        setShowPopup(true);
+    };
+
     const handleNext = () => {
         if (activeStep === 0) {
             // Step 0 Validation
             const shouldValidateDetails = !familyFound || situation === "Edit";
 
             if (shouldValidateDetails) {
-                if (!familyDetails.fatherCNIC || familyDetails.fatherCNIC.length !== 15) {
-                    setMessage("Father's CNIC must be 13 digits (XXXXX-XXXXXXX-X)");
+                if (!familyDetails.familyName) {
+                    setMessage("Family Name is required");
                     setSeverity("error");
                     setShowPopup(true);
                     return;
@@ -313,12 +323,12 @@ const AddStudent = ({ situation }) => {
                                 <Box display="flex" gap={2}>
                                     <TextField
                                         fullWidth
-                                        label="Father's CNIC (XXXXX-XXXXXXX-X)"
-                                        name="fatherCNIC"
-                                        value={familyDetails.fatherCNIC}
+                                        label="Family Name"
+                                        name="familyName"
+                                        value={familyDetails.familyName}
                                         onChange={handleFamilyChange}
                                         required
-                                        disabled={situation !== "Edit" && familyFound} // Disable CNIC edit ONLY if found via search in Add mode
+                                        disabled={situation !== "Edit" && familyFound}
                                     />
                                     {situation !== "Edit" && (
                                         <Button
@@ -334,7 +344,7 @@ const AddStudent = ({ situation }) => {
                                         <Button variant="outlined" color="error" onClick={() => {
                                             setFamilyFound(false);
                                             setFamilyDetails({
-                                                fatherName: '', fatherCNIC: '', fatherPhone: '', fatherOccupation: '',
+                                                familyName: '', fatherName: '', fatherCNIC: '', fatherPhone: '', fatherOccupation: '',
                                                 motherName: '', motherPhone: '', homeAddress: '', guardianEmail: ''
                                             });
                                             setFamilyId('');
@@ -343,6 +353,15 @@ const AddStudent = ({ situation }) => {
                                         </Button>
                                     )}
                                 </Box>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Father's CNIC (Optional) (XXXXX-XXXXXXX-X)"
+                                    name="fatherCNIC"
+                                    value={familyDetails.fatherCNIC}
+                                    onChange={handleFamilyChange}
+                                />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <TextField
@@ -582,6 +601,32 @@ const AddStudent = ({ situation }) => {
                     </Box>
                 </form>
             </StyledPaper>
+
+            <Dialog open={searchDialogOpen} onClose={() => setSearchDialogOpen(false)} maxWidth="sm" fullWidth>
+                <DialogTitle>Select Family</DialogTitle>
+                <DialogContent dividers>
+                    {familySearchResults.length === 0 ? (
+                        <Typography>No families found with this name.</Typography>
+                    ) : (
+                        <List>
+                            {familySearchResults.map((family, index) => (
+                                <React.Fragment key={family._id}>
+                                    <ListItem disablePadding>
+                                        <ListItemButton onClick={() => handleSelectFamily(family)}>
+                                            <ListItemText
+                                                primary={`Family Name: ${family.familyName} | Father Name: ${family.fatherName}`}
+                                                secondary={`Address: ${family.homeAddress} | Phone: ${family.fatherPhone}`}
+                                            />
+                                        </ListItemButton>
+                                    </ListItem>
+                                    {index < familySearchResults.length - 1 && <Divider />}
+                                </React.Fragment>
+                            ))}
+                        </List>
+                    )}
+                </DialogContent>
+            </Dialog>
+
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} severity={severity} />
         </Container>
     )

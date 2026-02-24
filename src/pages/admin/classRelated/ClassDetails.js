@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { getClassDetails, getClassStudents, getSubjectList } from "../../../redux/sclassRelated/sclassHandle";
 
 import {
-    Box, Container, Typography, Tab, Paper, Grid, Tooltip, Button
+    Box, Container, Typography, Tab, Paper, Grid, Tooltip, IconButton
 } from '@mui/material';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
@@ -111,19 +111,18 @@ const ClassDetails = () => {
                             <Typography variant="h5" gutterBottom sx={{ mb: 0 }}>
                                 Subjects List:
                             </Typography>
-                            <Button
-                                variant="contained"
-                                startIcon={<AddIcon />}
-                                onClick={() => navigate("/Admin/addsubject/" + classID)}
-                                sx={{
-                                    textTransform: 'none', fontWeight: 600, fontFamily: 'var(--font-family-sans)',
-                                    borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--color-primary-600)',
-                                    boxShadow: 'none', px: 2.5, whiteSpace: 'nowrap',
-                                    '&:hover': { backgroundColor: 'var(--color-primary-700)', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
-                                }}
-                            >
-                                Add Subject
-                            </Button>
+                            <Tooltip title="Add Subject">
+                                <IconButton
+                                    onClick={() => navigate("/Admin/addsubject/" + classID)}
+                                    sx={{
+                                        bgcolor: 'var(--color-primary-600)', color: 'white',
+                                        '&:hover': { bgcolor: 'var(--color-primary-700)' },
+                                        borderRadius: 'var(--border-radius-md)'
+                                    }}
+                                >
+                                    <AddIcon />
+                                </IconButton>
+                            </Tooltip>
                         </Box>
                         <TableTemplate buttonHaver={SubjectsButtonHaver} columns={subjectColumns} rows={subjectRows} />
                     </>
@@ -191,19 +190,18 @@ const ClassDetails = () => {
                             <Typography variant="h5" gutterBottom sx={{ mb: 0 }}>
                                 Students List:
                             </Typography>
-                            <Button
-                                variant="contained"
-                                startIcon={<AddIcon />}
-                                onClick={() => navigate("/Admin/class/addstudents/" + classID)}
-                                sx={{
-                                    textTransform: 'none', fontWeight: 600, fontFamily: 'var(--font-family-sans)',
-                                    borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--color-primary-600)',
-                                    boxShadow: 'none', px: 2.5, whiteSpace: 'nowrap',
-                                    '&:hover': { backgroundColor: 'var(--color-primary-700)', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
-                                }}
-                            >
-                                Add Student
-                            </Button>
+                            <Tooltip title="Add Student">
+                                <IconButton
+                                    onClick={() => navigate("/Admin/class/addstudents/" + classID)}
+                                    sx={{
+                                        bgcolor: 'var(--color-primary-600)', color: 'white',
+                                        '&:hover': { bgcolor: 'var(--color-primary-700)' },
+                                        borderRadius: 'var(--border-radius-md)'
+                                    }}
+                                >
+                                    <AddIcon />
+                                </IconButton>
+                            </Tooltip>
                         </Box>
                         <TableTemplate buttonHaver={StudentsButtonHaver} columns={studentColumns} rows={studentRows} />
                     </>

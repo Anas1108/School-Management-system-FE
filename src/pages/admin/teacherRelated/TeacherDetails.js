@@ -3,7 +3,8 @@ import { getTeacherDetails } from '../../../redux/teacherRelated/teacherHandle';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Container, Typography, Box, Paper, Avatar, Grid, Chip, Tabs, Tab } from '@mui/material';
+import { Container, Typography, Box, Paper, Avatar, Grid, Chip, Tabs, Tab, Tooltip, IconButton } from '@mui/material';
+import { ArrowBack as ArrowBackIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 
 import ConfirmationModal from '../../../components/ConfirmationModal';
 import Popup from '../../../components/Popup';
@@ -93,16 +94,22 @@ const TeacherDetails = () => {
                                 </Typography>
                             </Box>
                         </Box>
-                        <Box sx={{ display: 'flex', gap: 2 }}>
-                            <Button variant="outlined" onClick={() => navigate("/Admin/teachers")}>
-                                Back
-                            </Button>
-                            <Button variant="contained" color="primary" onClick={() => navigate("/Admin/teachers/teacher/edit/" + teacherID)}>
-                                Edit Profile
-                            </Button>
-                            <Button variant="outlined" color="error" onClick={deleteHandler}>
-                                Delete
-                            </Button>
+                        <Box sx={{ display: 'flex', gap: 1.5 }}>
+                            <Tooltip title="Back">
+                                <IconButton size="small" onClick={() => navigate("/Admin/teachers")} sx={{ border: '1px solid var(--border-color)', borderRadius: 'var(--border-radius-md)' }}>
+                                    <ArrowBackIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Edit Profile">
+                                <IconButton size="small" onClick={() => navigate("/Admin/teachers/teacher/edit/" + teacherID)} sx={{ bgcolor: 'primary.main', color: 'white', '&:hover': { bgcolor: 'primary.dark' }, borderRadius: 'var(--border-radius-md)' }}>
+                                    <EditIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Delete">
+                                <IconButton size="small" color="error" onClick={deleteHandler} sx={{ border: '1px solid', borderColor: 'error.main', borderRadius: 'var(--border-radius-md)' }}>
+                                    <DeleteIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
                         </Box>
                     </Paper>
 

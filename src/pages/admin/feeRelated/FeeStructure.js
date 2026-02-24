@@ -2,10 +2,11 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
     Container, Box, Typography, TextField, MenuItem, Button, IconButton, Dialog,
     DialogTitle, DialogContent, DialogActions, Grid, InputAdornment, Table, TableBody,
-    TableCell, TableContainer, TableHead, TableRow, CircularProgress
+    TableCell, TableContainer, TableHead, TableRow, CircularProgress, Tooltip
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import { useSelector } from 'react-redux';
@@ -22,6 +23,7 @@ const FeeStructure = () => {
     // Fee Head State
     const [newHeadName, setNewHeadName] = useState('');
     const [newHeadDesc, setNewHeadDesc] = useState('');
+    const [editingHeadId, setEditingHeadId] = useState(null);
     const [headModalOpen, setHeadModalOpen] = useState(false);
 
     // Structure State
@@ -64,20 +66,59 @@ const FeeStructure = () => {
         }
     }, [selectedClass]);
 
-    const createFeeHead = async () => {
+    const handleOpenCreateHeadModal = () => {
+        setEditingHeadId(null);
+        setNewHeadName('');
+        setNewHeadDesc('');
+        setHeadModalOpen(true);
+    };
+
+    const handleOpenEditHeadModal = (head) => {
+        setEditingHeadId(head._id);
+        setNewHeadName(head.name);
+        setNewHeadDesc(head.description);
+        setHeadModalOpen(true);
+    };
+
+    const saveFeeHead = async () => {
         if (!newHeadName) return;
         try {
-            await axios.post(`${process.env.REACT_APP_BASE_URL}/FeeHeadCreate`, {
-                name: newHeadName,
-                description: newHeadDesc,
-                adminID: currentUser._id
-            });
-            setNewHeadName('');
-            setNewHeadDesc('');
+            if (editingHeadId) {
+                // Update
+                await axios.put(`${process.env.REACT_APP_BASE_URL}/FeeHeadUpdate/${editingHeadId}`, {
+                    name: newHeadName,
+                    description: newHeadDesc
+                });
+                setModalData({ open: true, title: 'Success', message: 'Fee Head updated', type: 'success' });
+            } else {
+                // Create
+                await axios.post(`${process.env.REACT_APP_BASE_URL}/FeeHeadCreate`, {
+                    name: newHeadName,
+                    description: newHeadDesc,
+                    adminID: currentUser._id
+                });
+                setModalData({ open: true, title: 'Success', message: 'Fee Head created', type: 'success' });
+            }
+
             setHeadModalOpen(false);
             fetchFeeHeads();
-        } catch (error) { console.error(error); }
-    }
+        } catch (error) {
+            console.error(error);
+            setModalData({ open: true, title: 'Error', message: error.response?.data?.message || 'Error saving Fee Head', type: 'error' });
+        }
+    };
+
+    const deleteFeeHead = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this Fee Head?")) return;
+        try {
+            await axios.delete(`${process.env.REACT_APP_BASE_URL}/FeeHeadDelete/${id}`);
+            setModalData({ open: true, title: 'Success', message: 'Fee Head deleted', type: 'success' });
+            fetchFeeHeads();
+        } catch (error) {
+            console.error(error);
+            setModalData({ open: true, title: 'Error', message: error.response?.data?.message || 'Error deleting Fee Head', type: 'error' });
+        }
+    };
 
     const fetchStructure = async (classId) => {
         try {
@@ -172,37 +213,27 @@ const FeeStructure = () => {
     }
 
     return (
-        <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
-            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: 2, mb: 2 }}>
+        <Container maxWidth={false} sx={{ mt: 0, mb: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'stretch', md: 'center' }, mb: 1, gap: 2 }}>
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
                     Fee Configuration
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                    <Button
-                        variant="outlined"
-                        startIcon={<ArrowBackIcon />}
-                        onClick={() => navigate('/Admin/fees')}
-                        sx={{ borderRadius: 'var(--border-radius-md)', px: 2, textTransform: 'none', borderColor: 'var(--border-color)' }}
-                    >
-                        Back to Dashboard
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        color="secondary"
-                        startIcon={<ListAltIcon />}
-                        onClick={handleViewAll}
-                        sx={{ borderRadius: 'var(--border-radius-md)', px: 2, textTransform: 'none' }}
-                    >
-                        View All Structures
-                    </Button>
-                    <Button
-                        variant="contained"
-                        startIcon={<AddIcon />}
-                        onClick={() => setHeadModalOpen(true)}
-                        sx={{ borderRadius: 'var(--border-radius-md)', px: 2, textTransform: 'none', boxShadow: 'none' }}
-                    >
-                        Create Fee Head
-                    </Button>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+                    <Tooltip title="Back to Dashboard">
+                        <IconButton size="small" onClick={() => navigate('/Admin/fees')} sx={{ border: '1px solid var(--border-color)', borderRadius: 'var(--border-radius-md)' }}>
+                            <ArrowBackIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="View All Structures">
+                        <IconButton size="small" color="secondary" onClick={handleViewAll} sx={{ border: '1px solid', borderColor: 'secondary.main', borderRadius: 'var(--border-radius-md)' }}>
+                            <ListAltIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Create Fee Head">
+                        <IconButton size="small" onClick={handleOpenCreateHeadModal} sx={{ bgcolor: 'primary.main', color: 'white', '&:hover': { bgcolor: 'primary.dark' }, borderRadius: 'var(--border-radius-md)' }}>
+                            <AddIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
                 </Box>
             </Box>
 
@@ -215,9 +246,19 @@ const FeeStructure = () => {
                         </Typography>
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                             {feeHeads.length > 0 ? feeHeads.map(head => (
-                                <Box key={head._id} sx={{ p: 1.5, borderRadius: 2, bgcolor: 'action.hover', border: '1px solid', borderColor: 'divider' }}>
-                                    <Typography variant="subtitle2" fontWeight="bold">{head.name}</Typography>
-                                    {head.description && <Typography variant="caption" color="text.secondary">{head.description}</Typography>}
+                                <Box key={head._id} sx={{ p: 1.5, borderRadius: 2, bgcolor: 'action.hover', border: '1px solid', borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Box>
+                                        <Typography variant="subtitle2" fontWeight="bold">{head.name}</Typography>
+                                        {head.description && <Typography variant="caption" color="text.secondary">{head.description}</Typography>}
+                                    </Box>
+                                    <Box sx={{ display: 'flex', gap: 0.5 }}>
+                                        <IconButton size="small" color="primary" onClick={() => handleOpenEditHeadModal(head)}>
+                                            <EditIcon fontSize="small" />
+                                        </IconButton>
+                                        <IconButton size="small" color="error" onClick={() => deleteFeeHead(head._id)}>
+                                            <DeleteIcon fontSize="small" />
+                                        </IconButton>
+                                    </Box>
                                 </Box>
                             )) : (
                                 <Typography variant="body2" color="text.secondary" align="center">No fee heads created yet.</Typography>
@@ -334,9 +375,9 @@ const FeeStructure = () => {
                 </Grid>
             </Grid>
 
-            {/* Create Fee Head Modal */}
+            {/* Create/Edit Fee Head Modal */}
             <Dialog open={headModalOpen} onClose={() => setHeadModalOpen(false)} maxWidth="xs" fullWidth>
-                <DialogTitle sx={{ fontWeight: 'bold' }}>Create New Fee Head</DialogTitle>
+                <DialogTitle sx={{ fontWeight: 'bold' }}>{editingHeadId ? 'Edit Fee Head' : 'Create New Fee Head'}</DialogTitle>
                 <DialogContent>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
                         <TextField
@@ -357,7 +398,7 @@ const FeeStructure = () => {
                 </DialogContent>
                 <DialogActions sx={{ p: 3 }}>
                     <Button onClick={() => setHeadModalOpen(false)} color="inherit">Cancel</Button>
-                    <Button variant="contained" onClick={createFeeHead}>Create Head</Button>
+                    <Button variant="contained" onClick={saveFeeHead}>{editingHeadId ? 'Save Changes' : 'Create Head'}</Button>
                 </DialogActions>
             </Dialog>
 

@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
     Container, Box, Typography, Button, TextField, MenuItem, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Chip, Dialog, DialogTitle,
-    DialogContent, DialogActions, Menu, Checkbox, ListItemText, IconButton
+    DialogContent, DialogActions, Menu, Checkbox, ListItemText, IconButton, Tooltip
 } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
@@ -14,6 +14,7 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PaymentsIcon from '@mui/icons-material/Payments';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import CustomModal from '../../../components/CustomModal';
 import CustomLoader from '../../../components/CustomLoader';
 
@@ -53,6 +54,7 @@ const FeeDashboard = () => {
         status: [],
     });
     const [uniqueStatus, setUniqueStatus] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
 
 
 
@@ -143,7 +145,26 @@ const FeeDashboard = () => {
     const getFilteredInvoices = () => {
         return generatedInvoices.filter(row => {
             const statusMatch = filters.status.length === 0 || filters.status.includes(row.status);
-            return statusMatch;
+
+            let searchMatch = true;
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                const rollNum = row.studentId?.rollNum?.toString().toLowerCase() || '';
+                const name = row.studentId?.name?.toLowerCase() || '';
+                const challan = row.challanNumber?.toLowerCase() || '';
+                const statusStr = row.status?.toLowerCase() || '';
+                const monthName = new Date(0, row.month - 1).toLocaleString('default', { month: 'long' }).toLowerCase();
+                const yearStr = row.year?.toString() || '';
+
+                searchMatch = rollNum.includes(query) ||
+                    name.includes(query) ||
+                    challan.includes(query) ||
+                    statusStr.includes(query) ||
+                    monthName.includes(query) ||
+                    yearStr.includes(query);
+            }
+
+            return statusMatch && searchMatch;
         });
     };
 
@@ -179,35 +200,55 @@ const FeeDashboard = () => {
 
 
     return (
-        <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
+        <Container maxWidth={false} sx={{ mt: 0, mb: 2 }}>
             {loading ? (
                 <CustomLoader />
             ) : (
                 <>
-                    <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, gap: 2, mb: 2 }}>
+                    <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'stretch', md: 'center' }, mb: 1, gap: 2 }}>
                         <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
                             Fee Management
                         </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-                            <Button variant="contained" startIcon={<PaymentsIcon />} onClick={() => setGenModalOpen(true)} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none', boxShadow: 'none' }}>
-                                Generate Invoices
-                            </Button>
-                            <Button variant="outlined" color="error" onClick={() => navigate('/Admin/fees/defaulters')} startIcon={<WarningAmberIcon />} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none' }}>
-                                Defaulters
-                            </Button>
-                            <Button variant="outlined" color="primary" onClick={() => navigate('/Admin/fees/structure')} startIcon={<SettingsIcon />} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none' }}>
-                                Config Fees
-                            </Button>
-                            <Button variant="contained" color="info" onClick={() => navigate('/Admin/fees/search')} startIcon={<SearchIcon />} sx={{ borderRadius: 'var(--border-radius-md)', textTransform: 'none', boxShadow: 'none' }}>
-                                Search
-                            </Button>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+
+                            <Tooltip title="Defaulters">
+                                <IconButton size="small" color="error" onClick={() => navigate('/Admin/fees/defaulters')} sx={{ border: '1px solid', borderColor: 'error.main', borderRadius: 'var(--border-radius-md)' }}>
+                                    <WarningAmberIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Config Fees">
+                                <IconButton size="small" color="primary" onClick={() => navigate('/Admin/fees/structure')} sx={{ border: '1px solid', borderColor: 'primary.main', borderRadius: 'var(--border-radius-md)' }}>
+                                    <SettingsIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Discounts">
+                                <IconButton size="small" onClick={() => navigate('/Admin/fees/discounts')} sx={{ bgcolor: 'secondary.main', color: 'white', '&:hover': { bgcolor: 'secondary.dark' }, borderRadius: 'var(--border-radius-md)' }}>
+                                    <LocalOfferIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Search">
+                                <IconButton size="small" onClick={() => navigate('/Admin/fees/search')} sx={{ bgcolor: 'info.main', color: 'white', '&:hover': { bgcolor: 'info.dark' }, borderRadius: 'var(--border-radius-md)' }}>
+                                    <SearchIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
                         </Box>
                     </Box>
 
                     {/* Generated Invoices List */}
                     <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: 2, mb: 2 }}>
                         <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>Monthly Invoices</Typography>
-                        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', width: { xs: '100%', sm: 'auto' } }}>
+                        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap', width: { xs: '100%', sm: 'auto' } }}>
+                            <TextField
+                                size="small"
+                                placeholder="Search Invoices..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                InputProps={{
+                                    startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />,
+                                    style: { borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--bg-paper)' }
+                                }}
+                                sx={{ minWidth: 200, flexGrow: { xs: 1, sm: 0 } }}
+                            />
                             <TextField
                                 select
                                 size="small"
@@ -238,6 +279,11 @@ const FeeDashboard = () => {
                                     </MenuItem>
                                 ))}
                             </TextField>
+                            <Tooltip title="Generate Invoices">
+                                <IconButton onClick={() => setGenModalOpen(true)} sx={{ bgcolor: 'primary.main', color: 'white', '&:hover': { bgcolor: 'primary.dark' }, borderRadius: 'var(--border-radius-md)' }}>
+                                    <PaymentsIcon />
+                                </IconButton>
+                            </Tooltip>
                         </Box>
                     </Box>
                     <Box sx={{ borderRadius: 'var(--border-radius-lg)', overflow: 'hidden', border: '1px solid var(--border-color)', background: 'var(--bg-paper)' }}>

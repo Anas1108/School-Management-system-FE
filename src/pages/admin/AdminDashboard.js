@@ -1,23 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
     CssBaseline,
     Box,
     Toolbar,
-    List,
     Typography,
-    Divider,
-    IconButton,
-    useMediaQuery,
-    useTheme,
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
-import { AppBar, Drawer } from '../../components/styles';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import TopNavBar from '../../components/TopNavBar';
+import AccountMenu from '../../components/AccountMenu';
+import { AppBar } from '../../components/styles';
 import LogoutModal from '../../components/LogoutModal';
-import SideBar from './SideBar';
 import { useDispatch } from 'react-redux';
 import { authLogout } from '../../redux/userRelated/userSlice';
+
+// Icons for TopNavBar
+import HomeIcon from "@mui/icons-material/Home";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import AnnouncementOutlinedIcon from '@mui/icons-material/AnnouncementOutlined';
+import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
+import SupervisorAccountOutlinedIcon from '@mui/icons-material/SupervisorAccountOutlined';
+import ReportIcon from '@mui/icons-material/Report';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined';
 import AdminProfile from './AdminProfile';
 import AdminHomePage from './AdminHomePage';
 import AdminSettings from './AdminSettings';
@@ -46,20 +51,23 @@ import TeacherDetails from './teacherRelated/TeacherDetails';
 import AddClass from './classRelated/AddClass';
 import ClassDetails from './classRelated/ClassDetails';
 import ShowClasses from './classRelated/ShowClasses';
-import AccountMenu from '../../components/AccountMenu';
+
 
 import FeeDashboard from './feeRelated/FeeDashboard';
 import FeeDefaulters from './feeRelated/FeeDefaulters';
 import FeeStructure from './feeRelated/FeeStructure';
 import FeeSearch from './feeRelated/FeeSearch';
+import FeeDiscounts from './feeRelated/FeeDiscounts';
 import BreadcrumbsNav from '../../components/BreadcrumbsNav';
 
-const AdminDashboard = () => {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-    const [open, setOpen] = useState(!isMobile);
-    const [logoutOpen, setLogoutOpen] = useState(false);
+import ShowFamilies from './familyRelated/ShowFamilies';
+import ViewFamily from './familyRelated/ViewFamily';
+import AddFamily from './familyRelated/AddFamily';
+import EditFamily from './familyRelated/EditFamily';
+import FamilyRestroomOutlinedIcon from '@mui/icons-material/FamilyRestroomOutlined';
 
+const AdminDashboard = () => {
+    const [logoutOpen, setLogoutOpen] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -77,155 +85,138 @@ const AdminDashboard = () => {
         navigate('/');
     };
 
-    // Toggle drawer
-    const toggleDrawer = () => {
-        setOpen(!open);
-    };
-
-    // Auto-close overlay drawer on route change
-    const location = useLocation();
-    useEffect(() => {
-        if (isMobile && open) {
-            setOpen(false);
-        }
-    }, [location.pathname, isMobile, open]);
+    const adminLinks = [
+        { title: 'Home', icon: <HomeIcon />, path: '/' },
+        { title: 'Classes', icon: <ClassOutlinedIcon />, path: '/Admin/classes' },
+        { title: 'Subjects', icon: <AssignmentIcon />, path: '/Admin/subjects' },
+        { title: 'Teachers', icon: <SupervisorAccountOutlinedIcon />, path: '/Admin/teachers' },
+        { title: 'Students', icon: <PersonOutlineIcon />, path: '/Admin/students' },
+        { title: 'Families', icon: <FamilyRestroomOutlinedIcon />, path: '/Admin/families' },
+        { title: 'Notices', icon: <AnnouncementOutlinedIcon />, path: '/Admin/notices' },
+        { title: 'Complains', icon: <ReportIcon />, path: '/Admin/complains' },
+        { title: 'Subject Allocation', icon: <AssignmentIndIcon />, path: '/Admin/subject-allocation' },
+        { title: 'Fee Management', icon: <MonetizationOnOutlinedIcon />, path: '/Admin/fees' },
+    ];
 
     return (
         <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
             <CssBaseline />
-            <AppBar open={open} position='absolute'>
-                <Toolbar sx={{ pr: '24px' }}>
-                    <IconButton
-                        edge="start"
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={toggleDrawer}
-                        sx={{
-                            marginRight: '36px',
-                            ...(open && !isMobile && { display: 'none' }),
-                            color: 'var(--color-primary-600)'
-                        }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography
-                        component="h1"
-                        variant="h6"
-                        color="var(--text-primary)"
-                        noWrap
-                        sx={{ flexGrow: 1, fontWeight: 700, letterSpacing: '-0.5px' }}
-                    >
-                        Admin Dashboard
-                    </Typography>
+            <AppBar position='absolute' open={false}>
+                <Toolbar sx={{ pr: '24px', display: 'flex', alignItems: 'center' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+                        <img
+                            src="/favicon.png"
+                            alt="TKS Logo"
+                            style={{ height: '32px', marginRight: '12px' }}
+                        />
+                        <Box>
+                            <Typography
+                                component="h1"
+                                variant="h6"
+                                color="var(--text-primary)"
+                                noWrap
+                                sx={{
+                                    fontWeight: 700,
+                                    letterSpacing: '-0.5px',
+                                    lineHeight: 1.2,
+                                    fontSize: { xs: '0.9rem', sm: '1.25rem' }
+                                }}
+                            >
+                                The Knowledge School
+                            </Typography>
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                    color: 'var(--color-primary-600)',
+                                    fontWeight: 600,
+                                    display: { xs: 'none', sm: 'block' }
+                                }}
+                            >
+                                Kulluwal Campus
+                            </Typography>
+                        </Box>
+                    </Box>
                     <AccountMenu onLogout={handleLogoutOpen} />
                 </Toolbar>
             </AppBar>
-            <Drawer
-                variant={isMobile ? "temporary" : "permanent"}
-                open={open}
-                onClose={toggleDrawer}
-                sx={styles.drawerStyled}
-                PaperProps={{
-                    sx: {
-                        backgroundColor: 'var(--bg-paper)',
-                        width: isMobile ? '260px' : undefined
-                    }
-                }}
-            >
-                <Toolbar sx={styles.toolBarStyled}>
-                    <Typography
-                        variant="h5"
-                        color="primary"
-                        sx={{
-                            fontWeight: 'bold',
-                            flexGrow: 1,
-                            ml: 2,
-                            background: 'var(--gradient-primary)',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            letterSpacing: '-1px'
-                        }}
-                    >
-                        TKS Kulluwal
-                    </Typography>
-                    <IconButton onClick={toggleDrawer} sx={{ color: 'var(--text-secondary)' }}>
-                        <ChevronLeftIcon />
-                    </IconButton>
-                </Toolbar>
-                <Divider />
-                <List component="nav" sx={{ flex: 1, overflow: 'hidden' }}>
-                    <SideBar open={open} onLogout={handleLogoutOpen} />
-                </List>
-            </Drawer>
 
             <Box component="main" sx={styles.boxStyled}>
-                <Toolbar />
+                <Box sx={{ minHeight: '64px' }} /> {/* Increased to match standard AppBar height */}
+                <TopNavBar links={adminLinks} title="TKS Kulluwal" />
                 <Box sx={{
                     flex: 1,
                     overflow: 'auto',
                     background: 'var(--bg-body)',
-                    p: { xs: 2, sm: 3, md: 4 } // Responsive padding
+                    px: { xs: 2, sm: 3, md: 4 },
+                    pb: { xs: 2, sm: 3, md: 4 },
                 }}>
                     <BreadcrumbsNav />
-                    <Routes>
-                        <Route path="/" element={<AdminHomePage />} />
-                        <Route path='*' element={<Navigate to="/" />} />
-                        <Route path="/Admin/dashboard" element={<AdminHomePage />} />
-                        <Route path="/Admin/profile" element={<AdminProfile />} />
-                        <Route path="/Admin/settings" element={<AdminSettings />} />
-                        <Route path="/Admin/complains" element={<SeeComplains />} />
+                    <Box sx={{ pt: 0 }}> {/* Removed buffer */}
+                        <Routes>
+                            <Route path="/" element={<AdminHomePage />} />
+                            <Route path='*' element={<Navigate to="/" />} />
+                            <Route path="/Admin/dashboard" element={<AdminHomePage />} />
+                            <Route path="/Admin/profile" element={<AdminProfile />} />
+                            <Route path="/Admin/settings" element={<AdminSettings />} />
+                            <Route path="/Admin/complains" element={<SeeComplains />} />
 
-                        {/* Notice */}
-                        <Route path="/Admin/addnotice" element={<AddNotice />} />
-                        <Route path="/Admin/notices" element={<ShowNotices />} />
+                            {/* Notice */}
+                            <Route path="/Admin/addnotice" element={<AddNotice />} />
+                            <Route path="/Admin/notices" element={<ShowNotices />} />
 
-                        {/* Subject */}
-                        <Route path="/Admin/subjects" element={<ShowSubjects />} />
-                        <Route path="/Admin/subjects/subject/:classID/:subjectID" element={<ViewSubject />} />
-                        <Route path="/Admin/subjects/chooseclass" element={<ChooseClass situation="Subject" />} />
+                            {/* Subject */}
+                            <Route path="/Admin/subjects" element={<ShowSubjects />} />
+                            <Route path="/Admin/subjects/subject/:classID/:subjectID" element={<ViewSubject />} />
+                            <Route path="/Admin/subjects/chooseclass" element={<ChooseClass situation="Subject" />} />
 
-                        <Route path="/Admin/addsubject/:id" element={<SubjectForm />} />
-                        <Route path="/Admin/class/subject/:classID/:subjectID" element={<ViewSubject />} />
+                            <Route path="/Admin/addsubject/:id" element={<SubjectForm />} />
+                            <Route path="/Admin/class/subject/:classID/:subjectID" element={<ViewSubject />} />
 
-                        <Route path="/Admin/subject/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
-                        <Route path="/Admin/subject/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
-                        <Route path="/Admin/subject/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
-                        <Route path="/Admin/subject-allocation" element={<SubjectAllocation />} />
+                            <Route path="/Admin/subject/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
+                            <Route path="/Admin/subject/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
+                            <Route path="/Admin/subject/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
+                            <Route path="/Admin/subject-allocation" element={<SubjectAllocation />} />
 
-                        {/* Class */}
-                        <Route path="/Admin/addclass" element={<AddClass />} />
-                        <Route path="/Admin/classes" element={<ShowClasses />} />
-                        <Route path="/Admin/classes/class/:id" element={<ClassDetails />} />
-                        <Route path="/Admin/class/addstudents/:id" element={<AddStudent situation="Class" />} />
+                            {/* Class */}
+                            <Route path="/Admin/addclass" element={<AddClass />} />
+                            <Route path="/Admin/classes" element={<ShowClasses />} />
+                            <Route path="/Admin/classes/class/:id" element={<ClassDetails />} />
+                            <Route path="/Admin/class/addstudents/:id" element={<AddStudent situation="Class" />} />
 
-                        {/* Student */}
-                        <Route path="/Admin/addstudents" element={<AddStudent situation="Student" />} />
-                        <Route path="/Admin/students" element={<ShowStudents />} />
-                        <Route path="/Admin/students/student/edit/:id" element={<AddStudent situation="Edit" />} />
-                        <Route path="/Admin/students/student/:id" element={<ViewStudent />} />
-                        <Route path="/Admin/students/student/attendance/:id" element={<StudentAttendance situation="Student" />} />
-                        <Route path="/Admin/students/student/marks/:id" element={<StudentExamMarks situation="Student" />} />
+                            {/* Student */}
+                            <Route path="/Admin/addstudents" element={<AddStudent situation="Student" />} />
+                            <Route path="/Admin/students" element={<ShowStudents />} />
+                            <Route path="/Admin/students/student/edit/:id" element={<AddStudent situation="Edit" />} />
+                            <Route path="/Admin/students/student/:id" element={<ViewStudent />} />
+                            <Route path="/Admin/students/student/attendance/:id" element={<StudentAttendance situation="Student" />} />
+                            <Route path="/Admin/students/student/marks/:id" element={<StudentExamMarks situation="Student" />} />
 
-                        {/* Teacher */}
-                        <Route path="/Admin/teachers" element={<ShowTeachers />} />
-                        <Route path="/Admin/teachers/teacher/edit/:id" element={<AddTeacher situation="Edit" />} />
-                        <Route path="/Admin/teachers/teacher/:id" element={<TeacherDetails />} />
-                        <Route path="/Admin/teachers/chooseclass" element={<ChooseClass situation="Teacher" />} />
-                        <Route path="/Admin/teachers/choosesubject/:id" element={<ChooseSubject situation="Norm" />} />
-                        <Route path="/Admin/teachers/choosesubject/:classID/:teacherID" element={<ChooseSubject situation="Teacher" />} />
-                        <Route path="/Admin/teachers/add" element={<AddTeacher />} />
-                        <Route path="/Admin/teachers/addteacher/:id" element={<AddTeacher />} />
+                            {/* Family */}
+                            <Route path="/Admin/families" element={<ShowFamilies />} />
+                            <Route path="/Admin/families/family/:id" element={<ViewFamily />} />
+                            <Route path="/Admin/families/family/edit/:id" element={<EditFamily />} />
+                            <Route path="/Admin/addfamily" element={<AddFamily />} />
+
+                            {/* Teacher */}
+                            <Route path="/Admin/teachers" element={<ShowTeachers />} />
+                            <Route path="/Admin/teachers/teacher/edit/:id" element={<AddTeacher situation="Edit" />} />
+                            <Route path="/Admin/teachers/teacher/:id" element={<TeacherDetails />} />
+                            <Route path="/Admin/teachers/chooseclass" element={<ChooseClass situation="Teacher" />} />
+                            <Route path="/Admin/teachers/choosesubject/:id" element={<ChooseSubject situation="Norm" />} />
+                            <Route path="/Admin/teachers/choosesubject/:classID/:teacherID" element={<ChooseSubject situation="Teacher" />} />
+                            <Route path="/Admin/teachers/add" element={<AddTeacher />} />
+                            <Route path="/Admin/teachers/addteacher/:id" element={<AddTeacher />} />
 
 
 
-                        {/* Fees */}
-                        <Route path="/Admin/fees" element={<FeeDashboard />} />
-                        <Route path="/Admin/fees/defaulters" element={<FeeDefaulters />} />
-                        <Route path="/Admin/fees/structure" element={<FeeStructure />} />
-                        <Route path="/Admin/fees/search" element={<FeeSearch />} />
-
-                        <Route path="/Admin/fees/search" element={<FeeSearch />} />
-                    </Routes>
+                            {/* Fees */}
+                            <Route path="/Admin/fees" element={<FeeDashboard />} />
+                            <Route path="/Admin/fees/defaulters" element={<FeeDefaulters />} />
+                            <Route path="/Admin/fees/structure" element={<FeeStructure />} />
+                            <Route path="/Admin/fees/search" element={<FeeSearch />} />
+                            <Route path="/Admin/fees/discounts" element={<FeeDiscounts />} />
+                        </Routes>
+                    </Box>
                     <LogoutModal
                         open={logoutOpen}
                         handleClose={handleLogoutClose}
@@ -256,8 +247,5 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'flex-end',
         px: [1],
-    },
-    drawerStyled: {
-        display: "flex"
-    },
+    }
 }

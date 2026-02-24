@@ -158,8 +158,8 @@ const ShowTeachers = () => {
     };
 
     return (
-        <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
-            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'stretch', md: 'center' }, mb: 2, gap: 2 }}>
+        <Container maxWidth={false} sx={{ mt: 0, mb: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'stretch', md: 'center' }, mb: 1, gap: 2 }}>
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
                     Teachers
                 </Typography>
@@ -186,20 +186,18 @@ const ShowTeachers = () => {
                         }}
                         sx={{ width: { xs: '100%', md: '260px' } }}
                     />
-                    <Button
-                        variant="contained"
-                        startIcon={<AddIcon />}
-                        onClick={() => navigate("/Admin/teachers/add")}
-                        sx={{
-                            textTransform: 'none', fontWeight: 600, fontFamily: 'var(--font-family-sans)',
-                            borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--color-primary-600)',
-                            boxShadow: 'none', px: 2.5, whiteSpace: 'nowrap',
-                            width: { xs: '100%', sm: 'auto' },
-                            '&:hover': { backgroundColor: 'var(--color-primary-700)', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
-                        }}
-                    >
-                        Add Teacher
-                    </Button>
+                    <Tooltip title="Add Teacher">
+                        <IconButton
+                            onClick={() => navigate("/Admin/teachers/add")}
+                            sx={{
+                                bgcolor: 'var(--color-primary-600)', color: 'white',
+                                '&:hover': { bgcolor: 'var(--color-primary-700)' },
+                                borderRadius: 'var(--border-radius-md)'
+                            }}
+                        >
+                            <AddIcon />
+                        </IconButton>
+                    </Tooltip>
                 </Box>
             </Box>
 

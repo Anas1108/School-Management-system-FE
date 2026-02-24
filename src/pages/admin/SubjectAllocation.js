@@ -224,10 +224,12 @@ const SubjectAllocation = () => {
 
 
     return (
-        <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
-            <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'var(--text-primary)', mb: 3 }}>
-                Subject Allocation
-            </Typography>
+        <Container maxWidth={false} sx={{ mt: 0, mb: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'stretch', md: 'center' }, mb: 1, gap: 2 }}>
+                <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'var(--text-primary)', mb: 1 }}>
+                    Subject Allocation
+                </Typography>
+            </Box>
 
             <Grid container spacing={3}>
                 {/* Top Control Bar: Selection Context */}
