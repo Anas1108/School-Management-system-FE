@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import { Box, Typography, Container, Tooltip, TextField, InputAdornment, IconButton } from '@mui/material';
+import { Box, Typography, Container, Tooltip, TextField, InputAdornment, IconButton, Button } from '@mui/material';
 import { ActionIconButtonPrimary } from '../../../components/buttonStyles';
 import TableTemplate from '../../../components/TableTemplate';
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import AddIcon from '@mui/icons-material/Add';
 import CustomLoader from '../../../components/CustomLoader';
 
 const ShowFamilies = () => {
@@ -93,6 +94,18 @@ const ShowFamilies = () => {
                         }}
                         sx={{ width: { xs: '100%', md: '260px' } }}
                     />
+                    <Tooltip title="Add Family">
+                        <IconButton
+                            onClick={() => navigate('/Admin/addfamily')}
+                            sx={{
+                                bgcolor: 'var(--color-primary-600)', color: 'white',
+                                '&:hover': { bgcolor: 'var(--color-primary-700)' },
+                                borderRadius: 'var(--border-radius-md)'
+                            }}
+                        >
+                            <AddIcon />
+                        </IconButton>
+                    </Tooltip>
                 </Box>
             </Box>
             {loading ? <CustomLoader /> :

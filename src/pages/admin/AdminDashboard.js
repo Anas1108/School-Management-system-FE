@@ -64,6 +64,7 @@ import BreadcrumbsNav from '../../components/BreadcrumbsNav';
 
 import ShowFamilies from './familyRelated/ShowFamilies';
 import ViewFamily from './familyRelated/ViewFamily';
+import AddFamily from './familyRelated/AddFamily';
 import FamilyRestroomOutlinedIcon from '@mui/icons-material/FamilyRestroomOutlined';
 
 const AdminDashboard = () => {
@@ -194,6 +195,7 @@ const AdminDashboard = () => {
                             {/* Family */}
                             <Route path="/Admin/families" element={<ShowFamilies />} />
                             <Route path="/Admin/families/family/:id" element={<ViewFamily />} />
+                            <Route path="/Admin/addfamily" element={<AddFamily />} />
 
                             {/* Teacher */}
                             <Route path="/Admin/teachers" element={<ShowTeachers />} />
