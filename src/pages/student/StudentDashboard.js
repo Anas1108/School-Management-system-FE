@@ -107,23 +107,26 @@ const StudentDashboard = () => {
                     <TopNavBar links={studentLinks} title="Student Dashboard" />
                     <Box sx={{
                         flex: 1,
-                        overflow: 'hidden',
+                        overflow: 'auto',
                         background: 'var(--bg-body)',
-                        p: { xs: 2, sm: 3, md: 4 } // Responsive padding
+                        px: { xs: 2, sm: 3, md: 4 }, // Horizontal padding
+                        pb: { xs: 2, sm: 3, md: 4 }, // Bottom padding
                     }}>
                         <BreadcrumbsNav />
-                        <Routes>
-                            <Route path="/" element={<StudentHomePage />} />
-                            <Route path='*' element={<Navigate to="/" />} />
-                            <Route path="/Student/dashboard" element={<StudentHomePage />} />
-                            <Route path="/Student/profile" element={<StudentProfile />} />
+                        <Box sx={{ pt: 1 }}> {/* Small buffer after sticky breadcrumbs */}
+                            <Routes>
+                                <Route path="/" element={<StudentHomePage />} />
+                                <Route path='*' element={<Navigate to="/" />} />
+                                <Route path="/Student/dashboard" element={<StudentHomePage />} />
+                                <Route path="/Student/profile" element={<StudentProfile />} />
 
-                            <Route path="/Student/subjects" element={<StudentSubjects />} />
-                            <Route path="/Student/attendance" element={<ViewStdAttendance />} />
-                            <Route path="/Student/complain" element={<StudentComplain />} />
+                                <Route path="/Student/subjects" element={<StudentSubjects />} />
+                                <Route path="/Student/attendance" element={<ViewStdAttendance />} />
+                                <Route path="/Student/complain" element={<StudentComplain />} />
 
-                            <Route path="/Student/complain" element={<StudentComplain />} />
-                        </Routes>
+                                <Route path="/Student/complain" element={<StudentComplain />} />
+                            </Routes>
+                        </Box>
                         <LogoutModal
                             open={logoutOpen}
                             handleClose={handleLogoutClose}

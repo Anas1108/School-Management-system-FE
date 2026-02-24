@@ -24,87 +24,101 @@ const BreadcrumbsNav = () => {
     return (
         <Box
             sx={{
-                mb: { xs: 2, md: 3 },
-                mt: 1,
-                p: '6px 16px',
-                borderRadius: 'var(--border-radius-md)',
-                background: 'rgba(255, 255, 255, 0.4)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-                display: 'inline-flex',
-                maxWidth: '100%', // Ensure it doesn't overflow
-                boxShadow: 'var(--shadow-sm)',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                    boxShadow: 'var(--shadow-md)',
-                    background: 'rgba(255, 255, 255, 0.6)',
-                }
+                position: 'sticky',
+                top: 0,
+                zIndex: 100, // Higher than content
+                width: '100%',
+                background: 'var(--bg-body)', // Match page background to hide scrolling content
+                pt: { xs: 1, md: 1 },
+                pb: { xs: 1.5, md: 2 },
+                mb: 1,
+                display: 'flex',
+                alignItems: 'center',
+                // Remove horizontal page padding if necessary or handle it in parent
             }}
         >
-            <Breadcrumbs
-                separator={<NavigateNextIcon fontSize="small" sx={{ color: 'var(--text-tertiary)', mx: 0.5 }} />}
-                aria-label="breadcrumb"
+            <Box
                 sx={{
-                    '& .MuiBreadcrumbs-ol': {
-                        flexWrap: 'nowrap', // Prevent wrapping if possible, or allow it but control items
-                        overflow: 'hidden'
-                    },
-                    '& .MuiBreadcrumbs-li': {
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        maxWidth: { xs: '100px', sm: 'unset' } // Truncate on mobile
+                    p: '6px 16px',
+                    borderRadius: 'var(--border-radius-md)',
+                    background: 'rgba(255, 255, 255, 0.4)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    display: 'inline-flex',
+                    maxWidth: '100%',
+                    boxShadow: 'var(--shadow-sm)',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                        boxShadow: 'var(--shadow-md)',
+                        background: 'rgba(255, 255, 255, 0.6)',
                     }
                 }}
             >
-                {breadcrumbs.map((crumb, index) => {
-                    const last = index === breadcrumbs.length - 1;
-                    const isDashboard = crumb.label === 'Dashboard';
+                <Breadcrumbs
+                    separator={<NavigateNextIcon fontSize="small" sx={{ color: 'var(--text-tertiary)', mx: 0.5 }} />}
+                    aria-label="breadcrumb"
+                    sx={{
+                        '& .MuiBreadcrumbs-ol': {
+                            flexWrap: 'nowrap', // Prevent wrapping if possible, or allow it but control items
+                            overflow: 'hidden'
+                        },
+                        '& .MuiBreadcrumbs-li': {
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            maxWidth: { xs: '100px', sm: 'unset' } // Truncate on mobile
+                        }
+                    }}
+                >
+                    {breadcrumbs.map((crumb, index) => {
+                        const last = index === breadcrumbs.length - 1;
+                        const isDashboard = crumb.label === 'Dashboard';
 
-                    return last ? (
-                        <Typography
-                            key={index}
-                            sx={{
-                                color: 'var(--color-primary-700)',
-                                fontWeight: 600,
-                                fontSize: 'var(--font-size-sm)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 0.5,
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis'
-                            }}
-                        >
-                            {isDashboard && <HomeIcon sx={{ fontSize: '1.2rem', color: 'var(--color-primary-600)' }} />}
-                            {crumb.label}
-                        </Typography>
-                    ) : (
-                        <Link
-                            underline="none"
-                            color="inherit"
-                            component={RouterLink}
-                            to={crumb.to}
-                            key={index}
-                            sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 0.5,
-                                fontSize: 'var(--font-size-sm)',
-                                color: 'var(--text-secondary)',
-                                transition: 'color 0.2s',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                '&:hover': {
-                                    color: 'var(--color-primary-600)',
-                                }
-                            }}
-                        >
-                            {isDashboard && <HomeIcon sx={{ fontSize: '1.2rem' }} />}
-                            {crumb.label}
-                        </Link>
-                    );
-                })}
-            </Breadcrumbs>
+                        return last ? (
+                            <Typography
+                                key={index}
+                                sx={{
+                                    color: 'var(--color-primary-700)',
+                                    fontWeight: 600,
+                                    fontSize: 'var(--font-size-sm)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 0.5,
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis'
+                                }}
+                            >
+                                {isDashboard && <HomeIcon sx={{ fontSize: '1.2rem', color: 'var(--color-primary-600)' }} />}
+                                {crumb.label}
+                            </Typography>
+                        ) : (
+                            <Link
+                                underline="none"
+                                color="inherit"
+                                component={RouterLink}
+                                to={crumb.to}
+                                key={index}
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 0.5,
+                                    fontSize: 'var(--font-size-sm)',
+                                    color: 'var(--text-secondary)',
+                                    transition: 'color 0.2s',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    '&:hover': {
+                                        color: 'var(--color-primary-600)',
+                                    }
+                                }}
+                            >
+                                {isDashboard && <HomeIcon sx={{ fontSize: '1.2rem' }} />}
+                                {crumb.label}
+                            </Link>
+                        );
+                    })}
+                </Breadcrumbs>
+            </Box>
         </Box>
     );
 };

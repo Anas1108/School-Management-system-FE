@@ -110,27 +110,30 @@ const TeacherDashboard = () => {
                     <TopNavBar links={teacherLinks} title="Teacher Dashboard" />
                     <Box sx={{
                         flex: 1,
-                        overflow: 'hidden',
+                        overflow: 'auto',
                         background: 'var(--bg-body)',
-                        p: { xs: 2, sm: 3, md: 4 } // Responsive padding
+                        px: { xs: 2, sm: 3, md: 4 }, // Horizontal padding
+                        pb: { xs: 2, sm: 3, md: 4 }, // Bottom padding
                     }}>
                         <BreadcrumbsNav />
-                        <Routes>
-                            <Route path="/" element={<TeacherHomePage />} />
-                            <Route path='*' element={<Navigate to="/" />} />
-                            <Route path="/Teacher/dashboard" element={<TeacherHomePage />} />
-                            <Route path="/Teacher/profile" element={<TeacherProfile />} />
+                        <Box sx={{ pt: 1 }}> {/* Small buffer after sticky breadcrumbs */}
+                            <Routes>
+                                <Route path="/" element={<TeacherHomePage />} />
+                                <Route path='*' element={<Navigate to="/" />} />
+                                <Route path="/Teacher/dashboard" element={<TeacherHomePage />} />
+                                <Route path="/Teacher/profile" element={<TeacherProfile />} />
 
-                            <Route path="/Teacher/complain" element={<TeacherComplain />} />
+                                <Route path="/Teacher/complain" element={<TeacherComplain />} />
 
-                            <Route path="/Teacher/class" element={<TeacherClassDetails />} />
-                            <Route path="/Teacher/class/student/:id" element={<TeacherViewStudent />} />
+                                <Route path="/Teacher/class" element={<TeacherClassDetails />} />
+                                <Route path="/Teacher/class/student/:id" element={<TeacherViewStudent />} />
 
-                            <Route path="/Teacher/class/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
-                            <Route path="/Teacher/class/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
+                                <Route path="/Teacher/class/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
+                                <Route path="/Teacher/class/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
 
-                            <Route path="/Teacher/class/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
-                        </Routes>
+                                <Route path="/Teacher/class/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
+                            </Routes>
+                        </Box>
                         <LogoutModal
                             open={logoutOpen}
                             handleClose={handleLogoutClose}
