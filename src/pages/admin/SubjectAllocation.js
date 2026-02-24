@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { getAllSclasses } from '../../redux/sclassRelated/sclassHandle';
 import { getAllTeachers } from '../../redux/teacherRelated/teacherHandle';
 import {
@@ -18,13 +19,14 @@ import ConfirmationModal from '../../components/ConfirmationModal';
 
 const SubjectAllocation = () => {
     const dispatch = useDispatch();
+    const location = useLocation();
     const { currentUser } = useSelector(state => state.user);
     const { sclassesList } = useSelector(state => state.sclass);
     const { teachersList } = useSelector(state => state.teacher);
 
     const [loading, setLoading] = useState(false);
     const [teacher, setTeacher] = useState('');
-    const [sclass, setSclass] = useState('');
+    const [sclass, setSclass] = useState(location.state?.classId || '');
     const [subjects, setSubjects] = useState([]);
     const [selectedSubjects, setSelectedSubjects] = useState([]);
     const [academicYear] = useState('2026'); // Ideally this should be dynamic or from settings
