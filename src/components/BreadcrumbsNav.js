@@ -6,10 +6,46 @@ import HomeIcon from '@mui/icons-material/Home';
 
 const getBreadcrumbs = (pathname) => {
     const pathnames = pathname.split('/').filter((x) => x);
+
+    // Map of specific path segments to user-friendly labels
+    const pathMapping = {
+        'families': 'Families',
+        'family': 'Family Details',
+        'students': 'Students',
+        'student': 'Student Details',
+        'teachers': 'Teachers',
+        'teacher': 'Teacher Details',
+        'classes': 'Classes',
+        'class': 'Class Details',
+        'subjects': 'Subjects',
+        'subject': 'Subject Details',
+        'fees': 'Fee Management',
+        'complains': 'Complaints',
+        'notices': 'Notices',
+        'admin': 'Admin',
+        'addstudents': 'Add Student',
+        'addteacher': 'Add Teacher',
+        'addclass': 'Add Class',
+        'addnotice': 'Add Notice',
+        'subject-allocation': 'Subject Allocation'
+    };
+
     return pathnames.map((value, index) => {
         const to = `/${pathnames.slice(0, index + 1).join('/')}`;
-        // Simple capitalization, can be enhanced with a map if needed
-        const label = value.charAt(0).toUpperCase() + value.slice(1);
+
+        // Use mapping if available, otherwise try to format
+        // Check if value is a 24-char hex string (MongoDB ID)
+        const isMongoId = /^[0-9a-fA-F]{24}$/.test(value);
+        let label = value;
+
+        if (isMongoId) {
+            label = 'Details';
+        } else if (pathMapping[value.toLowerCase()]) {
+            label = pathMapping[value.toLowerCase()];
+        } else {
+            label = value.charAt(0).toUpperCase() + value.slice(1);
+        }
+
         return { label, to };
     });
 };

@@ -62,6 +62,10 @@ import FeeSearch from './feeRelated/FeeSearch';
 import FeeDiscounts from './feeRelated/FeeDiscounts';
 import BreadcrumbsNav from '../../components/BreadcrumbsNav';
 
+import ShowFamilies from './familyRelated/ShowFamilies';
+import ViewFamily from './familyRelated/ViewFamily';
+import FamilyRestroomOutlinedIcon from '@mui/icons-material/FamilyRestroomOutlined';
+
 const AdminDashboard = () => {
     const [logoutOpen, setLogoutOpen] = useState(false);
     const navigate = useNavigate();
@@ -87,6 +91,7 @@ const AdminDashboard = () => {
         { title: 'Subjects', icon: <AssignmentIcon />, path: '/Admin/subjects' },
         { title: 'Teachers', icon: <SupervisorAccountOutlinedIcon />, path: '/Admin/teachers' },
         { title: 'Students', icon: <PersonOutlineIcon />, path: '/Admin/students' },
+        { title: 'Families', icon: <FamilyRestroomOutlinedIcon />, path: '/Admin/families' },
         { title: 'Notices', icon: <AnnouncementOutlinedIcon />, path: '/Admin/notices' },
         { title: 'Complains', icon: <ReportIcon />, path: '/Admin/complains' },
         { title: 'Subject Allocation', icon: <AssignmentIndIcon />, path: '/Admin/subject-allocation' },
@@ -185,6 +190,10 @@ const AdminDashboard = () => {
                             <Route path="/Admin/students/student/:id" element={<ViewStudent />} />
                             <Route path="/Admin/students/student/attendance/:id" element={<StudentAttendance situation="Student" />} />
                             <Route path="/Admin/students/student/marks/:id" element={<StudentExamMarks situation="Student" />} />
+
+                            {/* Family */}
+                            <Route path="/Admin/families" element={<ShowFamilies />} />
+                            <Route path="/Admin/families/family/:id" element={<ViewFamily />} />
 
                             {/* Teacher */}
                             <Route path="/Admin/teachers" element={<ShowTeachers />} />
