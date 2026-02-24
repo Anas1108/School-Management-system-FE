@@ -111,6 +111,41 @@ const LoginPage = ({ role }) => {
         }
     }, [status, currentRole, navigate, error, response, currentUser]);
 
+    const roleContent = {
+        Admin: {
+            title: <>Smart Solutions for <br /> Modern Education</>,
+            subtitle: "Manage your school with ease, efficiency, and excellence. Everything you need in one powerful platform.",
+            features: [
+                "Automated Academic Tracking",
+                "Seamless Communication Tools",
+                "Comprehensive Financial Management",
+                "Advanced Student & Teacher Analytics"
+            ]
+        },
+        Teacher: {
+            title: <>Empowering Educators <br /> to Inspire Minds</>,
+            subtitle: "Streamline your classroom management, track student performance, and enhance teaching with modern digital tools.",
+            features: [
+                "Interactive Attendance Tracking",
+                "Simplified Gradebook Management",
+                "Direct Student Communication",
+                "Class Performance Analytics"
+            ]
+        },
+        Student: {
+            title: <>Your Gateway to <br /> Knowledge & Growth</>,
+            subtitle: "Access your grades, attendance, and learning materials all in one place. Stay connected with your campus journey.",
+            features: [
+                "Real-time Attendance View",
+                "Progress Reports & Grades",
+                "Class Notices & Updates",
+                "Library & Resource Access"
+            ]
+        }
+    };
+
+    const currentContent = roleContent[role] || roleContent.Admin;
+
     return (
         <ThemeProvider theme={theme}>
             <LoginRoot>
@@ -148,7 +183,7 @@ const LoginPage = ({ role }) => {
                                     lineHeight: 1.1,
                                     letterSpacing: '-0.02em',
                                 }}>
-                                    Smart Solutions for <br /> Modern Education
+                                    {currentContent.title}
                                 </Typography>
                                 <Typography variant="h5" sx={{
                                     fontWeight: 400,
@@ -158,7 +193,7 @@ const LoginPage = ({ role }) => {
                                     lineHeight: 1.4,
                                     fontSize: { xs: '1rem', md: '1.1rem', lg: '1.25rem' }
                                 }}>
-                                    Manage your school with ease, efficiency, and excellence. Everything you need in one powerful platform.
+                                    {currentContent.subtitle}
                                 </Typography>
 
                                 <Box sx={{
@@ -174,12 +209,7 @@ const LoginPage = ({ role }) => {
                                     }
                                 }}>
                                     <List sx={{ '& .MuiListItem-root': { px: 0, py: 0.5 } }}>
-                                        {[
-                                            "Automated Academic Tracking",
-                                            "Seamless Communication Tools",
-                                            "Comprehensive Financial Management",
-                                            "Advanced Student & Teacher Analytics"
-                                        ].map((text, index) => (
+                                        {currentContent.features.map((text, index) => (
                                             <ListItem key={index}>
                                                 <ListItemIcon sx={{ minWidth: '32px' }}>
                                                     <CheckCircleOutline sx={{ color: 'var(--color-secondary-400)', fontSize: '1.2rem' }} />
