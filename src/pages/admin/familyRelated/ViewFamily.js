@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 import axios from 'axios';
-import { Box, Typography, Container, Paper, Grid, List, ListItem, ListItemText, ListItemButton, Divider, Tooltip, IconButton, Avatar, Tabs, Tab } from '@mui/material';
+import { Box, Typography, Container, Paper, Grid, List, ListItem, ListItemText, ListItemButton, Divider, Tooltip, IconButton, Avatar, Tabs, Tab, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import CustomLoader from '../../../components/CustomLoader';
+import Popup from '../../../components/Popup';
 import styled from 'styled-components';
 
 const ViewFamily = () => {
@@ -12,6 +13,12 @@ const ViewFamily = () => {
     const [family, setFamily] = useState(null);
     const [loading, setLoading] = useState(true);
     const [value, setValue] = useState(0);
+
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
+    const [message, setMessage] = useState("");
+    const [severity, setSeverity] = useState("error");
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -30,6 +37,37 @@ const ViewFamily = () => {
         };
         fetchFamily();
     }, [id]);
+
+    const handleDeleteClick = () => {
+        setDeleteDialogOpen(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        setActionLoading(true);
+        try {
+            const response = await axios.delete(`${process.env.REACT_APP_BASE_URL}/Family/${id}`);
+            if (response.data.message && typeof response.data.message === 'string' && response.data.message.toLowerCase().includes("cannot delete")) {
+                setMessage(response.data.message);
+                setSeverity("error");
+                setShowPopup(true);
+            } else {
+                setMessage("Family Deleted Successfully");
+                setSeverity("success");
+                setShowPopup(true);
+                setTimeout(() => {
+                    navigate('/Admin/families');
+                }, 1500);
+            }
+        } catch (error) {
+            console.error(error);
+            setMessage("Error deleting family");
+            setSeverity("error");
+            setShowPopup(true);
+        } finally {
+            setActionLoading(false);
+            setDeleteDialogOpen(false);
+        }
+    };
 
     if (loading) return <CustomLoader />;
     if (!family || family.message || !family.familyName) return <Typography>No Family Found</Typography>;
@@ -62,7 +100,7 @@ const ViewFamily = () => {
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="Delete">
-                        <IconButton size="small" color="error" sx={{ border: '1px solid', borderColor: 'error.main', borderRadius: 'var(--border-radius-md)' }}>
+                        <IconButton size="small" color="error" onClick={handleDeleteClick} sx={{ border: '1px solid', borderColor: 'error.main', borderRadius: 'var(--border-radius-md)' }}>
                             <DeleteIcon fontSize="small" />
                         </IconButton>
                     </Tooltip>
@@ -136,6 +174,24 @@ const ViewFamily = () => {
                     )}
                 </CustomTabPanel>
             </Paper>
+
+            <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        Are you sure you want to delete the {family.familyName} family? This action cannot be undone.
+                        Note: You cannot delete a family if there are students still associated with it.
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDeleteDialogOpen(false)} disabled={actionLoading}>Cancel</Button>
+                    <Button onClick={handleDeleteConfirm} color="error" variant="contained" disabled={actionLoading}>
+                        {actionLoading ? "Deleting..." : "Delete"}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} severity={severity} />
         </Container>
     );
 };
