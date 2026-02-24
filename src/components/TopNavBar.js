@@ -27,8 +27,8 @@ const StyledAppBar = styled(MuiAppBar)(({ theme }) => ({
     borderBottom: '1px solid var(--border-color)',
     borderRadius: 'var(--border-radius-lg)', // Rounded corners for floating feel
     color: 'var(--text-primary)',
-    margin: '8px 16px', // Gap from the edges and top bar
-    width: 'calc(100% - 32px)',
+    margin: '4px 0 8px 0', // Full width: removed horizontal margins
+    width: '100%',
     transition: 'all 0.3s ease',
 }));
 
@@ -151,7 +151,7 @@ const TopNavBar = ({ links, title, onLogout }) => {
                         <Box sx={{
                             flexGrow: 1,
                             display: 'flex',
-                            justifyContent: 'center', // Center navigation for modern feel
+                            justifyContent: 'flex-start', // Left align navigation links as requested
                             overflowX: 'auto',
                             '&::-webkit-scrollbar': { display: 'none' }
                         }}>
