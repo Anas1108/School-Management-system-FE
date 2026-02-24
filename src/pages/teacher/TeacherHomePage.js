@@ -29,7 +29,7 @@ const TeacherHomePage = () => {
 
     return (
         <>
-            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Container maxWidth="lg" sx={{ mt: 0, mb: 4 }}>
                 <Grid container spacing={3}>
                     <Grid item xs={12} sm={6} md={3} lg={3}>
                         <StyledPaper>

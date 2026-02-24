@@ -28,10 +28,10 @@ const BreadcrumbsNav = () => {
                 top: 0,
                 zIndex: 100, // Higher than content
                 width: '100%',
-                background: 'var(--bg-body)', // Match page background to hide scrolling content
-                pt: { xs: 1, md: 1 },
-                pb: { xs: 1.5, md: 2 },
-                mb: 1,
+                background: 'var(--bg-body)',
+                pt: { xs: 0.5, md: 0.5 }, // Reduced from 1
+                pb: { xs: 0.5, md: 0.5 }, // Reduced from 1.5/2
+                mb: 0, // Removed bottom margin
                 display: 'flex',
                 alignItems: 'center',
                 // Remove horizontal page padding if necessary or handle it in parent
@@ -39,7 +39,7 @@ const BreadcrumbsNav = () => {
         >
             <Box
                 sx={{
-                    p: '6px 16px',
+                    p: '4px 12px', // Reduced from 6px 16px
                     borderRadius: 'var(--border-radius-md)',
                     background: 'rgba(255, 255, 255, 0.4)',
                     backdropFilter: 'blur(10px)',

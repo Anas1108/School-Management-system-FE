@@ -27,9 +27,16 @@ const StyledAppBar = styled(MuiAppBar)(({ theme }) => ({
     borderBottom: '1px solid var(--border-color)',
     borderRadius: 'var(--border-radius-lg)', // Rounded corners for floating feel
     color: 'var(--text-primary)',
-    margin: '4px 0 8px 0', // Full width: removed horizontal margins
+    margin: '4px 0 8px 0', // Reduced top margin from 8px to 4px as requested
     width: '100%',
     transition: 'all 0.3s ease',
+}));
+
+const SlimToolbar = styled(Toolbar)(({ theme }) => ({
+    minHeight: '56px !important', // Increased from 48px for better breathing room
+    padding: '0 16px !important',
+    display: 'flex',
+    justifyContent: 'flex-start', // Left-aligned links
 }));
 
 const NavButton = styled(Button)(({ theme, active }) => ({

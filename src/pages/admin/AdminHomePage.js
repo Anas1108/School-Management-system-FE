@@ -33,7 +33,7 @@ const AdminHomePage = () => {
   const numberOfTeachers = teachersList && teachersList.length;
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 2, mb: 2, px: { xs: 2, md: 3 } }}>
+    <Container maxWidth="xl" sx={{ mt: 0, mb: 2, px: { xs: 2, md: 3 } }}>
       <Grid container spacing={2}>
         {/* Welcome Hero Section - More Compact */}
         <Grid item xs={12}>

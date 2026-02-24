@@ -44,8 +44,8 @@ const StudentHomePage = () => {
 
     return (
         <>
-            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold', color: 'var(--text-primary)' }}>
+            <Container maxWidth="lg" sx={{ mt: 0, mb: 4 }}>
+                <Typography variant="h4" sx={{ mb: 1, fontWeight: 'bold', color: 'var(--text-primary)' }}>
                     Welcome back, {currentUser.name}!
                 </Typography>
                 <Grid container spacing={3}>

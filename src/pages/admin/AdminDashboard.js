@@ -136,17 +136,17 @@ const AdminDashboard = () => {
             </AppBar>
 
             <Box component="main" sx={styles.boxStyled}>
-                <Toolbar />
+                <Box sx={{ minHeight: '64px' }} /> {/* Increased to match standard AppBar height */}
                 <TopNavBar links={adminLinks} title="TKS Kulluwal" />
                 <Box sx={{
                     flex: 1,
                     overflow: 'auto',
                     background: 'var(--bg-body)',
-                    px: { xs: 2, sm: 3, md: 4 }, // Horizontal padding
-                    pb: { xs: 2, sm: 3, md: 4 }, // Bottom padding
+                    px: { xs: 2, sm: 3, md: 4 },
+                    pb: { xs: 2, sm: 3, md: 4 },
                 }}>
                     <BreadcrumbsNav />
-                    <Box sx={{ pt: 1 }}> {/* Small buffer after sticky breadcrumbs */}
+                    <Box sx={{ pt: 0 }}> {/* Removed buffer */}
                         <Routes>
                             <Route path="/" element={<AdminHomePage />} />
                             <Route path='*' element={<Navigate to="/" />} />

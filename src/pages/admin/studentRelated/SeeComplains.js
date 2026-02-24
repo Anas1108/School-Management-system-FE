@@ -215,8 +215,8 @@ const SeeComplains = () => {
 
   return (
     <>
-      <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+      <Container maxWidth={false} sx={{ mt: 0, mb: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'stretch', md: 'center' }, mb: 1, gap: 2 }}>
           <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
             Complains
           </Typography>
