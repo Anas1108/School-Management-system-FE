@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { getSubjectDetails } from '../../../redux/sclassRelated/sclassHandle';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, Container, Typography, Grid, Tooltip, IconButton, Paper } from '@mui/material';
+import { Box, Container, Typography, Grid, Tooltip, IconButton, Paper, Button } from '@mui/material';
 import { GreenButton } from '../../../components/buttonStyles';
 import { ArrowBack as ArrowBackIcon, Edit as EditIcon } from '@mui/icons-material';
 import styled from 'styled-components';
@@ -72,12 +72,17 @@ const ViewSubject = () => {
         </Grid>
         <Box sx={{ mt: 4, textAlign: 'center' }}>
           {subjectDetails && subjectDetails.teacher ?
-            <InfoBox sx={{ display: 'inline-block', minWidth: '300px' }}>
-              <Typography variant="subtitle2" color="textSecondary">Teacher Assigned</Typography>
-              <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'var(--color-primary-600)' }}>
-                {subjectDetails.teacher.name}
-              </Typography>
-            </InfoBox>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+              <InfoBox sx={{ display: 'inline-block', minWidth: '300px' }}>
+                <Typography variant="subtitle2" color="textSecondary">Teacher Assigned</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'var(--color-primary-600)' }}>
+                  {subjectDetails.teacher.name}
+                </Typography>
+              </InfoBox>
+              <Button variant="outlined" color="primary" onClick={() => navigate("/Admin/subject-allocation", { state: { classId: subjectDetails?.sclassName?._id } })}>
+                Change Teacher
+              </Button>
+            </Box>
             :
             <GreenButton variant="contained"
               onClick={() => navigate("/Admin/subject-allocation", { state: { classId: subjectDetails?.sclassName?._id } })}>
