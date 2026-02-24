@@ -20,7 +20,7 @@ const StudentAttendance = ({ situation }) => {
     const { currentUser, userDetails, loading } = useSelector((state) => state.user);
     const { subjectsList } = useSelector((state) => state.sclass);
     const { response, error, statestatus } = useSelector((state) => state.student);
-    const params = useParams()
+    const { id, studentID: paramStudentID, subjectID } = useParams();
 
     const [studentID, setStudentID] = useState("");
     const [subjectName, setSubjectName] = useState("");
@@ -34,17 +34,15 @@ const StudentAttendance = ({ situation }) => {
 
     useEffect(() => {
         if (situation === "Student") {
-            setStudentID(params.id);
-            const stdID = params.id
-            dispatch(getUserDetails(stdID, "Student"));
+            setStudentID(id);
+            dispatch(getUserDetails(id, "Student"));
         }
         else if (situation === "Subject") {
-            const { studentID, subjectID } = params
-            setStudentID(studentID);
-            dispatch(getUserDetails(studentID, "Student"));
+            setStudentID(paramStudentID);
+            dispatch(getUserDetails(paramStudentID, "Student"));
             setChosenSubName(subjectID);
         }
-    }, [situation, params, dispatch]);
+    }, [situation, id, paramStudentID, subjectID, dispatch]);
 
     useEffect(() => {
         if (userDetails && userDetails.sclassName && situation === "Student") {

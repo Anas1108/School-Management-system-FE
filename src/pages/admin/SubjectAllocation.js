@@ -28,7 +28,7 @@ const SubjectAllocation = () => {
     const [teacher, setTeacher] = useState('');
     const [sclass, setSclass] = useState(location.state?.classId || '');
     const [subjects, setSubjects] = useState([]);
-    const [selectedSubjects, setSelectedSubjects] = useState([]);
+    const [selectedSubjects, setSelectedSubjects] = useState(location.state?.subjectId ? [location.state?.subjectId] : []);
     const [academicYear] = useState('2026'); // Ideally this should be dynamic or from settings
     const [isClassIncharge, setIsClassIncharge] = useState(false);
     const [allocationType, setAllocationType] = useState('Primary');

@@ -79,13 +79,13 @@ const ViewSubject = () => {
                   {subjectDetails.teacher.name}
                 </Typography>
               </InfoBox>
-              <Button variant="outlined" color="primary" onClick={() => navigate("/Admin/subject-allocation", { state: { classId: subjectDetails?.sclassName?._id } })}>
+              <Button variant="outlined" color="primary" onClick={() => navigate("/Admin/subject-allocation", { state: { classId: subjectDetails?.sclassName?._id, subjectId: subjectDetails?._id } })}>
                 Change Teacher
               </Button>
             </Box>
             :
             <GreenButton variant="contained"
-              onClick={() => navigate("/Admin/subject-allocation", { state: { classId: subjectDetails?.sclassName?._id } })}>
+              onClick={() => navigate("/Admin/subject-allocation", { state: { classId: subjectDetails?.sclassName?._id, subjectId: subjectDetails?._id } })}>
               Allocate Teacher
             </GreenButton>
           }

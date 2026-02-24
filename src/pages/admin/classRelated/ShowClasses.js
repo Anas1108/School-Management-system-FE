@@ -14,9 +14,12 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
 import Popup from '../../../components/Popup';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 
 import CustomLoader from '../../../components/CustomLoader';
+import { deleteUser } from '../../../redux/userRelated/userHandle';
 
 const ShowClasses = () => {
   const navigate = useNavigate()
@@ -38,15 +41,29 @@ const ShowClasses = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [message, setMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [classToDelete, setClassToDelete] = useState(null);
+  const [actionLoading, setActionLoading] = useState(false);
 
   const deleteHandler = (deleteID, address) => {
-    console.log(deleteID);
-    console.log(address);
-    setMessage("Sorry the delete function has been disabled for now.")
-    // dispatch(deleteUser(deleteID, address))
-    //   .then(() => {
-    //     dispatch(getAllSclasses(adminID, "Sclass"));
-    //   })
+    setClassToDelete({ id: deleteID, address });
+    setDeleteDialogOpen(true);
+  }
+
+  const confirmDelete = () => {
+    if (!classToDelete) return;
+    setActionLoading(true);
+    dispatch(deleteUser(classToDelete.id, classToDelete.address))
+      .then(() => {
+        dispatch(getAllSclasses(adminID, "Sclass"));
+        setActionLoading(false);
+        setDeleteDialogOpen(false);
+        setClassToDelete(null);
+      })
+      .catch(() => {
+        setActionLoading(false);
+        setDeleteDialogOpen(false);
+      });
   }
 
   const sclassColumns = [
@@ -72,6 +89,12 @@ const ShowClasses = () => {
             onClick={() => navigate("/Admin/classes/class/" + row.id)}>
             <VisibilityOutlinedIcon />
           </ActionIconButtonPrimary>
+        </Tooltip>
+        <Tooltip title="Edit" arrow>
+          <ActionIconButtonSuccess
+            onClick={() => navigate(`/Admin/classes/class/edit/${row.id}`)}>
+            <EditIcon />
+          </ActionIconButtonSuccess>
         </Tooltip>
         <Tooltip title="Add Subjects" arrow>
           <ActionIconButtonSuccess
@@ -154,7 +177,20 @@ const ShowClasses = () => {
         </>
       }
       <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
-
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete this class? This will also delete all associated students, subjects, and teachers. This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)} disabled={actionLoading}>Cancel</Button>
+          <Button onClick={confirmDelete} color="error" variant="contained" disabled={actionLoading}>
+            {actionLoading ? "Deleting..." : "Delete"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };
