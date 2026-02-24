@@ -4,9 +4,7 @@ import {
     Box,
     Toolbar,
     Typography,
-    IconButton,
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import TopNavBar from '../../components/TopNavBar';
 import AccountMenu from '../../components/AccountMenu';

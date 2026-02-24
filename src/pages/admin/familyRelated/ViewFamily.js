@@ -5,7 +5,6 @@ import { Box, Typography, Container, Paper, Grid, List, ListItem, ListItemText, 
 import { ArrowBack as ArrowBackIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import CustomLoader from '../../../components/CustomLoader';
 import Popup from '../../../components/Popup';
-import styled from 'styled-components';
 
 const ViewFamily = () => {
     const { id } = useParams();

@@ -4,9 +4,7 @@ import {
     Box,
     Toolbar,
     Typography,
-    IconButton,
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import StudentHomePage from './StudentHomePage';
 import StudentProfile from './StudentProfile';
@@ -53,11 +51,7 @@ const StudentDashboard = () => {
         { title: 'Complain', icon: <AnnouncementOutlinedIcon />, path: '/Student/complain' },
     ];
 
-    const [mobileOpen, setMobileOpen] = useState(false);
 
-    const handleDrawerToggle = () => {
-        setMobileOpen(!mobileOpen);
-    };
 
     return (
         <>

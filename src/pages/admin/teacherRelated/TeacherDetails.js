@@ -3,7 +3,7 @@ import { getTeacherDetails } from '../../../redux/teacherRelated/teacherHandle';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Container, Typography, Box, Paper, Avatar, Grid, Chip, Tabs, Tab, Tooltip, IconButton } from '@mui/material';
+import { Container, Typography, Box, Paper, Avatar, Grid, Chip, Tabs, Tab, Tooltip, IconButton } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 
 import ConfirmationModal from '../../../components/ConfirmationModal';

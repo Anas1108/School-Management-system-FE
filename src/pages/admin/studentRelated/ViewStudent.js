@@ -419,7 +419,7 @@ const ViewStudent = () => {
                 }
             };
             fetchGroups();
-        }, [currentUser]);
+        }, []);
 
         const handleAssignDiscount = async () => {
             try {

@@ -32,12 +32,7 @@ const StyledAppBar = styled(MuiAppBar)(({ theme }) => ({
     transition: 'all 0.3s ease',
 }));
 
-const SlimToolbar = styled(Toolbar)(({ theme }) => ({
-    minHeight: '56px !important', // Increased from 48px for better breathing room
-    padding: '0 16px !important',
-    display: 'flex',
-    justifyContent: 'flex-start', // Left-aligned links
-}));
+
 
 const NavButton = styled(Button)(({ theme, active }) => ({
     margin: '0 4px',
