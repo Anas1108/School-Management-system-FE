@@ -56,6 +56,7 @@ const PromoteStudents = () => {
 
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState('');
+    const [popupSeverity, setPopupSeverity] = useState('error');
 
     useEffect(() => {
         dispatch(getAllSclasses(adminID, "Sclass"));
@@ -82,6 +83,7 @@ const PromoteStudents = () => {
 
     useEffect(() => {
         if (statestatus === "added") {
+            setPopupSeverity('success');
             setShowPopup(true);
             setMessage("Students promoted successfully!");
             dispatch(underStudentControl());
@@ -90,10 +92,12 @@ const PromoteStudents = () => {
             setToClass('');
             setSelectedStudents([]);
         } else if (response) {
+            setPopupSeverity('error');
             setShowPopup(true);
             setMessage(response);
             dispatch(underStudentControl());
         } else if (error) {
+            setPopupSeverity('error');
             setShowPopup(true);
             setMessage(error.message || "An error occurred");
             dispatch(underStudentControl());
@@ -324,7 +328,7 @@ const PromoteStudents = () => {
                 </form>
             </Paper>
 
-            <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
+            <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} severity={popupSeverity} />
 
             <Dialog
                 open={openConfirm}
