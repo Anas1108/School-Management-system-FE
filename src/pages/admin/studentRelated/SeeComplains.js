@@ -220,7 +220,7 @@ const SeeComplains = () => {
           <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
             Complains
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, flexWrap: 'wrap' }}>
             <TextField
               placeholder="Search Complaints..."
               variant="outlined"
@@ -238,7 +238,7 @@ const SeeComplains = () => {
                   backgroundColor: 'var(--bg-paper)',
                 }
               }}
-              sx={{ width: '260px' }}
+              sx={{ width: { xs: '100%', sm: '260px' } }}
             />
             <FormControl size="small" sx={{ minWidth: 120 }}>
               <Select

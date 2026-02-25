@@ -154,7 +154,7 @@ const ShowStudents = () => {
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
                     Students
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexDirection: { xs: 'column', sm: 'row' }, width: { xs: '100%', md: 'auto' } }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, flexWrap: 'wrap' }}>
                     <TextField
                         placeholder="Search students..."
                         variant="outlined"
@@ -183,7 +183,7 @@ const ShowStudents = () => {
                                 backgroundColor: 'var(--bg-paper)',
                             }
                         }}
-                        sx={{ width: { xs: '100%', md: '260px' } }}
+                        sx={{ width: { xs: '100%', sm: '260px' } }}
                     />
                     <Tooltip title="Add Student">
                         <IconButton
