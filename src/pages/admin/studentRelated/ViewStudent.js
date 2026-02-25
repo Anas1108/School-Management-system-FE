@@ -10,7 +10,6 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { KeyboardArrowUp, KeyboardArrowDown, Delete as DeleteIcon, ArrowBack as ArrowBackIcon, Edit as EditIcon } from '@mui/icons-material';
 import { removeStuff, updateStudentFields } from '../../../redux/studentRelated/studentHandle';
-import { calculateOverallAttendancePercentage, calculateSubjectAttendancePercentage, groupAttendanceBySubject } from '../../../components/attendanceCalculator';
 import CustomBarChart from '../../../components/CustomBarChart'
 import { StyledTableCell, StyledTableRow } from '../../../components/styles';
 
@@ -51,8 +50,6 @@ const ViewStudent = () => {
     const [sclassName, setSclassName] = useState('');
 
     const [subjectMarks, setSubjectMarks] = useState('');
-    const [subjectAttendance, setSubjectAttendance] = useState([]);
-
     const [openStates, setOpenStates] = useState({});
 
     const [showPopup, setShowPopup] = useState(false);
@@ -105,7 +102,6 @@ const ViewStudent = () => {
             setSclassName(userDetails.sclassName || '');
 
             setSubjectMarks(userDetails.examResult || '');
-            setSubjectAttendance(userDetails.attendance || []);
         }
     }, [userDetails]);
 
@@ -131,157 +127,6 @@ const ViewStudent = () => {
             .then(() => {
                 dispatch(getUserDetails(studentID, address));
             })
-    }
-
-    const removeSubAttendance = (subId) => {
-        dispatch(updateStudentFields(studentID, { subId }, "RemoveStudentSubAtten"))
-            .then(() => {
-                dispatch(getUserDetails(studentID, address));
-            })
-    }
-
-    const overallAttendancePercentage = calculateOverallAttendancePercentage(subjectAttendance);
-
-
-
-
-    const subjectData = Object.entries(groupAttendanceBySubject(subjectAttendance)).map(([subName, { subCode, present, sessions }]) => {
-        const subjectAttendancePercentage = calculateSubjectAttendancePercentage(present, sessions);
-        return {
-            subject: subName,
-            attendancePercentage: subjectAttendancePercentage,
-            totalClasses: sessions,
-            attendedClasses: present
-        };
-    });
-
-    const StudentAttendanceSection = () => {
-        const renderTableSection = () => {
-            return (
-                <>
-                    <Typography variant="h5" gutterBottom>Attendance</Typography>
-                    <Box sx={{ overflowX: 'auto' }}>
-                        <Table sx={{ minWidth: 650 }}>
-                            <TableHead>
-                                <StyledTableRow>
-                                    <StyledTableCell>Subject</StyledTableCell>
-                                    <StyledTableCell>Present</StyledTableCell>
-                                    <StyledTableCell>Total Sessions</StyledTableCell>
-                                    <StyledTableCell>Attendance Percentage</StyledTableCell>
-                                    <StyledTableCell align="center">Actions</StyledTableCell>
-                                </StyledTableRow>
-                            </TableHead>
-                            {Object.entries(groupAttendanceBySubject(subjectAttendance)).map(([subName, { present, allData, subId, sessions }], index) => {
-                                const subjectAttendancePercentage = calculateSubjectAttendancePercentage(present, sessions);
-                                return (
-                                    <TableBody key={index}>
-                                        <StyledTableRow>
-                                            <StyledTableCell>{subName}</StyledTableCell>
-                                            <StyledTableCell>{present}</StyledTableCell>
-                                            <StyledTableCell>{sessions}</StyledTableCell>
-                                            <StyledTableCell>{subjectAttendancePercentage}%</StyledTableCell>
-                                            <StyledTableCell align="center">
-                                                <Button variant="contained"
-                                                    onClick={() => handleOpen(subId)}>
-                                                    {openStates[subId] ? <KeyboardArrowUp /> : <KeyboardArrowDown />}Details
-                                                </Button>
-                                                <IconButton onClick={() => removeSubAttendance(subId)}>
-                                                    <DeleteIcon color="error" />
-                                                </IconButton>
-                                                <Button variant="contained" sx={styles.attendanceButton}
-                                                    onClick={() => navigate(`/Admin/subject/student/attendance/${studentID}/${subId}`)}>
-                                                    Change
-                                                </Button>
-                                            </StyledTableCell>
-                                        </StyledTableRow>
-                                        <StyledTableRow>
-                                            <StyledTableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                                                <Collapse in={openStates[subId]} timeout="auto" unmountOnExit>
-                                                    <Box sx={{ margin: 1 }}>
-                                                        <Typography variant="h6" gutterBottom component="div">
-                                                            Attendance Details
-                                                        </Typography>
-                                                        <Table size="small" aria-label="purchases">
-                                                            <TableHead>
-                                                                <StyledTableRow>
-                                                                    <StyledTableCell>Date</StyledTableCell>
-                                                                    <StyledTableCell align="right">Status</StyledTableCell>
-                                                                </StyledTableRow>
-                                                            </TableHead>
-                                                            <TableBody>
-                                                                {allData.map((data, index) => {
-                                                                    const date = new Date(data.date);
-                                                                    const dateString = date.toString() !== "Invalid Date" ? date.toISOString().substring(0, 10) : "Invalid Date";
-                                                                    return (
-                                                                        <StyledTableRow key={index}>
-                                                                            <StyledTableCell component="th" scope="row">
-                                                                                {dateString}
-                                                                            </StyledTableCell>
-                                                                            <StyledTableCell align="right">{data.status}</StyledTableCell>
-                                                                        </StyledTableRow>
-                                                                    )
-                                                                })}
-                                                            </TableBody>
-                                                        </Table>
-                                                    </Box>
-                                                </Collapse>
-                                            </StyledTableCell>
-                                        </StyledTableRow>
-                                    </TableBody>
-                                )
-                            }
-                            )}
-                        </Table>
-                    </Box>
-                    <Box sx={{ mt: 2 }}>
-                        <Typography variant="subtitle1">Overall Attendance Percentage: {overallAttendancePercentage.toFixed(2)}%</Typography>
-                    </Box>
-                    <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
-                        <Button variant="outlined" color="error" startIcon={<DeleteIcon />} onClick={() => removeHandler(studentID, "RemoveStudentAtten")}>Delete All</Button>
-                        <Button variant="contained" sx={styles.styledButton} onClick={() => navigate("/Admin/students/student/attendance/" + studentID)}>
-                            Add Attendance
-                        </Button>
-                    </Box>
-                </>
-            )
-        }
-        const renderChartSection = () => {
-            return (
-                <>
-                    <CustomBarChart chartData={subjectData} dataKey="attendancePercentage" />
-                </>
-            )
-        }
-        return (
-            <>
-                {subjectAttendance && Array.isArray(subjectAttendance) && subjectAttendance.length > 0
-                    ?
-                    <>
-                        {selectedSection === 'table' && renderTableSection()}
-                        {selectedSection === 'chart' && renderChartSection()}
-
-                        <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
-                            <BottomNavigation value={selectedSection} onChange={handleSectionChange} showLabels>
-                                <BottomNavigationAction
-                                    label="Table"
-                                    value="table"
-                                    icon={selectedSection === 'table' ? <TableChartIcon /> : <TableChartOutlinedIcon />}
-                                />
-                                <BottomNavigationAction
-                                    label="Chart"
-                                    value="chart"
-                                    icon={selectedSection === 'chart' ? <InsertChartIcon /> : <InsertChartOutlinedIcon />}
-                                />
-                            </BottomNavigation>
-                        </Paper>
-                    </>
-                    :
-                    <Button variant="contained" sx={styles.styledButton} onClick={() => navigate("/Admin/students/student/attendance/" + studentID)}>
-                        Add Attendance
-                    </Button>
-                }
-            </>
-        )
     }
 
     const StudentMarksSection = () => {
@@ -630,7 +475,6 @@ const ViewStudent = () => {
                             <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'var(--bg-paper)' }}>
                                 <TabList onChange={handleChange} centered textColor="primary" indicatorColor="primary">
                                     <Tab label="Details" value="1" />
-                                    <Tab label="Attendance" value="2" />
                                     <Tab label="Marks" value="3" />
                                     <Tab label="Discounts" value="4" />
                                 </TabList>
@@ -638,9 +482,6 @@ const ViewStudent = () => {
 
                             <TabPanel value="1" sx={{ p: 4 }}>
                                 <StudentDetailsSection />
-                            </TabPanel>
-                            <TabPanel value="2" sx={{ p: 4 }}>
-                                <StudentAttendanceSection />
                             </TabPanel>
                             <TabPanel value="3" sx={{ p: 4 }}>
                                 <StudentMarksSection />

@@ -13,7 +13,6 @@ import { GreenButton } from '../../../components/buttonStyles';
 import TableTemplate from '../../../components/TableTemplate';
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
 import GradeOutlinedIcon from '@mui/icons-material/GradeOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import EditIcon from '@mui/icons-material/Edit';
@@ -109,12 +108,7 @@ const ShowStudents = () => {
                         <VisibilityOutlinedIcon />
                     </ActionIconButtonPrimary>
                 </Tooltip>
-                <Tooltip title="Take Attendance" arrow>
-                    <ActionIconButtonSuccess
-                        onClick={() => navigate("/Admin/students/student/attendance/" + row.id)}>
-                        <EventAvailableOutlinedIcon />
-                    </ActionIconButtonSuccess>
-                </Tooltip>
+
                 <Tooltip title="Provide Marks" arrow>
                     <ActionIconButtonInfo
                         onClick={() => navigate("/Admin/students/student/marks/" + row.id)}>

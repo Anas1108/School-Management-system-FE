@@ -200,13 +200,6 @@ const AdminHomePage = () => {
             <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
               <QuickStatItem>
                 <div className="header">
-                  <span className="label">Attendance</span>
-                  <span className="percentage">85%</span>
-                </div>
-                <StyledLinearProgress variant="determinate" value={85} color="primary" />
-              </QuickStatItem>
-              <QuickStatItem>
-                <div className="header">
                   <span className="label">Syllabus</span>
                   <span className="percentage">60%</span>
                 </div>

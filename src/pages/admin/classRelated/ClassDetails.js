@@ -17,7 +17,6 @@ import TableTemplate from "../../../components/TableTemplate";
 import AddIcon from '@mui/icons-material/Add';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
 import Popup from "../../../components/Popup";
@@ -205,12 +204,7 @@ const ClassDetails = () => {
                         <VisibilityOutlinedIcon />
                     </ActionIconButtonPrimary>
                 </Tooltip>
-                <Tooltip title="Attendance" arrow>
-                    <ActionIconButtonSuccess
-                        onClick={() => navigate("/Admin/students/student/attendance/" + row.id)}>
-                        <EventAvailableOutlinedIcon />
-                    </ActionIconButtonSuccess>
-                </Tooltip>
+
                 <Tooltip title="Delete" arrow>
                     <ActionIconButtonError
                         onClick={() => deleteHandler(row.id, "Student")}>

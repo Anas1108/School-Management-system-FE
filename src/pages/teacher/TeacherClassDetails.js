@@ -6,7 +6,6 @@ import { Box, Typography, Tooltip, Container } from '@mui/material';
 import { ActionIconButtonPrimary, ActionIconButtonSuccess, ActionIconButtonInfo } from "../../components/buttonStyles";
 import TableTemplate from "../../components/TableTemplate";
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
 import GradeOutlinedIcon from '@mui/icons-material/GradeOutlined';
 
 const TeacherClassDetails = () => {
@@ -48,12 +47,7 @@ const TeacherClassDetails = () => {
                         <VisibilityOutlinedIcon />
                     </ActionIconButtonPrimary>
                 </Tooltip>
-                <Tooltip title="Take Attendance" arrow>
-                    <ActionIconButtonSuccess
-                        onClick={() => navigate(`/Teacher/class/student/attendance/${row.id}/${subjectID}`)}>
-                        <EventAvailableOutlinedIcon />
-                    </ActionIconButtonSuccess>
-                </Tooltip>
+
                 <Tooltip title="Provide Marks" arrow>
                     <ActionIconButtonInfo
                         onClick={() => navigate(`/Teacher/class/student/marks/${row.id}/${subjectID}`)}>

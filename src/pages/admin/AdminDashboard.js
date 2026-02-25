@@ -30,7 +30,6 @@ import AdminSettings from './AdminSettings';
 import AddStudent from './studentRelated/AddStudent';
 import SeeComplains from './studentRelated/SeeComplains';
 import ShowStudents from './studentRelated/ShowStudents';
-import StudentAttendance from './studentRelated/StudentAttendance';
 import StudentExamMarks from './studentRelated/StudentExamMarks';
 import ViewStudent from './studentRelated/ViewStudent';
 
@@ -180,8 +179,6 @@ const AdminDashboard = () => {
                             <Route path="/Admin/addsubject/:id" element={<SubjectForm />} />
                             <Route path="/Admin/class/subject/:classID/:subjectID" element={<ViewSubject />} />
 
-                            <Route path="/Admin/subject/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
-                            <Route path="/Admin/subject/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
                             <Route path="/Admin/subject/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
                             <Route path="/Admin/subject-allocation" element={<SubjectAllocation />} />
 
@@ -198,7 +195,6 @@ const AdminDashboard = () => {
                             <Route path="/Admin/students" element={<ShowStudents />} />
                             <Route path="/Admin/students/student/edit/:id" element={<AddStudent situation="Edit" />} />
                             <Route path="/Admin/students/student/:id" element={<ViewStudent />} />
-                            <Route path="/Admin/students/student/attendance/:id" element={<StudentAttendance situation="Student" />} />
                             <Route path="/Admin/students/student/marks/:id" element={<StudentExamMarks situation="Student" />} />
 
                             {/* Family */}

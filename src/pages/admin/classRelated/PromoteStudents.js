@@ -163,7 +163,7 @@ const PromoteStudents = () => {
                 </Typography>
             </Box>
             <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-                Select a class to promote students from, choose the target class, and decide whether to reset their academic records (exams and attendance) for the new session.
+                Select a class to promote students from, choose the target class, and decide whether to reset their academic records (exams) for the new session.
             </Typography>
 
             <Paper elevation={3} sx={{ p: 4, borderRadius: 3, mb: 4 }}>
@@ -234,7 +234,7 @@ const PromoteStudents = () => {
                                         Clear Academic Records Next Session
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary">
-                                        Checking this will erase the students' previous Exam Results and Attendance. Fees will remain intact.
+                                        Checking this will erase the students' previous Exam Results. Fees will remain intact.
                                     </Typography>
                                 </Box>
                             }
@@ -342,7 +342,7 @@ const PromoteStudents = () => {
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
                         Are you sure you want to promote {selectedStudents.length} student(s)?
-                        {clearRecords && " Their previous session's exams and attendance records will be cleared."}
+                        {clearRecords && " Their previous session's exams records will be cleared."}
                         This action cannot be undone.
                     </DialogContentText>
                 </DialogContent>
