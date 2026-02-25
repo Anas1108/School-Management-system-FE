@@ -54,6 +54,12 @@ const sclassSlice = createSlice({
             state.loading = false;
             state.error = null;
         },
+        getStudentsFailed: (state, action) => {
+            state.sclassStudents = [];
+            state.getresponse = action.payload;
+            state.loading = false;
+            state.error = null;
+        },
         getError: (state, action) => {
             state.loading = false;
             state.error = action.payload;
@@ -84,6 +90,7 @@ export const {
     getSubjectsSuccess,
     detailsSuccess,
     getFailedTwo,
+    getStudentsFailed,
     resetSubjects,
     getSubDetailsSuccess,
     getSubDetailsRequest

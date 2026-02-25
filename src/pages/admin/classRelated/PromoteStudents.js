@@ -23,7 +23,12 @@ import {
     Alert,
     Divider,
     TextField,
-    Chip
+    Chip,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions
 } from '@mui/material';
 import { getAllSclasses, getClassStudents } from '../../../redux/sclassRelated/sclassHandle';
 import { promoteStudentsAPI } from '../../../redux/studentRelated/studentHandle';
@@ -47,6 +52,7 @@ const PromoteStudents = () => {
     const [clearRecords, setClearRecords] = useState(true);
     const [targetSessionYear, setTargetSessionYear] = useState(`${new Date().getFullYear()}-${new Date().getFullYear() + 1}`);
     const [selectedStudents, setSelectedStudents] = useState([]);
+    const [openConfirm, setOpenConfirm] = useState(false);
 
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState('');
@@ -132,7 +138,16 @@ const PromoteStudents = () => {
             setMessage("Source and Target class cannot be the same.");
             return;
         }
+        setOpenConfirm(true);
+    };
+
+    const handleConfirmPromote = () => {
+        setOpenConfirm(false);
         dispatch(promoteStudentsAPI(selectedStudents, toClass, clearRecords, targetSessionYear));
+    };
+
+    const handleCloseConfirm = () => {
+        setOpenConfirm(false);
     };
 
     return (
@@ -310,6 +325,32 @@ const PromoteStudents = () => {
             </Paper>
 
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
+
+            <Dialog
+                open={openConfirm}
+                onClose={handleCloseConfirm}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"Confirm Promotion"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Are you sure you want to promote {selectedStudents.length} student(s)?
+                        {clearRecords && " Their previous session's exams and attendance records will be cleared."}
+                        This action cannot be undone.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseConfirm} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleConfirmPromote} color="error" autoFocus variant="contained">
+                        Confirm Promote
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };

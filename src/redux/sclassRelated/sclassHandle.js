@@ -7,6 +7,7 @@ import {
     getStudentsSuccess,
     detailsSuccess,
     getFailedTwo,
+    getStudentsFailed,
     getSubjectsSuccess,
     getSubDetailsSuccess,
     getSubDetailsRequest
@@ -33,7 +34,7 @@ export const getClassStudents = (id) => async (dispatch) => {
     try {
         const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/Sclass/Students/${id}`);
         if (result.data.message) {
-            dispatch(getFailedTwo(result.data.message));
+            dispatch(getStudentsFailed(result.data.message));
         } else {
             dispatch(getStudentsSuccess(result.data));
         }
