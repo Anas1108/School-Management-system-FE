@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import SettingsIcon from '@mui/icons-material/Settings';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import PaymentsIcon from '@mui/icons-material/Payments';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
@@ -224,7 +224,7 @@ const FeeDashboard = () => {
                             </Tooltip>
                             <Tooltip title="Last Balance Presets">
                                 <IconButton size="small" onClick={() => navigate('/Admin/fees/last-balance-presets')} sx={{ bgcolor: 'var(--color-success-600)', color: 'white', '&:hover': { bgcolor: 'var(--color-success-700)' }, borderRadius: 'var(--border-radius-md)' }}>
-                                    <AccountBalanceWalletIcon fontSize="small" />
+                                    <AccountBalanceIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title="Discounts">

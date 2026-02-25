@@ -9,7 +9,7 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { KeyboardArrowUp, KeyboardArrowDown, Delete as DeleteIcon, ArrowBack as ArrowBackIcon, Edit as EditIcon } from '@mui/icons-material';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import { removeStuff, updateStudentFields } from '../../../redux/studentRelated/studentHandle';
 import CustomBarChart from '../../../components/CustomBarChart'
 import { StyledTableCell, StyledTableRow } from '../../../components/styles';
@@ -465,7 +465,7 @@ const ViewStudent = () => {
                             </Tooltip>
                             <Tooltip title="Last Balance">
                                 <IconButton size="small" onClick={() => navigate("/Admin/students/student/lastbalance/" + studentID)} sx={{ bgcolor: 'var(--color-success-600)', color: 'white', '&:hover': { bgcolor: 'var(--color-success-700)' }, borderRadius: 'var(--border-radius-md)' }}>
-                                    <AccountBalanceWalletIcon fontSize="small" />
+                                    <AccountBalanceIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title="Delete">

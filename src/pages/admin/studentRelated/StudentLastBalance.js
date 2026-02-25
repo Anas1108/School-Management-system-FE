@@ -7,6 +7,7 @@ import { Box, Button, Typography, Paper, Container, IconButton, Table, TableBody
 import { StyledTableCell, StyledTableRow } from '../../../components/styles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import Popup from '../../../components/Popup';
@@ -27,6 +28,10 @@ const StudentLastBalance = () => {
 
     const [openAddModal, setOpenAddModal] = useState(false);
     const [newBalance, setNewBalance] = useState({ feeName: '', amount: 0 });
+
+    const [openEditModal, setOpenEditModal] = useState(false);
+    const [editIndex, setEditIndex] = useState(null);
+    const [editBalance, setEditBalance] = useState({ feeName: '', amount: 0 });
 
     const [message, setMessage] = useState("");
     const [showPopup, setShowPopup] = useState(false);
@@ -74,6 +79,27 @@ const StudentLastBalance = () => {
         setBalances(updatedBalances);
         setNewBalance({ feeName: '', amount: 0 });
         setOpenAddModal(false);
+    };
+
+    const handleEditClick = (index, item) => {
+        setEditIndex(index);
+        setEditBalance({ ...item });
+        setOpenEditModal(true);
+    };
+
+    const handleUpdateBalance = () => {
+        if (!editBalance.feeName || editBalance.amount < 0) {
+            setMessage("Please enter a valid Fee Name and a non-negative Amount.");
+            setSeverity("error");
+            setShowPopup(true);
+            return;
+        }
+
+        const updatedBalances = [...balances];
+        updatedBalances[editIndex] = editBalance;
+        setBalances(updatedBalances);
+        setOpenEditModal(false);
+        setEditIndex(null);
     };
 
     const handleDeleteBalance = (index) => {
@@ -149,6 +175,9 @@ const StudentLastBalance = () => {
                                         <StyledTableCell>{item.feeName}</StyledTableCell>
                                         <StyledTableCell align="center">{item.amount}</StyledTableCell>
                                         <StyledTableCell align="right">
+                                            <IconButton color="primary" onClick={() => handleEditClick(index, item)}>
+                                                <EditIcon />
+                                            </IconButton>
                                             <IconButton color="error" onClick={() => handleDeleteBalance(index)}>
                                                 <DeleteIcon />
                                             </IconButton>
@@ -202,6 +231,37 @@ const StudentLastBalance = () => {
                 <DialogActions sx={{ p: 3 }}>
                     <Button onClick={() => setOpenAddModal(false)} color="inherit">Cancel</Button>
                     <Button variant="contained" onClick={handleAddBalance}>Add</Button>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog open={openEditModal} onClose={() => setOpenEditModal(false)} maxWidth="sm" fullWidth>
+                <DialogTitle sx={{ fontWeight: 'bold' }}>Edit Balance Record</DialogTitle>
+                <DialogContent>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 2 }}>
+                        <Autocomplete
+                            freeSolo
+                            options={presets}
+                            value={editBalance.feeName}
+                            onInputChange={(event, newValue) => {
+                                setEditBalance({ ...editBalance, feeName: newValue });
+                            }}
+                            renderInput={(params) => (
+                                <TextField {...params} label="Fee Name (e.g. Books, Uniform)" fullWidth />
+                            )}
+                        />
+                        <TextField
+                            label="Amount (PKR)"
+                            type="number"
+                            fullWidth
+                            value={editBalance.amount}
+                            onChange={(e) => setEditBalance({ ...editBalance, amount: Number(e.target.value) })}
+                            inputProps={{ min: 0 }}
+                        />
+                    </Box>
+                </DialogContent>
+                <DialogActions sx={{ p: 3 }}>
+                    <Button onClick={() => setOpenEditModal(false)} color="inherit">Cancel</Button>
+                    <Button variant="contained" onClick={handleUpdateBalance}>Update</Button>
                 </DialogActions>
             </Dialog>
 
