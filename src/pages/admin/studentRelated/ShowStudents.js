@@ -16,6 +16,7 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import GradeOutlinedIcon from '@mui/icons-material/GradeOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import EditIcon from '@mui/icons-material/Edit';
+import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import HistoryIcon from '@mui/icons-material/History';
 import Popup from '../../../components/Popup';
@@ -114,6 +115,13 @@ const ShowStudents = () => {
                         onClick={() => navigate("/Admin/students/student/marks/" + row.id)}>
                         <GradeOutlinedIcon />
                     </ActionIconButtonInfo>
+                </Tooltip>
+
+                <Tooltip title="Last Balance" arrow>
+                    <ActionIconButtonSuccess
+                        onClick={() => navigate("/Admin/students/student/lastbalance/" + row.id)}>
+                        <AccountBalanceWalletOutlinedIcon />
+                    </ActionIconButtonSuccess>
                 </Tooltip>
                 <Tooltip title="Fee History" arrow>
                     <ActionIconButtonPrimary

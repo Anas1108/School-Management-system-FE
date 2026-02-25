@@ -32,6 +32,7 @@ import SeeComplains from './studentRelated/SeeComplains';
 import ShowStudents from './studentRelated/ShowStudents';
 import StudentExamMarks from './studentRelated/StudentExamMarks';
 import ViewStudent from './studentRelated/ViewStudent';
+import StudentLastBalance from './studentRelated/StudentLastBalance';
 
 import AddNotice from './noticeRelated/AddNotice';
 import ShowNotices from './noticeRelated/ShowNotices';
@@ -62,6 +63,7 @@ import FeeDefaulters from './feeRelated/FeeDefaulters';
 import FeeStructure from './feeRelated/FeeStructure';
 import FeeSearch from './feeRelated/FeeSearch';
 import FeeDiscounts from './feeRelated/FeeDiscounts';
+import LastBalancePresets from './feeRelated/LastBalancePresets';
 import BreadcrumbsNav from '../../components/BreadcrumbsNav';
 
 import ShowFamilies from './familyRelated/ShowFamilies';
@@ -196,6 +198,7 @@ const AdminDashboard = () => {
                             <Route path="/Admin/students/student/edit/:id" element={<AddStudent situation="Edit" />} />
                             <Route path="/Admin/students/student/:id" element={<ViewStudent />} />
                             <Route path="/Admin/students/student/marks/:id" element={<StudentExamMarks situation="Student" />} />
+                            <Route path="/Admin/students/student/lastbalance/:id" element={<StudentLastBalance />} />
 
                             {/* Family */}
                             <Route path="/Admin/families" element={<ShowFamilies />} />
@@ -221,6 +224,7 @@ const AdminDashboard = () => {
                             <Route path="/Admin/fees/structure" element={<FeeStructure />} />
                             <Route path="/Admin/fees/search" element={<FeeSearch />} />
                             <Route path="/Admin/fees/discounts" element={<FeeDiscounts />} />
+                            <Route path="/Admin/fees/last-balance-presets" element={<LastBalancePresets />} />
                         </Routes>
                     </Box>
                     <LogoutModal
