@@ -6,7 +6,7 @@ import { getAllTeachers } from '../../redux/teacherRelated/teacherHandle';
 import {
     Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup,
     InputLabel, MenuItem, Select, Typography, CircularProgress,
-    Grid, Paper, Switch, RadioGroup, Radio, Table, TableBody, TableCell,
+    Grid, Paper, RadioGroup, Radio, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Chip, Container, Tabs, Tab,
     IconButton, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';

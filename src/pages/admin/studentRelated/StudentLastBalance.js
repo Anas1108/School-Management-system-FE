@@ -18,7 +18,7 @@ const StudentLastBalance = () => {
     const navigate = useNavigate();
     const params = useParams();
     const dispatch = useDispatch();
-    const { userDetails, loading, error, response } = useSelector((state) => state.user);
+    const { userDetails, loading } = useSelector((state) => state.user);
 
     const studentID = params.id;
     const address = "Student";

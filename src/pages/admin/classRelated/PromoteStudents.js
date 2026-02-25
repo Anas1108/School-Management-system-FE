@@ -33,7 +33,6 @@ import {
 import { getAllSclasses, getClassStudents } from '../../../redux/sclassRelated/sclassHandle';
 import { promoteStudentsAPI } from '../../../redux/studentRelated/studentHandle';
 import { underStudentControl } from '../../../redux/studentRelated/studentSlice';
-import { underControl as sclassUnderControl } from '../../../redux/sclassRelated/sclassSlice';
 import Popup from '../../../components/Popup';
 import CustomLoader from '../../../components/CustomLoader';
 import { TrendingUp, CompareArrows } from '@mui/icons-material';

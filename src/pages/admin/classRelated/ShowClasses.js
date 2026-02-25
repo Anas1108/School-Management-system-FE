@@ -10,7 +10,6 @@ import TableTemplate from '../../../components/TableTemplate';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import SchoolIcon from '@mui/icons-material/School';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { getAllTeachers } from '../../../redux/teacherRelated/teacherHandle';
 

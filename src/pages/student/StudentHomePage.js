@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { Container, Grid, Paper, Typography, Box } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../redux/userRelated/userHandle';
@@ -12,7 +12,7 @@ import { getSubjectList } from '../../redux/sclassRelated/sclassHandle';
 const StudentHomePage = () => {
     const dispatch = useDispatch();
 
-    const { userDetails, currentUser, loading, response } = useSelector((state) => state.user);
+    const { currentUser } = useSelector((state) => state.user);
     const { subjectsList } = useSelector((state) => state.sclass);
 
 
@@ -109,24 +109,3 @@ const StatValue = styled(CountUp)`
     color: white;
 `;
 
-const ChartCard = styled(Paper)`
-    padding: 2rem;
-    height: 200px;
-    border-radius: var(--border-radius-xl);
-    border: 1px solid var(--border-color);
-    background: var(--bg-paper);
-`;
-
-const ChartWrapper = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 140px;
-`;
-
-const EmptyState = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 140px;
-`;

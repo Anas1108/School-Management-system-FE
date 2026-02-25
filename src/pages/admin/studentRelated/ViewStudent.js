@@ -4,13 +4,13 @@ import { getUserDetails } from '../../../redux/userRelated/userHandle';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import { useNavigate, useParams } from 'react-router-dom'
 import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
-import { Box, Button, Collapse, IconButton, Table, TableBody, TableHead, Typography, Tab, Paper, BottomNavigation, BottomNavigationAction, Container, Grid, Avatar, Dialog, DialogTitle, DialogContent, TextField, MenuItem, DialogActions, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
+import { Box, Button, IconButton, Table, TableBody, TableHead, Typography, Tab, Paper, BottomNavigation, BottomNavigationAction, Container, Grid, Avatar, Dialog, DialogTitle, DialogContent, TextField, MenuItem, DialogActions, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { KeyboardArrowUp, KeyboardArrowDown, Delete as DeleteIcon, ArrowBack as ArrowBackIcon, Edit as EditIcon } from '@mui/icons-material';
+import { Delete as DeleteIcon, ArrowBack as ArrowBackIcon, Edit as EditIcon } from '@mui/icons-material';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import { removeStuff, updateStudentFields } from '../../../redux/studentRelated/studentHandle';
+import { removeStuff } from '../../../redux/studentRelated/studentHandle';
 import CustomBarChart from '../../../components/CustomBarChart'
 import { StyledTableCell, StyledTableRow } from '../../../components/styles';
 
@@ -51,7 +51,7 @@ const ViewStudent = () => {
     const [sclassName, setSclassName] = useState('');
 
     const [subjectMarks, setSubjectMarks] = useState('');
-    const [openStates, setOpenStates] = useState({});
+
 
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
@@ -60,12 +60,7 @@ const ViewStudent = () => {
     // Confirmation Modal State
     const [confirmOpen, setConfirmOpen] = useState(false);
 
-    const handleOpen = (subId) => {
-        setOpenStates((prevState) => ({
-            ...prevState,
-            [subId]: !prevState[subId],
-        }));
-    };
+
 
     const [studentDiscounts, setStudentDiscounts] = useState([]);
     const [fetchDiscountsTrigger, setFetchDiscountsTrigger] = useState(0);
@@ -123,12 +118,7 @@ const ViewStudent = () => {
             })
     }
 
-    const removeHandler = (id, deladdress) => {
-        dispatch(removeStuff(id, deladdress))
-            .then(() => {
-                dispatch(getUserDetails(studentID, address));
-            })
-    }
+
 
     const StudentMarksSection = () => {
         const renderTableSection = () => {

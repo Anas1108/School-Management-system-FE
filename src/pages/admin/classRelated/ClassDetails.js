@@ -79,7 +79,7 @@ const ClassDetails = () => {
     };
 
     const [showPopup, setShowPopup] = useState(false);
-    const [message, setMessage] = useState("");
+    const [message] = useState("");
 
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);

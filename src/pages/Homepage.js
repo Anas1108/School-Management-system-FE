@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Typography, Button, Box, Container } from '@mui/material';
+import { Typography, Button, Box } from '@mui/material';
 import { PlayArrow } from '@mui/icons-material';
 import styled from 'styled-components';
 import TKSLogo from "../assets/tks-Kulluwal.png";

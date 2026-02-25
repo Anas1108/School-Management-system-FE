@@ -35,7 +35,7 @@ const ShowSubjects = () => {
     }
 
     const [showPopup, setShowPopup] = useState(false);
-    const [message, setMessage] = useState("");
+    const [message] = useState("");
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [subjectToDelete, setSubjectToDelete] = useState(null);
     const [actionLoading, setActionLoading] = useState(false);

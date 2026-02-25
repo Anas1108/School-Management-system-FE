@@ -7,13 +7,12 @@ import { StyledTableCell, StyledTableRow } from '../../../components/styles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-import SaveIcon from '@mui/icons-material/Save';
 import Popup from '../../../components/Popup';
 import CustomLoader from '../../../components/CustomLoader';
 
 const LastBalancePresets = () => {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+
     const { currentUser } = useSelector(state => state.user);
 
     const [presets, setPresets] = useState([]);
