@@ -63,3 +63,20 @@ export const removeStuff = (id, address) => async (dispatch) => {
         dispatch(getError(error));
     }
 }
+
+export const promoteStudentsAPI = (studentIds, targetClassId, clearRecords, targetSessionYear) => async (dispatch) => {
+    dispatch(getRequest());
+
+    try {
+        const result = await axios.put(`${process.env.REACT_APP_BASE_URL}/Students/Promote`, { studentIds, targetClassId, clearRecords, targetSessionYear }, {
+            headers: { 'Content-Type': 'application/json' },
+        });
+        if (result.data.message && result.data.message !== "Students promoted successfully") {
+            dispatch(getFailed(result.data.message));
+        } else {
+            dispatch(stuffDone());
+        }
+    } catch (error) {
+        dispatch(getError(error));
+    }
+}

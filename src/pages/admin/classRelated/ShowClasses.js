@@ -15,6 +15,7 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import Popup from '../../../components/Popup';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 
@@ -144,6 +145,18 @@ const ShowClasses = () => {
             }}
             sx={{ width: '260px' }}
           />
+          <Tooltip title="Promote Students">
+            <IconButton
+              onClick={() => navigate("/Admin/classes/promote")}
+              sx={{
+                bgcolor: 'var(--color-secondary-500)', color: 'white',
+                '&:hover': { bgcolor: 'var(--color-secondary-600)' },
+                borderRadius: 'var(--border-radius-md)'
+              }}
+            >
+              <TrendingUpIcon />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Add Class">
             <IconButton
               onClick={() => navigate("/Admin/addclass")}

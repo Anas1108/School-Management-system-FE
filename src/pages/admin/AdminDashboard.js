@@ -55,6 +55,7 @@ import AddClass from './classRelated/AddClass';
 import ClassDetails from './classRelated/ClassDetails';
 import ShowClasses from './classRelated/ShowClasses';
 import EditClass from './classRelated/EditClass';
+import PromoteStudents from './classRelated/PromoteStudents';
 
 
 import FeeDashboard from './feeRelated/FeeDashboard';
@@ -190,6 +191,7 @@ const AdminDashboard = () => {
                             <Route path="/Admin/classes/class/:id" element={<ClassDetails />} />
                             <Route path="/Admin/classes/class/edit/:id" element={<EditClass />} />
                             <Route path="/Admin/class/addstudents/:id" element={<AddStudent situation="Class" />} />
+                            <Route path="/Admin/classes/promote" element={<PromoteStudents />} />
 
                             {/* Student */}
                             <Route path="/Admin/addstudents" element={<AddStudent situation="Student" />} />
