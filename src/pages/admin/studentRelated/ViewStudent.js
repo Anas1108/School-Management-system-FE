@@ -464,7 +464,7 @@ const ViewStudent = () => {
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title="Last Balance">
-                                <IconButton size="small" onClick={() => navigate("/Admin/students/student/lastbalance/" + studentID)} sx={{ bgcolor: 'var(--color-success-600)', color: 'white', '&:hover': { bgcolor: 'var(--color-success-700)' }, borderRadius: 'var(--border-radius-md)' }}>
+                                <IconButton size="small" onClick={() => navigate("/Admin/students/student/lastbalance/" + studentID)} sx={{ bgcolor: 'success.main', color: 'white', '&:hover': { bgcolor: 'success.dark' }, borderRadius: 'var(--border-radius-md)' }}>
                                     <AccountBalanceIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
