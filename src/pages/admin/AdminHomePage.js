@@ -1,20 +1,87 @@
-import { Container, Grid, Paper, Box, Typography, Button, LinearProgress } from '@mui/material'
-import SeeNotice from '../../components/SeeNotice';
-import styled from 'styled-components';
-import CountUp from 'react-countup';
+import React, { useEffect } from 'react'
+import { Container, Grid, Paper, Box, Typography, Button, LinearProgress, List, ListItem, ListItemText, Divider } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
 import { getAllSclasses } from '../../redux/sclassRelated/sclassHandle';
 import { getAllStudents } from '../../redux/studentRelated/studentHandle';
 import { getAllTeachers } from '../../redux/teacherRelated/teacherHandle';
+import { getAllNotices } from '../../redux/noticeRelated/noticeHandle';
+import styled from 'styled-components';
+import CountUp from 'react-countup';
+import { useNavigate } from 'react-router-dom';
 import StudentsIcon from "@mui/icons-material/Group";
 import ClassesIcon from "@mui/icons-material/Class";
 import TeachersIcon from "@mui/icons-material/SupervisorAccount";
-import FeesIcon from "@mui/icons-material/MonetizationOn";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import EventIcon from '@mui/icons-material/Event';
+
+const NoticeList = () => {
+  const dispatch = useDispatch();
+  const { currentUser } = useSelector(state => state.user);
+  const { noticesList, loading } = useSelector((state) => state.notice);
+
+  useEffect(() => {
+    dispatch(getAllNotices(currentUser._id, "Notice"));
+  }, [dispatch, currentUser._id]);
+
+  if (loading) return <Box sx={{ p: 3 }}><LinearProgress /></Box>;
+
+  return (
+    <List sx={{ p: 0 }}>
+      {noticesList && noticesList.length > 0 ? (
+        noticesList.map((notice, index) => (
+          <React.Fragment key={notice._id}>
+            <ListItem alignItems="flex-start" sx={{ py: 2, px: 2.5, '&:hover': { background: 'var(--color-gray-50)' } }}>
+              <Box sx={{
+                mr: 2,
+                mt: 0.5,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                background: 'var(--color-primary-50)',
+                color: 'var(--color-primary-600)'
+              }}>
+                <NotificationsActiveIcon sx={{ fontSize: '1.2rem' }} />
+              </Box>
+              <ListItemText
+                primary={
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'var(--text-primary)' }}>
+                    {notice.title}
+                  </Typography>
+                }
+                secondary={
+                  <Box sx={{ mt: 0.5 }}>
+                    <Typography variant="body2" sx={{ color: 'var(--text-secondary)', mb: 1, lineBreak: 'anywhere' }}>
+                      {notice.details}
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <EventIcon sx={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }} />
+                      <Typography variant="caption" sx={{ color: 'var(--text-tertiary)', fontWeight: 600 }}>
+                        {new Date(notice.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </Typography>
+                    </Box>
+                  </Box>
+                }
+              />
+            </ListItem>
+            {index < noticesList.length - 1 && <Divider component="li" sx={{ opacity: 0.6 }} />}
+          </React.Fragment>
+        ))
+      ) : (
+        <Box sx={{ p: 4, textAlign: 'center' }}>
+          <Typography variant="body2" color="textSecondary">No recent notices available.</Typography>
+        </Box>
+      )}
+    </List>
+  );
+};
 
 const AdminHomePage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { studentsList } = useSelector((state) => state.student);
   const { sclassesList } = useSelector((state) => state.sclass);
   const { teachersList } = useSelector((state) => state.teacher);
@@ -40,16 +107,24 @@ const AdminHomePage = () => {
           <WelcomeHero>
             <HeroContent>
               <Typography variant="h5" sx={{ fontWeight: 800, color: 'white', mb: 0.5, fontFamily: 'var(--font-family-heading)' }}>
-                Welcome, {currentUser.name}! 👋
+                Welcome, {currentUser.name}!
               </Typography>
               <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mb: 2, maxWidth: '500px' }}>
                 Manage your school efficiently with real-time updates and insights.
               </Typography>
               <Box sx={{ display: 'flex', gap: 1.5 }}>
-                <HeroButton variant="contained" size="small">
+                <HeroButton
+                  variant="contained"
+                  size="small"
+                  onClick={() => navigate('/Admin/reports')}
+                >
                   View Reports
                 </HeroButton>
-                <HeroButtonSecondary variant="outlined" size="small">
+                <HeroButtonSecondary
+                  variant="outlined"
+                  size="small"
+                  onClick={() => navigate('/Admin/classes')}
+                >
                   Manage Classes <ArrowForwardIcon sx={{ ml: 0.5, fontSize: '0.9rem' }} />
                 </HeroButtonSecondary>
               </Box>
@@ -61,25 +136,33 @@ const AdminHomePage = () => {
           </WelcomeHero>
         </Grid>
 
-        {/* Stats Section - Smaller Cards */}
+        {/* Stats Section - Clickable & Clean */}
         <Grid container item xs={12} spacing={2}>
           {[
-            { label: 'Total Students', value: numberOfStudents, icon: <StudentsIcon />, class: 'icon-students', trend: '+5%', color: 'positive' },
-            { label: 'Total Classes', value: numberOfClasses, icon: <ClassesIcon />, class: 'icon-classes', trend: 'Stable', color: '' },
-            { label: 'Total Teachers', value: numberOfTeachers, icon: <TeachersIcon />, class: 'icon-teachers', trend: '+2 new', color: 'positive' },
-            { label: 'Fees Collection', value: 23000, icon: <FeesIcon />, class: 'icon-fees', trend: '-3%', color: 'negative', prefix: 'Rs. ' },
+            { label: 'Total Students', value: numberOfStudents, icon: <StudentsIcon />, class: 'icon-students', color: 'primary', link: '/Admin/students' },
+            { label: 'Total Classes', value: numberOfClasses, icon: <ClassesIcon />, class: 'icon-classes', color: 'success', link: '/Admin/classes' },
+            { label: 'Total Teachers', value: numberOfTeachers, icon: <TeachersIcon />, class: 'icon-teachers', color: 'warning', link: '/Admin/teachers' },
           ].map((stat, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
-              <StatCard elevation={0}>
+            <Grid item xs={12} sm={4} key={index}>
+              <StatCard
+                elevation={0}
+                onClick={() => navigate(stat.link)}
+                sx={{ cursor: 'pointer' }}
+              >
                 <IconContainer className={stat.class}>
                   {stat.icon}
                 </IconContainer>
                 <StatInfo>
                   <div className="label">{stat.label}</div>
                   <div className="value">
-                    <CountUp start={0} end={stat.value} duration={2} prefix={stat.prefix || ''} />
+                    <CountUp start={0} end={stat.value} duration={2} />
                   </div>
-                  <div className={`trend ${stat.color}`}>{stat.trend}</div>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                    <Typography variant="caption" sx={{ color: 'var(--text-tertiary)', fontWeight: 600 }}>
+                      View Details
+                    </Typography>
+                    <ArrowForwardIcon sx={{ ml: 0.5, fontSize: '0.8rem', color: 'var(--text-tertiary)' }} />
+                  </Box>
                 </StatInfo>
               </StatCard>
             </Grid>
@@ -91,14 +174,18 @@ const AdminHomePage = () => {
           <SectionPaper elevation={0}>
             <SectionHeader>
               <Typography variant="subtitle1" sx={{ fontWeight: 700, fontFamily: 'var(--font-family-heading)' }}>
-                Recent Notices & Updates
+                School Announcements
               </Typography>
-              <Button size="small" sx={{ textTransform: 'none', fontWeight: 600 }}>
-                View All
+              <Button
+                size="small"
+                sx={{ textTransform: 'none', fontWeight: 600 }}
+                onClick={() => navigate('/Admin/addnotice')}
+              >
+                Create Notice
               </Button>
             </SectionHeader>
-            <Box sx={{ p: 1.5 }}>
-              <SeeNotice />
+            <Box sx={{ p: 0 }}>
+              <NoticeList />
             </Box>
           </SectionPaper>
         </Grid>
@@ -236,41 +323,63 @@ const HeroButtonSecondary = styled(Button)`
 
 const StatCard = styled(Paper)`
   && {
-    padding: 16px;
+    padding: 20px;
     display: flex;
     align-items: center;
-    gap: 16px;
-    border-radius: var(--border-radius-lg);
+    gap: 20px;
+    border-radius: var(--border-radius-xl);
     background: var(--bg-paper);
     border: 1px solid var(--border-color);
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     height: 100%;
+    position: relative;
+    overflow: hidden;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
     
     &:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
-      border-color: var(--color-primary-200);
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--color-primary-400);
+      
+      &::after {
+        opacity: 1;
+      }
+
+      .icon-box {
+        transform: scale(1.1);
+      }
     }
   }
 `;
 
-const IconContainer = styled.div`
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
-  border-radius: var(--border-radius-md);
+const IconContainer = styled.div.attrs({ className: 'icon-box' })`
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  border-radius: var(--border-radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.3s ease;
   
   svg {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
   }
   
-  &.icon-students { background: #eef2ff; color: #4f46e5; }
-  &.icon-classes { background: #ecfdf5; color: #10b981; }
-  &.icon-teachers { background: #fff7ed; color: #f59e0b; }
-  &.icon-fees { background: #fdf2f8; color: #db2777; }
+  &.icon-students { background: #eff6ff; color: #2563eb; }
+  &.icon-classes { background: #ecfdf5; color: #059669; }
+  &.icon-teachers { background: #fff7ed; color: #d97706; }
 `;
 
 const StatInfo = styled.div`
