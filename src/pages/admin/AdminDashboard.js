@@ -36,6 +36,8 @@ import ViewStudent from './studentRelated/ViewStudent';
 
 import AddNotice from './noticeRelated/AddNotice';
 import ShowNotices from './noticeRelated/ShowNotices';
+import EditNotice from './noticeRelated/EditNotice';
+import ViewNotice from './noticeRelated/ViewNotice';
 
 import ShowSubjects from './subjectRelated/ShowSubjects';
 import SubjectForm from './subjectRelated/SubjectForm';
@@ -165,6 +167,8 @@ const AdminDashboard = () => {
                             {/* Notice */}
                             <Route path="/Admin/addnotice" element={<AddNotice />} />
                             <Route path="/Admin/notices" element={<ShowNotices />} />
+                            <Route path="/Admin/notices/notice/:id" element={<ViewNotice />} />
+                            <Route path="/Admin/notices/edit/:id" element={<EditNotice />} />
 
                             {/* Subject */}
                             <Route path="/Admin/subjects" element={<ShowSubjects />} />
