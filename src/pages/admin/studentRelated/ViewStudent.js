@@ -10,7 +10,7 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { Delete as DeleteIcon, ArrowBack as ArrowBackIcon, Edit as EditIcon } from '@mui/icons-material';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import { removeStuff } from '../../../redux/studentRelated/studentHandle';
+
 import CustomBarChart from '../../../components/CustomBarChart'
 import { StyledTableCell, StyledTableRow } from '../../../components/styles';
 
