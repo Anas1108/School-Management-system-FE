@@ -30,7 +30,6 @@ const SubjectAllocation = () => {
     const [subjects, setSubjects] = useState([]);
     const [selectedSubjects, setSelectedSubjects] = useState(location.state?.subjectId ? [location.state?.subjectId] : []);
     const [academicYear] = useState('2026'); // Ideally this should be dynamic or from settings
-    const [isClassIncharge, setIsClassIncharge] = useState(false);
     const [allocationType, setAllocationType] = useState('Primary');
     const [workload, setWorkload] = useState([]);
     const [classAllocations, setClassAllocations] = useState([]);
@@ -46,7 +45,6 @@ const SubjectAllocation = () => {
     const [currentAllocation, setCurrentAllocation] = useState(null);
     const [editTeacher, setEditTeacher] = useState('');
     const [editType, setEditType] = useState('Primary');
-    const [editIsClassIncharge, setEditIsClassIncharge] = useState(false);
     const [actionLoading, setActionLoading] = useState(false);
 
     // Delete Confirmation State
@@ -137,7 +135,6 @@ const SubjectAllocation = () => {
                 subjects: selectedSubjects,
                 academicYear,
                 schoolId: adminID,
-                isClassIncharge,
                 type: allocationType
             });
 
@@ -145,7 +142,6 @@ const SubjectAllocation = () => {
             setSeverity("success");
             setShowPopup(true);
             setSelectedSubjects([]);
-            setIsClassIncharge(false);
             fetchWorkload(teacher); // Refresh workload
             fetchClassAllocations(sclass); // Refresh class allocations
         } catch (error) {
@@ -195,7 +191,6 @@ const SubjectAllocation = () => {
         setCurrentAllocation(allocation);
         setEditTeacher(allocation.teacherId);
         setEditType(allocation.type);
-        setEditIsClassIncharge(allocation.isClassIncharge);
         setOpenEditDialog(true);
     };
 
@@ -205,8 +200,7 @@ const SubjectAllocation = () => {
         try {
             await axios.put(`${process.env.REACT_APP_BASE_URL}/SubjectAllocation/${currentAllocation.allocationId}`, {
                 teacherId: editTeacher,
-                type: editType,
-                isClassIncharge: editIsClassIncharge
+                type: editType
             });
             setMessage('Allocation updated successfully');
             setSeverity('success');
@@ -294,20 +288,6 @@ const SubjectAllocation = () => {
                                             <FormControlLabel value="Primary" control={<Radio size="small" />} label="Primary" />
                                             <FormControlLabel value="Substitute" control={<Radio size="small" />} label="Substitute" />
                                         </RadioGroup>
-                                    </Box>
-
-                                    <Box sx={{ mb: 2 }}>
-                                        <FormControlLabel
-                                            control={
-                                                <Switch
-                                                    checked={isClassIncharge}
-                                                    onChange={(e) => setIsClassIncharge(e.target.checked)}
-                                                    color="primary"
-                                                    size="small"
-                                                />
-                                            }
-                                            label={<Typography variant="body2">Assign as Class In-charge</Typography>}
-                                        />
                                     </Box>
 
                                     <Box sx={{ mb: 3 }}>
@@ -420,9 +400,6 @@ const SubjectAllocation = () => {
                                                                             variant="outlined"
                                                                             sx={{ height: 20, fontSize: '0.7rem' }}
                                                                         />
-                                                                        {alloc.isClassIncharge && (
-                                                                            <Chip label="In-charge" size="small" color="info" sx={{ height: 20, fontSize: '0.7rem' }} />
-                                                                        )}
                                                                     </Box>
                                                                 )}
                                                             </TableCell>
@@ -494,9 +471,6 @@ const SubjectAllocation = () => {
                                                                         variant="outlined"
                                                                         sx={{ height: 20, fontSize: '0.7rem' }}
                                                                     />
-                                                                    {alloc.isClassIncharge && (
-                                                                        <Chip label="In-charge" size="small" color="info" sx={{ height: 20, fontSize: '0.7rem' }} />
-                                                                    )}
                                                                 </Box>
                                                             </TableCell>
                                                         </TableRow>
@@ -547,17 +521,6 @@ const SubjectAllocation = () => {
                                     <FormControlLabel value="Primary" control={<Radio size="small" />} label="Primary" />
                                     <FormControlLabel value="Substitute" control={<Radio size="small" />} label="Substitute" />
                                 </RadioGroup>
-                            </Box>
-                            <Box sx={{ mt: 1 }}>
-                                <FormControlLabel
-                                    control={
-                                        <Switch
-                                            checked={editIsClassIncharge}
-                                            onChange={(e) => setEditIsClassIncharge(e.target.checked)}
-                                        />
-                                    }
-                                    label="Class In-charge"
-                                />
                             </Box>
                         </>
                     )}

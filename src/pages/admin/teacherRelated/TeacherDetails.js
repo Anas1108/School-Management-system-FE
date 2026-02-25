@@ -185,9 +185,6 @@ const TeacherDetails = () => {
                                                                 color={alloc.type === 'Primary' ? 'success' : 'warning'}
                                                                 variant="outlined"
                                                             />
-                                                            {alloc.isClassIncharge && (
-                                                                <Chip label="In-charge" size="small" color="info" />
-                                                            )}
                                                         </Box>
                                                     </td>
                                                 </tr>

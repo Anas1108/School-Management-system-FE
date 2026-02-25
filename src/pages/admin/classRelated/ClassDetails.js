@@ -330,7 +330,7 @@ const ClassDetails = () => {
                     {sclassDetails && sclassDetails.sclassName}
                 </Typography>
                 <Grid container spacing={3} sx={{ mt: 2 }}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} sm={4}>
                         <StatBox>
                             <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'var(--color-primary-600)' }}>
                                 {numberOfSubjects}
@@ -340,7 +340,17 @@ const ClassDetails = () => {
                             </Typography>
                         </StatBox>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} sm={4}>
+                        <StatBox>
+                            <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'var(--color-primary-600)' }}>
+                                {sclassDetails && sclassDetails.classTeacher ? sclassDetails.classTeacher.name : "N/A"}
+                            </Typography>
+                            <Typography variant="subtitle1" color="textSecondary">
+                                Class Teacher
+                            </Typography>
+                        </StatBox>
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
                         <StatBox>
                             <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'var(--color-success-600)' }}>
                                 {numberOfStudents}
@@ -369,7 +379,7 @@ const ClassDetails = () => {
                         </GreenButton>
                     }
                 </Box>
-            </DetailsCard>
+            </DetailsCard >
         );
     }
 
