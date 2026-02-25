@@ -9,7 +9,6 @@ import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import StudentHomePage from './StudentHomePage';
 import StudentProfile from './StudentProfile';
 import StudentSubjects from './StudentSubjects';
-import ViewStdAttendance from './ViewStdAttendance';
 import StudentComplain from './StudentComplain';
 import LogoutModal from '../../components/LogoutModal';
 import TopNavBar from '../../components/TopNavBar';
@@ -21,7 +20,6 @@ import { authLogout } from '../../redux/userRelated/userSlice';
 // Icons for TopNavBar
 import HomeIcon from '@mui/icons-material/Home';
 import AnnouncementOutlinedIcon from '@mui/icons-material/AnnouncementOutlined';
-import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import BreadcrumbsNav from '../../components/BreadcrumbsNav';
 
@@ -47,7 +45,6 @@ const StudentDashboard = () => {
     const studentLinks = [
         { title: 'Home', icon: <HomeIcon />, path: '/' },
         { title: 'Subjects', icon: <AssignmentIcon />, path: '/Student/subjects' },
-        { title: 'Attendance', icon: <ClassOutlinedIcon />, path: '/Student/attendance' },
         { title: 'Complain', icon: <AnnouncementOutlinedIcon />, path: '/Student/complain' },
     ];
 
@@ -115,7 +112,6 @@ const StudentDashboard = () => {
                                 <Route path="/Student/profile" element={<StudentProfile />} />
 
                                 <Route path="/Student/subjects" element={<StudentSubjects />} />
-                                <Route path="/Student/attendance" element={<ViewStdAttendance />} />
                                 <Route path="/Student/complain" element={<StudentComplain />} />
 
                                 <Route path="/Student/complain" element={<StudentComplain />} />

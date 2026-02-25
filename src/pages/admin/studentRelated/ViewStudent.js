@@ -4,13 +4,13 @@ import { getUserDetails } from '../../../redux/userRelated/userHandle';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import { useNavigate, useParams } from 'react-router-dom'
 import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
-import { Box, Button, Collapse, IconButton, Table, TableBody, TableHead, Typography, Tab, Paper, BottomNavigation, BottomNavigationAction, Container, Grid, Avatar, Dialog, DialogTitle, DialogContent, TextField, MenuItem, DialogActions, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
+import { Box, Button, IconButton, Table, TableBody, TableHead, Typography, Tab, Paper, BottomNavigation, BottomNavigationAction, Container, Grid, Avatar, Dialog, DialogTitle, DialogContent, TextField, MenuItem, DialogActions, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { KeyboardArrowUp, KeyboardArrowDown, Delete as DeleteIcon, ArrowBack as ArrowBackIcon, Edit as EditIcon } from '@mui/icons-material';
-import { removeStuff, updateStudentFields } from '../../../redux/studentRelated/studentHandle';
-import { calculateOverallAttendancePercentage, calculateSubjectAttendancePercentage, groupAttendanceBySubject } from '../../../components/attendanceCalculator';
+import { Delete as DeleteIcon, ArrowBack as ArrowBackIcon, Edit as EditIcon } from '@mui/icons-material';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import { removeStuff } from '../../../redux/studentRelated/studentHandle';
 import CustomBarChart from '../../../components/CustomBarChart'
 import { StyledTableCell, StyledTableRow } from '../../../components/styles';
 
@@ -51,9 +51,7 @@ const ViewStudent = () => {
     const [sclassName, setSclassName] = useState('');
 
     const [subjectMarks, setSubjectMarks] = useState('');
-    const [subjectAttendance, setSubjectAttendance] = useState([]);
 
-    const [openStates, setOpenStates] = useState({});
 
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
@@ -62,12 +60,7 @@ const ViewStudent = () => {
     // Confirmation Modal State
     const [confirmOpen, setConfirmOpen] = useState(false);
 
-    const handleOpen = (subId) => {
-        setOpenStates((prevState) => ({
-            ...prevState,
-            [subId]: !prevState[subId],
-        }));
-    };
+
 
     const [studentDiscounts, setStudentDiscounts] = useState([]);
     const [fetchDiscountsTrigger, setFetchDiscountsTrigger] = useState(0);
@@ -105,7 +98,6 @@ const ViewStudent = () => {
             setSclassName(userDetails.sclassName || '');
 
             setSubjectMarks(userDetails.examResult || '');
-            setSubjectAttendance(userDetails.attendance || []);
         }
     }, [userDetails]);
 
@@ -126,163 +118,7 @@ const ViewStudent = () => {
             })
     }
 
-    const removeHandler = (id, deladdress) => {
-        dispatch(removeStuff(id, deladdress))
-            .then(() => {
-                dispatch(getUserDetails(studentID, address));
-            })
-    }
 
-    const removeSubAttendance = (subId) => {
-        dispatch(updateStudentFields(studentID, { subId }, "RemoveStudentSubAtten"))
-            .then(() => {
-                dispatch(getUserDetails(studentID, address));
-            })
-    }
-
-    const overallAttendancePercentage = calculateOverallAttendancePercentage(subjectAttendance);
-
-
-
-
-    const subjectData = Object.entries(groupAttendanceBySubject(subjectAttendance)).map(([subName, { subCode, present, sessions }]) => {
-        const subjectAttendancePercentage = calculateSubjectAttendancePercentage(present, sessions);
-        return {
-            subject: subName,
-            attendancePercentage: subjectAttendancePercentage,
-            totalClasses: sessions,
-            attendedClasses: present
-        };
-    });
-
-    const StudentAttendanceSection = () => {
-        const renderTableSection = () => {
-            return (
-                <>
-                    <Typography variant="h5" gutterBottom>Attendance</Typography>
-                    <Box sx={{ overflowX: 'auto' }}>
-                        <Table sx={{ minWidth: 650 }}>
-                            <TableHead>
-                                <StyledTableRow>
-                                    <StyledTableCell>Subject</StyledTableCell>
-                                    <StyledTableCell>Present</StyledTableCell>
-                                    <StyledTableCell>Total Sessions</StyledTableCell>
-                                    <StyledTableCell>Attendance Percentage</StyledTableCell>
-                                    <StyledTableCell align="center">Actions</StyledTableCell>
-                                </StyledTableRow>
-                            </TableHead>
-                            {Object.entries(groupAttendanceBySubject(subjectAttendance)).map(([subName, { present, allData, subId, sessions }], index) => {
-                                const subjectAttendancePercentage = calculateSubjectAttendancePercentage(present, sessions);
-                                return (
-                                    <TableBody key={index}>
-                                        <StyledTableRow>
-                                            <StyledTableCell>{subName}</StyledTableCell>
-                                            <StyledTableCell>{present}</StyledTableCell>
-                                            <StyledTableCell>{sessions}</StyledTableCell>
-                                            <StyledTableCell>{subjectAttendancePercentage}%</StyledTableCell>
-                                            <StyledTableCell align="center">
-                                                <Button variant="contained"
-                                                    onClick={() => handleOpen(subId)}>
-                                                    {openStates[subId] ? <KeyboardArrowUp /> : <KeyboardArrowDown />}Details
-                                                </Button>
-                                                <IconButton onClick={() => removeSubAttendance(subId)}>
-                                                    <DeleteIcon color="error" />
-                                                </IconButton>
-                                                <Button variant="contained" sx={styles.attendanceButton}
-                                                    onClick={() => navigate(`/Admin/subject/student/attendance/${studentID}/${subId}`)}>
-                                                    Change
-                                                </Button>
-                                            </StyledTableCell>
-                                        </StyledTableRow>
-                                        <StyledTableRow>
-                                            <StyledTableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                                                <Collapse in={openStates[subId]} timeout="auto" unmountOnExit>
-                                                    <Box sx={{ margin: 1 }}>
-                                                        <Typography variant="h6" gutterBottom component="div">
-                                                            Attendance Details
-                                                        </Typography>
-                                                        <Table size="small" aria-label="purchases">
-                                                            <TableHead>
-                                                                <StyledTableRow>
-                                                                    <StyledTableCell>Date</StyledTableCell>
-                                                                    <StyledTableCell align="right">Status</StyledTableCell>
-                                                                </StyledTableRow>
-                                                            </TableHead>
-                                                            <TableBody>
-                                                                {allData.map((data, index) => {
-                                                                    const date = new Date(data.date);
-                                                                    const dateString = date.toString() !== "Invalid Date" ? date.toISOString().substring(0, 10) : "Invalid Date";
-                                                                    return (
-                                                                        <StyledTableRow key={index}>
-                                                                            <StyledTableCell component="th" scope="row">
-                                                                                {dateString}
-                                                                            </StyledTableCell>
-                                                                            <StyledTableCell align="right">{data.status}</StyledTableCell>
-                                                                        </StyledTableRow>
-                                                                    )
-                                                                })}
-                                                            </TableBody>
-                                                        </Table>
-                                                    </Box>
-                                                </Collapse>
-                                            </StyledTableCell>
-                                        </StyledTableRow>
-                                    </TableBody>
-                                )
-                            }
-                            )}
-                        </Table>
-                    </Box>
-                    <Box sx={{ mt: 2 }}>
-                        <Typography variant="subtitle1">Overall Attendance Percentage: {overallAttendancePercentage.toFixed(2)}%</Typography>
-                    </Box>
-                    <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
-                        <Button variant="outlined" color="error" startIcon={<DeleteIcon />} onClick={() => removeHandler(studentID, "RemoveStudentAtten")}>Delete All</Button>
-                        <Button variant="contained" sx={styles.styledButton} onClick={() => navigate("/Admin/students/student/attendance/" + studentID)}>
-                            Add Attendance
-                        </Button>
-                    </Box>
-                </>
-            )
-        }
-        const renderChartSection = () => {
-            return (
-                <>
-                    <CustomBarChart chartData={subjectData} dataKey="attendancePercentage" />
-                </>
-            )
-        }
-        return (
-            <>
-                {subjectAttendance && Array.isArray(subjectAttendance) && subjectAttendance.length > 0
-                    ?
-                    <>
-                        {selectedSection === 'table' && renderTableSection()}
-                        {selectedSection === 'chart' && renderChartSection()}
-
-                        <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
-                            <BottomNavigation value={selectedSection} onChange={handleSectionChange} showLabels>
-                                <BottomNavigationAction
-                                    label="Table"
-                                    value="table"
-                                    icon={selectedSection === 'table' ? <TableChartIcon /> : <TableChartOutlinedIcon />}
-                                />
-                                <BottomNavigationAction
-                                    label="Chart"
-                                    value="chart"
-                                    icon={selectedSection === 'chart' ? <InsertChartIcon /> : <InsertChartOutlinedIcon />}
-                                />
-                            </BottomNavigation>
-                        </Paper>
-                    </>
-                    :
-                    <Button variant="contained" sx={styles.styledButton} onClick={() => navigate("/Admin/students/student/attendance/" + studentID)}>
-                        Add Attendance
-                    </Button>
-                }
-            </>
-        )
-    }
 
     const StudentMarksSection = () => {
         const renderTableSection = () => {
@@ -617,6 +453,11 @@ const ViewStudent = () => {
                                     <EditIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
+                            <Tooltip title="Last Balance">
+                                <IconButton size="small" onClick={() => navigate("/Admin/students/student/lastbalance/" + studentID)} sx={{ bgcolor: 'success.main', color: 'white', '&:hover': { bgcolor: 'success.dark' }, borderRadius: 'var(--border-radius-md)' }}>
+                                    <AccountBalanceIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
                             <Tooltip title="Delete">
                                 <IconButton size="small" color="error" onClick={deleteHandler} sx={{ border: '1px solid', borderColor: 'error.main', borderRadius: 'var(--border-radius-md)' }}>
                                     <DeleteIcon fontSize="small" />
@@ -630,7 +471,6 @@ const ViewStudent = () => {
                             <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'var(--bg-paper)' }}>
                                 <TabList onChange={handleChange} centered textColor="primary" indicatorColor="primary">
                                     <Tab label="Details" value="1" />
-                                    <Tab label="Attendance" value="2" />
                                     <Tab label="Marks" value="3" />
                                     <Tab label="Discounts" value="4" />
                                 </TabList>
@@ -638,9 +478,6 @@ const ViewStudent = () => {
 
                             <TabPanel value="1" sx={{ p: 4 }}>
                                 <StudentDetailsSection />
-                            </TabPanel>
-                            <TabPanel value="2" sx={{ p: 4 }}>
-                                <StudentAttendanceSection />
                             </TabPanel>
                             <TabPanel value="3" sx={{ p: 4 }}>
                                 <StudentMarksSection />

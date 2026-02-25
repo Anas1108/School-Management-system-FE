@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom'
 import { getClassDetails, getClassStudents, getSubjectList } from "../../../redux/sclassRelated/sclassHandle";
 
 import {
-    Box, Container, Typography, Tab, Paper, Grid, Tooltip, IconButton
+    Box, Container, Typography, Tab, Paper, Grid, Tooltip, IconButton,
+    Dialog, DialogTitle, DialogContent, DialogActions, Button
 } from '@mui/material';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
@@ -15,24 +17,56 @@ import TableTemplate from "../../../components/TableTemplate";
 import AddIcon from '@mui/icons-material/Add';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
+import PersonSearchIcon from '@mui/icons-material/PersonSearch';
+import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
 import Popup from "../../../components/Popup";
 import styled from 'styled-components';
 import CustomLoader from '../../../components/CustomLoader';
+import { deleteUser } from '../../../redux/userRelated/userHandle';
+import { resetSubjects } from '../../../redux/sclassRelated/sclassSlice';
 
 const ClassDetails = () => {
     const params = useParams()
     const navigate = useNavigate()
     const dispatch = useDispatch();
     const { subjectsList, sclassStudents, sclassDetails, loading, error, response, getresponse } = useSelector((state) => state.sclass);
+    const { currentUser } = useSelector(state => state.user);
 
     const classID = params.id
+
+    const [classTeachers, setClassTeachers] = useState([]);
+    const [teachersLoading, setTeachersLoading] = useState(false);
 
     useEffect(() => {
         dispatch(getClassDetails(classID, "Sclass"));
         dispatch(getSubjectList(classID, "ClassSubjects"))
         dispatch(getClassStudents(classID));
     }, [dispatch, classID])
+
+    useEffect(() => {
+        const fetchTeachers = async () => {
+            setTeachersLoading(true);
+            try {
+                // Fetching allocations for the class. 
+                // Currently defaults academic year to 2024-2025. Could be dynamic based on requirements.
+                const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/ClassAllocations/${classID}?schoolId=${currentUser._id}&academicYear=2024-2025`);
+                if (Array.isArray(res.data)) {
+                    setClassTeachers(res.data);
+                } else {
+                    setClassTeachers([]);
+                }
+            } catch (err) {
+                console.error("Error fetching class teachers:", err);
+                setClassTeachers([]);
+            } finally {
+                setTeachersLoading(false);
+            }
+        };
+
+        if (currentUser && currentUser._id && classID) {
+            fetchTeachers();
+        }
+    }, [classID, currentUser]);
 
     if (error) {
         console.log(error)
@@ -45,20 +79,37 @@ const ClassDetails = () => {
     };
 
     const [showPopup, setShowPopup] = useState(false);
-    const [message, setMessage] = useState("");
+    const [message] = useState("");
+
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
+    const [actionLoading, setActionLoading] = useState(false);
 
     const deleteHandler = (deleteID, address) => {
-        console.log(deleteID);
-        console.log(address);
-        setMessage("Sorry the delete function has been disabled for now.")
-        setShowPopup(true)
-        // dispatch(deleteUser(deleteID, address))
-        //     .then(() => {
-        //         dispatch(getClassStudents(classID));
-        //         dispatch(resetSubjects())
-        //         dispatch(getSubjectList(classID, "ClassSubjects"))
-        //     })
-    }
+        setItemToDelete({ id: deleteID, address });
+        setDeleteDialogOpen(true);
+    };
+
+    const confirmDelete = () => {
+        if (!itemToDelete) return;
+        setActionLoading(true);
+        dispatch(deleteUser(itemToDelete.id, itemToDelete.address))
+            .then(() => {
+                if (itemToDelete.address === "Subject") {
+                    dispatch(resetSubjects());
+                    dispatch(getSubjectList(classID, "ClassSubjects"));
+                } else if (itemToDelete.address === "Student") {
+                    dispatch(getClassStudents(classID));
+                }
+                setActionLoading(false);
+                setDeleteDialogOpen(false);
+                setItemToDelete(null);
+            })
+            .catch(() => {
+                setActionLoading(false);
+                setDeleteDialogOpen(false);
+            });
+    };
 
     const subjectColumns = [
         { id: 'name', label: 'Subject Name', minWidth: 170 },
@@ -153,12 +204,7 @@ const ClassDetails = () => {
                         <VisibilityOutlinedIcon />
                     </ActionIconButtonPrimary>
                 </Tooltip>
-                <Tooltip title="Attendance" arrow>
-                    <ActionIconButtonSuccess
-                        onClick={() => navigate("/Admin/students/student/attendance/" + row.id)}>
-                        <EventAvailableOutlinedIcon />
-                    </ActionIconButtonSuccess>
-                </Tooltip>
+
                 <Tooltip title="Delete" arrow>
                     <ActionIconButtonError
                         onClick={() => deleteHandler(row.id, "Student")}>
@@ -210,14 +256,68 @@ const ClassDetails = () => {
         )
     }
 
+    const teacherColumns = [
+        { id: 'subjectName', label: 'Subject', minWidth: 170 },
+        { id: 'teacherName', label: 'Teacher', minWidth: 170 },
+    ];
+
+    const teacherRows = classTeachers.map((item) => {
+        return {
+            subjectName: item.subjectName,
+            teacherName: item.teacherName,
+            teacherId: item.teacherId,
+            id: item.subjectId, // using subjectId as unique row key since it's 1-to-1 map here
+        };
+    });
+
+    const TeachersButtonHaver = ({ row }) => {
+        const navigate = useNavigate();
+
+        return (
+            <>
+                {row.teacherId && (
+                    <Tooltip title="View Teacher Profile" arrow>
+                        <ActionIconButtonPrimary
+                            onClick={() => navigate(`/Admin/teachers/teacher/${row.teacherId}`)}>
+                            <PersonSearchIcon />
+                        </ActionIconButtonPrimary>
+                    </Tooltip>
+                )}
+                <Tooltip title="Manage Allocation" arrow>
+                    <ActionIconButtonSuccess
+                        onClick={() => navigate(`/Admin/subject-allocation`, { state: { classId: classID, subjectId: row.id } })}>
+                        <ChangeCircleIcon />
+                    </ActionIconButtonSuccess>
+                </Tooltip>
+            </>
+        );
+    };
+
     const ClassTeachersSection = () => {
         return (
-            <Box sx={{ textAlign: 'center', py: 4 }}>
-                <Typography variant="h6" color="textSecondary">
-                    Teachers section coming soon
-                </Typography>
+            <Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="h5" gutterBottom sx={{ mb: 0 }}>
+                        Teachers List:
+                    </Typography>
+                    <Box>
+                        <Tooltip title="Manage Allocations">
+                            <GreenButton
+                                variant="contained"
+                                onClick={() => navigate("/Admin/subject-allocation", { state: { classId: classID } })}
+                            >
+                                Manage Allocations
+                            </GreenButton>
+                        </Tooltip>
+                    </Box>
+                </Box>
+                {teachersLoading ? (
+                    <CustomLoader />
+                ) : (
+                    <TableTemplate buttonHaver={TeachersButtonHaver} columns={teacherColumns} rows={teacherRows} />
+                )}
             </Box>
-        )
+        );
     }
 
     const ClassDetailsSection = () => {
@@ -230,7 +330,7 @@ const ClassDetails = () => {
                     {sclassDetails && sclassDetails.sclassName}
                 </Typography>
                 <Grid container spacing={3} sx={{ mt: 2 }}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} sm={4}>
                         <StatBox>
                             <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'var(--color-primary-600)' }}>
                                 {numberOfSubjects}
@@ -240,7 +340,17 @@ const ClassDetails = () => {
                             </Typography>
                         </StatBox>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} sm={4}>
+                        <StatBox>
+                            <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'var(--color-primary-600)' }}>
+                                {sclassDetails && sclassDetails.classTeacher ? sclassDetails.classTeacher.name : "N/A"}
+                            </Typography>
+                            <Typography variant="subtitle1" color="textSecondary">
+                                Class Teacher
+                            </Typography>
+                        </StatBox>
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
                         <StatBox>
                             <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'var(--color-success-600)' }}>
                                 {numberOfStudents}
@@ -269,7 +379,7 @@ const ClassDetails = () => {
                         </GreenButton>
                     }
                 </Box>
-            </DetailsCard>
+            </DetailsCard >
         );
     }
 
@@ -306,6 +416,20 @@ const ClassDetails = () => {
                 </>
             )}
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
+            <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        Are you sure you want to delete this {itemToDelete?.address?.toLowerCase() || 'item'}? This action cannot be undone.
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDeleteDialogOpen(false)} disabled={actionLoading}>Cancel</Button>
+                    <Button onClick={confirmDelete} color="error" variant="contained" disabled={actionLoading}>
+                        {actionLoading ? "Deleting..." : "Delete"}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 };

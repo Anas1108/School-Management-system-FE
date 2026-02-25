@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     noticesList: [],
+    noticeDetails: null,
     loading: false,
     error: null,
     response: null,
@@ -20,6 +21,11 @@ const noticeSlice = createSlice({
             state.error = null;
             state.response = null;
         },
+        detailsSuccess: (state, action) => {
+            state.noticeDetails = action.payload;
+            state.loading = false;
+            state.error = null;
+        },
         getFailed: (state, action) => {
             state.response = action.payload;
             state.loading = false;
@@ -35,6 +41,7 @@ const noticeSlice = createSlice({
 export const {
     getRequest,
     getSuccess,
+    detailsSuccess,
     getFailed,
     getError
 } = noticeSlice.actions;

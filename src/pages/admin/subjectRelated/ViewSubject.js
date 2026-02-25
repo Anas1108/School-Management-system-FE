@@ -1,161 +1,51 @@
-import React, { useEffect, useState } from 'react'
-import { getClassStudents, getSubjectDetails } from '../../../redux/sclassRelated/sclassHandle';
+import React, { useEffect } from 'react'
+import { getSubjectDetails } from '../../../redux/sclassRelated/sclassHandle';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, Tab, Container, Typography, BottomNavigation, BottomNavigationAction, Paper, Grid, Tooltip } from '@mui/material';
-import { GreenButton, ActionIconButtonPrimary, ActionIconButtonSuccess, ActionIconButtonInfo } from '../../../components/buttonStyles';
-import TableTemplate from '../../../components/TableTemplate';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import TabPanel from '@mui/lab/TabPanel';
+import { Box, Container, Typography, Grid, Tooltip, IconButton, Paper, Button } from '@mui/material';
+import { GreenButton } from '../../../components/buttonStyles';
+import { ArrowBack as ArrowBackIcon, Edit as EditIcon } from '@mui/icons-material';
 import styled from 'styled-components';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
-import GradeOutlinedIcon from '@mui/icons-material/GradeOutlined';
-
-import InsertChartIcon from '@mui/icons-material/InsertChart';
-import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
-import TableChartIcon from '@mui/icons-material/TableChart';
-import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
 import CustomLoader from '../../../components/CustomLoader';
 
 const ViewSubject = () => {
   const navigate = useNavigate()
   const params = useParams()
   const dispatch = useDispatch();
-  const { subloading, subjectDetails, sclassStudents, getresponse, error } = useSelector((state) => state.sclass);
+  const { subloading, subjectDetails, error } = useSelector((state) => state.sclass);
 
-  const { classID, subjectID } = params
+  const { subjectID } = params
 
   useEffect(() => {
     dispatch(getSubjectDetails(subjectID, "Subject"));
-    dispatch(getClassStudents(classID));
-  }, [dispatch, subjectID, classID]);
+  }, [dispatch, subjectID]);
 
   if (error) {
     console.log(error)
   }
 
-  const [value, setValue] = useState('1');
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  const [selectedSection, setSelectedSection] = useState('attendance');
-  const handleSectionChange = (event, newSection) => {
-    setSelectedSection(newSection);
-  };
-
-  const studentColumns = [
-    { id: 'rollNum', label: 'Roll No.', minWidth: 100 },
-    { id: 'name', label: 'Name', minWidth: 170 },
-  ]
-
-  const studentRows = sclassStudents.map((student) => {
-    return {
-      rollNum: student.rollNum,
-      name: student.name,
-      id: student._id,
-    };
-  })
-
-  const StudentsAttendanceButtonHaver = ({ row }) => {
-    return (
-      <>
-        <Tooltip title="View" arrow>
-          <ActionIconButtonPrimary
-            onClick={() => navigate("/Admin/students/student/" + row.id)}>
-            <VisibilityOutlinedIcon />
-          </ActionIconButtonPrimary>
-        </Tooltip>
-        <Tooltip title="Take Attendance" arrow>
-          <ActionIconButtonSuccess
-            onClick={() => navigate(`/Admin/subject/student/attendance/${row.id}/${subjectID}`)}>
-            <EventAvailableOutlinedIcon />
-          </ActionIconButtonSuccess>
-        </Tooltip>
-      </>
-    );
-  };
-
-  const StudentsMarksButtonHaver = ({ row }) => {
-    return (
-      <>
-        <Tooltip title="View" arrow>
-          <ActionIconButtonPrimary
-            onClick={() => navigate("/Admin/students/student/" + row.id)}>
-            <VisibilityOutlinedIcon />
-          </ActionIconButtonPrimary>
-        </Tooltip>
-        <Tooltip title="Provide Marks" arrow>
-          <ActionIconButtonInfo
-            onClick={() => navigate(`/Admin/subject/student/marks/${row.id}/${subjectID}`)}>
-            <GradeOutlinedIcon />
-          </ActionIconButtonInfo>
-        </Tooltip>
-      </>
-    );
-  };
-
-  const SubjectStudentsSection = () => {
-    return (
-      <>
-        {getresponse ? (
-          <>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-              <GreenButton
-                variant="contained"
-                onClick={() => navigate("/Admin/class/addstudents/" + classID)}
-              >
-                Add Students
-              </GreenButton>
-            </Box>
-          </>
-        ) : (
-          <>
-            <Typography variant="h5" gutterBottom>
-              Students List:
-            </Typography>
-
-            {selectedSection === 'attendance' &&
-              <TableTemplate buttonHaver={StudentsAttendanceButtonHaver} columns={studentColumns} rows={studentRows} />
-            }
-            {selectedSection === 'marks' &&
-              <TableTemplate buttonHaver={StudentsMarksButtonHaver} columns={studentColumns} rows={studentRows} />
-            }
-
-            <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
-              <BottomNavigation value={selectedSection} onChange={handleSectionChange} showLabels>
-                <BottomNavigationAction
-                  label="Attendance"
-                  value="attendance"
-                  icon={selectedSection === 'attendance' ? <TableChartIcon /> : <TableChartOutlinedIcon />}
-                />
-                <BottomNavigationAction
-                  label="Marks"
-                  value="marks"
-                  icon={selectedSection === 'marks' ? <InsertChartIcon /> : <InsertChartOutlinedIcon />}
-                />
-              </BottomNavigation>
-            </Paper>
-
-          </>
-        )}
-      </>
-    )
-  }
-
   const SubjectDetailsSection = () => {
-    const numberOfStudents = sclassStudents.length;
-
     return (
       <DetailsCard>
-        <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 'bold', textAlign: 'center' }}>
-          {subjectDetails && subjectDetails.subName}
-        </Typography>
-        <Grid container spacing={3} sx={{ mt: 2 }}>
-          <Grid item xs={12} sm={6}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography variant="h4" component="h2" sx={{ fontWeight: 'bold' }}>
+            {subjectDetails && subjectDetails.subName}
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 1.5 }}>
+            <Tooltip title="Back">
+              <IconButton size="small" onClick={() => navigate(-1)} sx={{ border: '1px solid var(--border-color)', borderRadius: 'var(--border-radius-md)' }}>
+                <ArrowBackIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Edit Subject">
+              <IconButton size="small" onClick={() => navigate(`/Admin/subjects/edit/${subjectDetails?._id}`)} sx={{ bgcolor: 'primary.main', color: 'white', '&:hover': { bgcolor: 'primary.dark' }, borderRadius: 'var(--border-radius-md)' }}>
+                <EditIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </Box>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={4}>
             <InfoBox>
               <Typography variant="subtitle2" color="textSecondary">Subject Code</Typography>
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
@@ -163,7 +53,7 @@ const ViewSubject = () => {
               </Typography>
             </InfoBox>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <InfoBox>
               <Typography variant="subtitle2" color="textSecondary">Sessions</Typography>
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
@@ -171,7 +61,7 @@ const ViewSubject = () => {
               </Typography>
             </InfoBox>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <InfoBox>
               <Typography variant="subtitle2" color="textSecondary">Class Name</Typography>
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
@@ -179,27 +69,24 @@ const ViewSubject = () => {
               </Typography>
             </InfoBox>
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <InfoBox>
-              <Typography variant="subtitle2" color="textSecondary">Number of Students</Typography>
-              <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'var(--color-success-600)' }}>
-                {numberOfStudents}
-              </Typography>
-            </InfoBox>
-          </Grid>
         </Grid>
         <Box sx={{ mt: 4, textAlign: 'center' }}>
           {subjectDetails && subjectDetails.teacher ?
-            <InfoBox>
-              <Typography variant="subtitle2" color="textSecondary">Teacher Assigned</Typography>
-              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                {subjectDetails.teacher.name}
-              </Typography>
-            </InfoBox>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+              <InfoBox sx={{ display: 'inline-block', minWidth: '300px' }}>
+                <Typography variant="subtitle2" color="textSecondary">Teacher Assigned</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'var(--color-primary-600)' }}>
+                  {subjectDetails.teacher.name}
+                </Typography>
+              </InfoBox>
+              <Button variant="outlined" color="primary" onClick={() => navigate("/Admin/subject-allocation", { state: { classId: subjectDetails?.sclassName?._id, subjectId: subjectDetails?._id } })}>
+                Change Teacher
+              </Button>
+            </Box>
             :
             <GreenButton variant="contained"
-              onClick={() => navigate("/Admin/teachers/addteacher/" + subjectDetails._id)}>
-              Add Subject Teacher
+              onClick={() => navigate("/Admin/subject-allocation", { state: { classId: subjectDetails?.sclassName?._id, subjectId: subjectDetails?._id } })}>
+              Allocate Teacher
             </GreenButton>
           }
         </Box>
@@ -208,28 +95,11 @@ const ViewSubject = () => {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
       {subloading ?
         <CustomLoader />
         :
-        <>
-          <TabContext value={value}>
-            <Paper sx={{ borderRadius: 'var(--border-radius-xl)', overflow: 'hidden' }}>
-              <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'var(--bg-paper)' }}>
-                <TabList onChange={handleChange} centered textColor="primary" indicatorColor="primary">
-                  <Tab label="Details" value="1" />
-                  <Tab label="Students" value="2" />
-                </TabList>
-              </Box>
-              <TabPanel value="1" sx={{ p: 4 }}>
-                <SubjectDetailsSection />
-              </TabPanel>
-              <TabPanel value="2" sx={{ p: 4 }}>
-                <SubjectStudentsSection />
-              </TabPanel>
-            </Paper>
-          </TabContext>
-        </>
+        <SubjectDetailsSection />
       }
     </Container>
   )
@@ -237,10 +107,11 @@ const ViewSubject = () => {
 
 export default ViewSubject
 
-const DetailsCard = styled(Box)`
+const DetailsCard = styled(Paper)`
     background: var(--bg-paper);
     border-radius: var(--border-radius-lg);
-    padding: 2rem;
+    padding: 2.5rem;
+    box-shadow: var(--shadow-md);
 `;
 
 const InfoBox = styled(Box)`

@@ -30,16 +30,19 @@ import AdminSettings from './AdminSettings';
 import AddStudent from './studentRelated/AddStudent';
 import SeeComplains from './studentRelated/SeeComplains';
 import ShowStudents from './studentRelated/ShowStudents';
-import StudentAttendance from './studentRelated/StudentAttendance';
 import StudentExamMarks from './studentRelated/StudentExamMarks';
 import ViewStudent from './studentRelated/ViewStudent';
+import StudentLastBalance from './studentRelated/StudentLastBalance';
 
 import AddNotice from './noticeRelated/AddNotice';
 import ShowNotices from './noticeRelated/ShowNotices';
+import EditNotice from './noticeRelated/EditNotice';
+import ViewNotice from './noticeRelated/ViewNotice';
 
 import ShowSubjects from './subjectRelated/ShowSubjects';
 import SubjectForm from './subjectRelated/SubjectForm';
 import ViewSubject from './subjectRelated/ViewSubject';
+import EditSubject from './subjectRelated/EditSubject';
 import SubjectAllocation from './SubjectAllocation';
 
 import AddTeacher from './teacherRelated/AddTeacher';
@@ -51,6 +54,8 @@ import TeacherDetails from './teacherRelated/TeacherDetails';
 import AddClass from './classRelated/AddClass';
 import ClassDetails from './classRelated/ClassDetails';
 import ShowClasses from './classRelated/ShowClasses';
+import EditClass from './classRelated/EditClass';
+import PromoteStudents from './classRelated/PromoteStudents';
 
 
 import FeeDashboard from './feeRelated/FeeDashboard';
@@ -58,6 +63,7 @@ import FeeDefaulters from './feeRelated/FeeDefaulters';
 import FeeStructure from './feeRelated/FeeStructure';
 import FeeSearch from './feeRelated/FeeSearch';
 import FeeDiscounts from './feeRelated/FeeDiscounts';
+import LastBalancePresets from './feeRelated/LastBalancePresets';
 import BreadcrumbsNav from '../../components/BreadcrumbsNav';
 
 import ShowFamilies from './familyRelated/ShowFamilies';
@@ -163,17 +169,18 @@ const AdminDashboard = () => {
                             {/* Notice */}
                             <Route path="/Admin/addnotice" element={<AddNotice />} />
                             <Route path="/Admin/notices" element={<ShowNotices />} />
+                            <Route path="/Admin/notices/notice/:id" element={<ViewNotice />} />
+                            <Route path="/Admin/notices/edit/:id" element={<EditNotice />} />
 
                             {/* Subject */}
                             <Route path="/Admin/subjects" element={<ShowSubjects />} />
                             <Route path="/Admin/subjects/subject/:classID/:subjectID" element={<ViewSubject />} />
                             <Route path="/Admin/subjects/chooseclass" element={<ChooseClass situation="Subject" />} />
+                            <Route path="/Admin/subjects/edit/:id" element={<EditSubject />} />
 
                             <Route path="/Admin/addsubject/:id" element={<SubjectForm />} />
                             <Route path="/Admin/class/subject/:classID/:subjectID" element={<ViewSubject />} />
 
-                            <Route path="/Admin/subject/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
-                            <Route path="/Admin/subject/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
                             <Route path="/Admin/subject/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
                             <Route path="/Admin/subject-allocation" element={<SubjectAllocation />} />
 
@@ -181,15 +188,17 @@ const AdminDashboard = () => {
                             <Route path="/Admin/addclass" element={<AddClass />} />
                             <Route path="/Admin/classes" element={<ShowClasses />} />
                             <Route path="/Admin/classes/class/:id" element={<ClassDetails />} />
+                            <Route path="/Admin/classes/class/edit/:id" element={<EditClass />} />
                             <Route path="/Admin/class/addstudents/:id" element={<AddStudent situation="Class" />} />
+                            <Route path="/Admin/classes/promote" element={<PromoteStudents />} />
 
                             {/* Student */}
                             <Route path="/Admin/addstudents" element={<AddStudent situation="Student" />} />
                             <Route path="/Admin/students" element={<ShowStudents />} />
                             <Route path="/Admin/students/student/edit/:id" element={<AddStudent situation="Edit" />} />
                             <Route path="/Admin/students/student/:id" element={<ViewStudent />} />
-                            <Route path="/Admin/students/student/attendance/:id" element={<StudentAttendance situation="Student" />} />
                             <Route path="/Admin/students/student/marks/:id" element={<StudentExamMarks situation="Student" />} />
+                            <Route path="/Admin/students/student/lastbalance/:id" element={<StudentLastBalance />} />
 
                             {/* Family */}
                             <Route path="/Admin/families" element={<ShowFamilies />} />
@@ -215,6 +224,7 @@ const AdminDashboard = () => {
                             <Route path="/Admin/fees/structure" element={<FeeStructure />} />
                             <Route path="/Admin/fees/search" element={<FeeSearch />} />
                             <Route path="/Admin/fees/discounts" element={<FeeDiscounts />} />
+                            <Route path="/Admin/fees/last-balance-presets" element={<LastBalancePresets />} />
                         </Routes>
                     </Box>
                     <LogoutModal

@@ -1,130 +1,475 @@
 import React from 'react';
-import { Breadcrumbs, Typography, Link, Box } from '@mui/material';
+import { Breadcrumbs, Typography, Link, Box, useMediaQuery, useTheme } from '@mui/material';
 import { useLocation, Link as RouterLink } from 'react-router-dom';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import HomeIcon from '@mui/icons-material/Home';
 
+/**
+ * Route pattern registry.
+ * Each entry maps a regex (matching the full pathname) to an array of breadcrumb steps.
+ * Crumbs are built left-to-right; each crumb has { label, pathIndex }.
+ * pathIndex = index in the split-path array that forms the link's "to".
+ * Use null for the path of the last (current) crumb — it won't be linked anyway.
+ *
+ * Pattern priority: MORE SPECIFIC patterns should come BEFORE less specific ones.
+ */
+const ROUTE_PATTERNS = [
+    // ── Admin ────────────────────────────────────────────────────────────────
+
+    // Dashboard / home
+    {
+        pattern: /^\/Admin\/dashboard$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Dashboard', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/profile$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Profile', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/settings$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Settings', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/complains$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Complaints', idx: null }]
+    },
+
+    // ── Notices ──────────────────────────────────────────────────────────────
+    {
+        pattern: /^\/Admin\/addnotice$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Notices', idx: 2, customTo: '/Admin/notices' }, { label: 'Add Notice', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/notices$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Notices', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/notices\/notice\/.+$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Notices', idx: 2, customTo: '/Admin/notices' }, { label: 'View Notice', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/notices\/edit\/.+$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Notices', idx: 2, customTo: '/Admin/notices' }, { label: 'Edit Notice', idx: null }]
+    },
+
+    // ── Subjects ─────────────────────────────────────────────────────────────
+    {
+        pattern: /^\/Admin\/subject-allocation$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Subject Allocation', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/subjects\/subject\/.+\/.+$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Subjects', idx: 2, customTo: '/Admin/subjects' }, { label: 'Subject Details', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/subjects\/chooseclass$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Subjects', idx: 2, customTo: '/Admin/subjects' }, { label: 'Choose Class', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/subjects\/edit\/.+$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Subjects', idx: 2, customTo: '/Admin/subjects' }, { label: 'Edit Subject', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/subjects$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Subjects', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/addsubject\/.+$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Subjects', idx: 2, customTo: '/Admin/subjects' }, { label: 'Add Subject', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/class\/subject\/.+\/.+$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Classes', idx: 2, customTo: '/Admin/classes' }, { label: 'Subject Details', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/subject\/student\/marks\/.+\/.+$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Subjects', idx: 2, customTo: '/Admin/subjects' }, { label: 'Student Marks', idx: null }]
+    },
+
+    // ── Classes ───────────────────────────────────────────────────────────────
+    {
+        pattern: /^\/Admin\/addclass$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Classes', idx: 2, customTo: '/Admin/classes' }, { label: 'Add Class', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/classes\/class\/edit\/.+$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Classes', idx: 2, customTo: '/Admin/classes' }, { label: 'Edit Class', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/classes\/class\/.+$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Classes', idx: 2, customTo: '/Admin/classes' }, { label: 'Class Details', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/classes\/promote$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Classes', idx: 2, customTo: '/Admin/classes' }, { label: 'Promote Students', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/classes$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Classes', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/class\/addstudents\/.+$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Classes', idx: 2, customTo: '/Admin/classes' }, { label: 'Add Students', idx: null }]
+    },
+
+    // ── Students ──────────────────────────────────────────────────────────────
+    {
+        pattern: /^\/Admin\/addstudents$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Students', idx: 2, customTo: '/Admin/students' }, { label: 'Add Student', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/students\/student\/edit\/.+$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Students', idx: 2, customTo: '/Admin/students' }, { label: 'Edit Student', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/students\/student\/marks\/.+$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Students', idx: 2, customTo: '/Admin/students' }, { label: 'Student Marks', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/students\/student\/lastbalance\/.+$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Students', idx: 2, customTo: '/Admin/students' }, { label: 'Last Balance', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/students\/student\/.+$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Students', idx: 2, customTo: '/Admin/students' }, { label: 'Student Details', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/students$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Students', idx: null }]
+    },
+
+    // ── Families ──────────────────────────────────────────────────────────────
+    {
+        pattern: /^\/Admin\/addfamily$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Families', idx: 2, customTo: '/Admin/families' }, { label: 'Add Family', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/families\/family\/edit\/.+$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Families', idx: 2, customTo: '/Admin/families' }, { label: 'Edit Family', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/families\/family\/.+$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Families', idx: 2, customTo: '/Admin/families' }, { label: 'Family Details', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/families$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Families', idx: null }]
+    },
+
+    // ── Teachers ──────────────────────────────────────────────────────────────
+    {
+        pattern: /^\/Admin\/teachers\/teacher\/edit\/.+$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Teachers', idx: 2, customTo: '/Admin/teachers' }, { label: 'Edit Teacher', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/teachers\/teacher\/.+$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Teachers', idx: 2, customTo: '/Admin/teachers' }, { label: 'Teacher Details', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/teachers\/chooseclass$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Teachers', idx: 2, customTo: '/Admin/teachers' }, { label: 'Choose Class', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/teachers\/choosesubject\/.*/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Teachers', idx: 2, customTo: '/Admin/teachers' }, { label: 'Choose Subject', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/teachers\/add$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Teachers', idx: 2, customTo: '/Admin/teachers' }, { label: 'Add Teacher', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/teachers\/addteacher\/.+$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Teachers', idx: 2, customTo: '/Admin/teachers' }, { label: 'Add Teacher', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/teachers$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Teachers', idx: null }]
+    },
+
+    // ── Fees ──────────────────────────────────────────────────────────────────
+    {
+        pattern: /^\/Admin\/fees\/defaulters$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Fee Management', idx: 2, customTo: '/Admin/fees' }, { label: 'Defaulters', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/fees\/structure$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Fee Management', idx: 2, customTo: '/Admin/fees' }, { label: 'Fee Structure', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/fees\/search$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Fee Management', idx: 2, customTo: '/Admin/fees' }, { label: 'Fee Search', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/fees\/discounts$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Fee Management', idx: 2, customTo: '/Admin/fees' }, { label: 'Discounts', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/fees\/last-balance-presets$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Fee Management', idx: 2, customTo: '/Admin/fees' }, { label: 'Balance Presets', idx: null }]
+    },
+
+    {
+        pattern: /^\/Admin\/fees$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Fee Management', idx: null }]
+    },
+
+    // ── Teacher dashboard ────────────────────────────────────────────────────
+    {
+        pattern: /^\/Teacher\/dashboard$/i,
+        crumbs: [{ label: 'Teacher', idx: 1 }, { label: 'Dashboard', idx: null }]
+    },
+
+    {
+        pattern: /^\/Teacher\/profile$/i,
+        crumbs: [{ label: 'Teacher', idx: 1 }, { label: 'Profile', idx: null }]
+    },
+
+    {
+        pattern: /^\/Teacher\/complain$/i,
+        crumbs: [{ label: 'Teacher', idx: 1 }, { label: 'Complain', idx: null }]
+    },
+
+    {
+        pattern: /^\/Teacher\/class\/student\/marks\/.+\/.+$/i,
+        crumbs: [{ label: 'Teacher', idx: 1 }, { label: 'Class', idx: 2, customTo: '/Teacher/class' }, { label: 'Student Marks', idx: null }]
+    },
+
+    {
+        pattern: /^\/Teacher\/class\/student\/.+$/i,
+        crumbs: [{ label: 'Teacher', idx: 1 }, { label: 'Class', idx: 2, customTo: '/Teacher/class' }, { label: 'Student Details', idx: null }]
+    },
+
+    {
+        pattern: /^\/Teacher\/class$/i,
+        crumbs: [{ label: 'Teacher', idx: 1 }, { label: 'My Class', idx: null }]
+    },
+
+    // ── Student dashboard ────────────────────────────────────────────────────
+    {
+        pattern: /^\/Student\/dashboard$/i,
+        crumbs: [{ label: 'Student', idx: 1 }, { label: 'Dashboard', idx: null }]
+    },
+
+    {
+        pattern: /^\/Student\/profile$/i,
+        crumbs: [{ label: 'Student', idx: 1 }, { label: 'Profile', idx: null }]
+    },
+
+    {
+        pattern: /^\/Student\/subjects$/i,
+        crumbs: [{ label: 'Student', idx: 1 }, { label: 'Subjects', idx: null }]
+    },
+
+    {
+        pattern: /^\/Student\/complain$/i,
+        crumbs: [{ label: 'Student', idx: 1 }, { label: 'Complain', idx: null }]
+    },
+];
+
+/** Resolve home route per role */
+const HOME_ROUTES = {
+    admin: '/Admin/dashboard',
+    teacher: '/Teacher/dashboard',
+    student: '/Student/dashboard',
+};
+
+const getHomeRoute = (pathname) => {
+    const lower = pathname.toLowerCase();
+    if (lower.startsWith('/admin')) return HOME_ROUTES.admin;
+    if (lower.startsWith('/teacher')) return HOME_ROUTES.teacher;
+    if (lower.startsWith('/student')) return HOME_ROUTES.student;
+    return '/';
+};
+
 const getBreadcrumbs = (pathname) => {
-    const pathnames = pathname.split('/').filter((x) => x);
+    // Always start with Home
+    const homeRoute = getHomeRoute(pathname);
 
-    // Map of specific path segments to user-friendly labels
-    const pathMapping = {
-        'families': 'Families',
-        'family': 'Family Details',
-        'students': 'Students',
-        'student': 'Student Details',
-        'teachers': 'Teachers',
-        'teacher': 'Teacher Details',
-        'classes': 'Classes',
-        'class': 'Class Details',
-        'subjects': 'Subjects',
-        'subject': 'Subject Details',
-        'fees': 'Fee Management',
-        'complains': 'Complaints',
-        'notices': 'Notices',
-        'admin': 'Admin',
-        'addstudents': 'Add Student',
-        'addteacher': 'Add Teacher',
-        'addclass': 'Add Class',
-        'addnotice': 'Add Notice',
-        'subject-allocation': 'Subject Allocation'
-    };
+    // Try to find a matching pattern
+    const match = ROUTE_PATTERNS.find(({ pattern }) => pattern.test(pathname));
 
-    return pathnames.map((value, index) => {
-        const to = `/${pathnames.slice(0, index + 1).join('/')}`;
+    if (!match) {
+        // Fallback: just show Home as the only crumb (e.g. at root "/")
+        return [{ label: 'Home', to: homeRoute, isHome: true }];
+    }
 
-        // Use mapping if available, otherwise try to format
-        // Check if value is a 24-char hex string (MongoDB ID)
-        const isMongoId = /^[0-9a-fA-F]{24}$/.test(value);
-        let label = value;
+    // Build crumbs from the matched pattern
+    const segments = pathname.split('/').filter(Boolean); // e.g. ['Admin', 'classes', 'class', '<id>']
 
-        if (isMongoId) {
-            label = 'Details';
-        } else if (pathMapping[value.toLowerCase()]) {
-            label = pathMapping[value.toLowerCase()];
-        } else {
-            label = value.charAt(0).toUpperCase() + value.slice(1);
-        }
+    const crumbs = [
+        { label: 'Home', to: homeRoute, isHome: true },
+        ...match.crumbs.map((crumb, i) => {
+            const isLast = i === match.crumbs.length - 1;
+            let to;
+            if (isLast) {
+                to = null; // current page — not linked
+            } else if (crumb.customTo) {
+                to = crumb.customTo;
+            } else if (crumb.idx != null) {
+                to = '/' + segments.slice(0, crumb.idx).join('/');
+            } else {
+                to = null;
+            }
+            return { label: crumb.label, to };
+        }),
+    ];
 
-        return { label, to };
-    });
+    return crumbs;
 };
 
 const BreadcrumbsNav = () => {
     const location = useLocation();
     const pathname = location.pathname;
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
     const breadcrumbs = getBreadcrumbs(pathname);
 
-    if (breadcrumbs.length === 0) return null;
+    // On the dashboard/home page (only 1 item), hide the breadcrumb bar entirely
+    if (breadcrumbs.length <= 1) return null;
+
+    // On mobile, show only the last 2 crumbs to save space
+    const visibleCrumbs = isMobile && breadcrumbs.length > 2
+        ? [
+            { label: '…', to: null, isEllipsis: true },
+            ...breadcrumbs.slice(-2),
+        ]
+        : breadcrumbs;
 
     return (
         <Box
             sx={{
                 position: 'sticky',
                 top: 0,
-                zIndex: 100, // Higher than content
+                zIndex: 100,
                 width: '100%',
                 background: 'var(--bg-body)',
-                pt: { xs: 0.5, md: 0.5 }, // Reduced from 1
-                pb: { xs: 0.5, md: 0.5 }, // Reduced from 1.5/2
-                mb: 0, // Removed bottom margin
+                pt: 0.5,
+                pb: 0.5,
                 display: 'flex',
                 alignItems: 'center',
-                // Remove horizontal page padding if necessary or handle it in parent
             }}
         >
             <Box
                 sx={{
-                    p: '4px 12px', // Reduced from 6px 16px
+                    p: { xs: '3px 8px', sm: '4px 12px' },
                     borderRadius: 'var(--border-radius-md)',
                     background: 'rgba(255, 255, 255, 0.4)',
                     backdropFilter: 'blur(10px)',
                     border: '1px solid rgba(255, 255, 255, 0.3)',
                     display: 'inline-flex',
                     maxWidth: '100%',
+                    minWidth: 0,
                     boxShadow: 'var(--shadow-sm)',
                     transition: 'all 0.3s ease',
                     '&:hover': {
                         boxShadow: 'var(--shadow-md)',
                         background: 'rgba(255, 255, 255, 0.6)',
-                    }
+                    },
+                    overflow: 'hidden',
                 }}
             >
                 <Breadcrumbs
-                    separator={<NavigateNextIcon fontSize="small" sx={{ color: 'var(--text-tertiary)', mx: 0.5 }} />}
+                    separator={
+                        <NavigateNextIcon
+                            fontSize="small"
+                            sx={{
+                                color: 'var(--text-tertiary)',
+                                mx: { xs: 0, sm: 0.5 },
+                                fontSize: { xs: '0.9rem', sm: '1rem' },
+                            }}
+                        />
+                    }
                     aria-label="breadcrumb"
                     sx={{
                         '& .MuiBreadcrumbs-ol': {
-                            flexWrap: 'nowrap', // Prevent wrapping if possible, or allow it but control items
-                            overflow: 'hidden'
+                            flexWrap: 'nowrap',
+                            alignItems: 'center',
+                            overflow: 'hidden',
                         },
                         '& .MuiBreadcrumbs-li': {
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            maxWidth: { xs: '100px', sm: 'unset' } // Truncate on mobile
-                        }
+                            display: 'flex',
+                            alignItems: 'center',
+                            minWidth: 0,
+                        },
+                        '& .MuiBreadcrumbs-separator': {
+                            mx: { xs: 0.25, sm: 0.5 },
+                        },
                     }}
                 >
-                    {breadcrumbs.map((crumb, index) => {
-                        const last = index === breadcrumbs.length - 1;
-                        const isDashboard = crumb.label === 'Dashboard';
+                    {visibleCrumbs.map((crumb, index) => {
+                        const isLast = index === visibleCrumbs.length - 1;
 
-                        return last ? (
+                        if (crumb.isEllipsis) {
+                            return (
+                                <Typography
+                                    key="ellipsis"
+                                    sx={{
+                                        color: 'var(--text-tertiary)',
+                                        fontSize: { xs: '0.7rem', sm: 'var(--font-size-sm)' },
+                                        lineHeight: 1,
+                                    }}
+                                >
+                                    …
+                                </Typography>
+                            );
+                        }
+
+                        return isLast ? (
                             <Typography
                                 key={index}
                                 sx={{
                                     color: 'var(--color-primary-700)',
                                     fontWeight: 600,
-                                    fontSize: 'var(--font-size-sm)',
+                                    fontSize: { xs: '0.72rem', sm: 'var(--font-size-sm)' },
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: 0.5,
+                                    whiteSpace: 'nowrap',
                                     overflow: 'hidden',
-                                    textOverflow: 'ellipsis'
+                                    textOverflow: 'ellipsis',
+                                    maxWidth: { xs: '110px', sm: 'unset' },
                                 }}
                             >
-                                {isDashboard && <HomeIcon sx={{ fontSize: '1.2rem', color: 'var(--color-primary-600)' }} />}
+                                {crumb.isHome && (
+                                    <HomeIcon sx={{ fontSize: { xs: '0.85rem', sm: '1.1rem' }, color: 'var(--color-primary-600)' }} />
+                                )}
                                 {crumb.label}
                             </Typography>
                         ) : (
@@ -138,17 +483,21 @@ const BreadcrumbsNav = () => {
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: 0.5,
-                                    fontSize: 'var(--font-size-sm)',
+                                    fontSize: { xs: '0.72rem', sm: 'var(--font-size-sm)' },
                                     color: 'var(--text-secondary)',
                                     transition: 'color 0.2s',
+                                    whiteSpace: 'nowrap',
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
+                                    maxWidth: { xs: '80px', sm: 'unset' },
                                     '&:hover': {
                                         color: 'var(--color-primary-600)',
-                                    }
+                                    },
                                 }}
                             >
-                                {isDashboard && <HomeIcon sx={{ fontSize: '1.2rem' }} />}
+                                {crumb.isHome && (
+                                    <HomeIcon sx={{ fontSize: { xs: '0.85rem', sm: '1.1rem' } }} />
+                                )}
                                 {crumb.label}
                             </Link>
                         );

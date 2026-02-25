@@ -10,7 +10,6 @@ import LogoutModal from '../../components/LogoutModal';
 import TopNavBar from '../../components/TopNavBar';
 import AccountMenu from '../../components/AccountMenu';
 import { AppBar } from '../../components/styles';
-import StudentAttendance from '../admin/studentRelated/StudentAttendance';
 import { useDispatch, useSelector } from 'react-redux';
 import { authLogout } from '../../redux/userRelated/userSlice';
 
@@ -122,7 +121,7 @@ const TeacherDashboard = () => {
                                 <Route path="/Teacher/class" element={<TeacherClassDetails />} />
                                 <Route path="/Teacher/class/student/:id" element={<TeacherViewStudent />} />
 
-                                <Route path="/Teacher/class/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
+
                                 <Route path="/Teacher/class/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
 
                                 <Route path="/Teacher/class/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />

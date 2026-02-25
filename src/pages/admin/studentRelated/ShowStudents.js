@@ -13,10 +13,10 @@ import { GreenButton } from '../../../components/buttonStyles';
 import TableTemplate from '../../../components/TableTemplate';
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
 import GradeOutlinedIcon from '@mui/icons-material/GradeOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import EditIcon from '@mui/icons-material/Edit';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import AddIcon from '@mui/icons-material/Add';
 import HistoryIcon from '@mui/icons-material/History';
 import Popup from '../../../components/Popup';
@@ -109,17 +109,19 @@ const ShowStudents = () => {
                         <VisibilityOutlinedIcon />
                     </ActionIconButtonPrimary>
                 </Tooltip>
-                <Tooltip title="Take Attendance" arrow>
-                    <ActionIconButtonSuccess
-                        onClick={() => navigate("/Admin/students/student/attendance/" + row.id)}>
-                        <EventAvailableOutlinedIcon />
-                    </ActionIconButtonSuccess>
-                </Tooltip>
+
                 <Tooltip title="Provide Marks" arrow>
                     <ActionIconButtonInfo
                         onClick={() => navigate("/Admin/students/student/marks/" + row.id)}>
                         <GradeOutlinedIcon />
                     </ActionIconButtonInfo>
+                </Tooltip>
+
+                <Tooltip title="Last Balance" arrow>
+                    <ActionIconButtonSuccess
+                        onClick={() => navigate("/Admin/students/student/lastbalance/" + row.id)}>
+                        <AccountBalanceIcon />
+                    </ActionIconButtonSuccess>
                 </Tooltip>
                 <Tooltip title="Fee History" arrow>
                     <ActionIconButtonPrimary
@@ -152,7 +154,7 @@ const ShowStudents = () => {
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
                     Students
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexDirection: { xs: 'column', sm: 'row' }, width: { xs: '100%', md: 'auto' } }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, flexWrap: 'wrap' }}>
                     <TextField
                         placeholder="Search students..."
                         variant="outlined"
@@ -181,7 +183,7 @@ const ShowStudents = () => {
                                 backgroundColor: 'var(--bg-paper)',
                             }
                         }}
-                        sx={{ width: { xs: '100%', md: '260px' } }}
+                        sx={{ width: { xs: '100%', sm: '260px' } }}
                     />
                     <Tooltip title="Add Student">
                         <IconButton

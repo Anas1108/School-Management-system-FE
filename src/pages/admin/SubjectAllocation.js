@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { getAllSclasses } from '../../redux/sclassRelated/sclassHandle';
 import { getAllTeachers } from '../../redux/teacherRelated/teacherHandle';
 import {
     Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup,
     InputLabel, MenuItem, Select, Typography, CircularProgress,
-    Grid, Paper, Switch, RadioGroup, Radio, Table, TableBody, TableCell,
+    Grid, Paper, RadioGroup, Radio, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Chip, Container, Tabs, Tab,
     IconButton, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
@@ -18,17 +19,17 @@ import ConfirmationModal from '../../components/ConfirmationModal';
 
 const SubjectAllocation = () => {
     const dispatch = useDispatch();
+    const location = useLocation();
     const { currentUser } = useSelector(state => state.user);
     const { sclassesList } = useSelector(state => state.sclass);
     const { teachersList } = useSelector(state => state.teacher);
 
     const [loading, setLoading] = useState(false);
     const [teacher, setTeacher] = useState('');
-    const [sclass, setSclass] = useState('');
+    const [sclass, setSclass] = useState(location.state?.classId || '');
     const [subjects, setSubjects] = useState([]);
-    const [selectedSubjects, setSelectedSubjects] = useState([]);
+    const [selectedSubjects, setSelectedSubjects] = useState(location.state?.subjectId ? [location.state?.subjectId] : []);
     const [academicYear] = useState('2026'); // Ideally this should be dynamic or from settings
-    const [isClassIncharge, setIsClassIncharge] = useState(false);
     const [allocationType, setAllocationType] = useState('Primary');
     const [workload, setWorkload] = useState([]);
     const [classAllocations, setClassAllocations] = useState([]);
@@ -44,7 +45,6 @@ const SubjectAllocation = () => {
     const [currentAllocation, setCurrentAllocation] = useState(null);
     const [editTeacher, setEditTeacher] = useState('');
     const [editType, setEditType] = useState('Primary');
-    const [editIsClassIncharge, setEditIsClassIncharge] = useState(false);
     const [actionLoading, setActionLoading] = useState(false);
 
     // Delete Confirmation State
@@ -135,7 +135,6 @@ const SubjectAllocation = () => {
                 subjects: selectedSubjects,
                 academicYear,
                 schoolId: adminID,
-                isClassIncharge,
                 type: allocationType
             });
 
@@ -143,7 +142,6 @@ const SubjectAllocation = () => {
             setSeverity("success");
             setShowPopup(true);
             setSelectedSubjects([]);
-            setIsClassIncharge(false);
             fetchWorkload(teacher); // Refresh workload
             fetchClassAllocations(sclass); // Refresh class allocations
         } catch (error) {
@@ -193,7 +191,6 @@ const SubjectAllocation = () => {
         setCurrentAllocation(allocation);
         setEditTeacher(allocation.teacherId);
         setEditType(allocation.type);
-        setEditIsClassIncharge(allocation.isClassIncharge);
         setOpenEditDialog(true);
     };
 
@@ -203,8 +200,7 @@ const SubjectAllocation = () => {
         try {
             await axios.put(`${process.env.REACT_APP_BASE_URL}/SubjectAllocation/${currentAllocation.allocationId}`, {
                 teacherId: editTeacher,
-                type: editType,
-                isClassIncharge: editIsClassIncharge
+                type: editType
             });
             setMessage('Allocation updated successfully');
             setSeverity('success');
@@ -292,20 +288,6 @@ const SubjectAllocation = () => {
                                             <FormControlLabel value="Primary" control={<Radio size="small" />} label="Primary" />
                                             <FormControlLabel value="Substitute" control={<Radio size="small" />} label="Substitute" />
                                         </RadioGroup>
-                                    </Box>
-
-                                    <Box sx={{ mb: 2 }}>
-                                        <FormControlLabel
-                                            control={
-                                                <Switch
-                                                    checked={isClassIncharge}
-                                                    onChange={(e) => setIsClassIncharge(e.target.checked)}
-                                                    color="primary"
-                                                    size="small"
-                                                />
-                                            }
-                                            label={<Typography variant="body2">Assign as Class In-charge</Typography>}
-                                        />
                                     </Box>
 
                                     <Box sx={{ mb: 3 }}>
@@ -418,9 +400,6 @@ const SubjectAllocation = () => {
                                                                             variant="outlined"
                                                                             sx={{ height: 20, fontSize: '0.7rem' }}
                                                                         />
-                                                                        {alloc.isClassIncharge && (
-                                                                            <Chip label="In-charge" size="small" color="info" sx={{ height: 20, fontSize: '0.7rem' }} />
-                                                                        )}
                                                                     </Box>
                                                                 )}
                                                             </TableCell>
@@ -492,9 +471,6 @@ const SubjectAllocation = () => {
                                                                         variant="outlined"
                                                                         sx={{ height: 20, fontSize: '0.7rem' }}
                                                                     />
-                                                                    {alloc.isClassIncharge && (
-                                                                        <Chip label="In-charge" size="small" color="info" sx={{ height: 20, fontSize: '0.7rem' }} />
-                                                                    )}
                                                                 </Box>
                                                             </TableCell>
                                                         </TableRow>
@@ -545,17 +521,6 @@ const SubjectAllocation = () => {
                                     <FormControlLabel value="Primary" control={<Radio size="small" />} label="Primary" />
                                     <FormControlLabel value="Substitute" control={<Radio size="small" />} label="Substitute" />
                                 </RadioGroup>
-                            </Box>
-                            <Box sx={{ mt: 1 }}>
-                                <FormControlLabel
-                                    control={
-                                        <Switch
-                                            checked={editIsClassIncharge}
-                                            onChange={(e) => setEditIsClassIncharge(e.target.checked)}
-                                        />
-                                    }
-                                    label="Class In-charge"
-                                />
                             </Box>
                         </>
                     )}

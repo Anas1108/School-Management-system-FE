@@ -2,16 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
+import { deleteUser } from '../../../redux/userRelated/userHandle';
 
 import {
-    Box, Container, Typography, TextField, InputAdornment, Tooltip, IconButton
+    Box, Container, Typography, TextField, InputAdornment, Tooltip, IconButton,
+    Dialog, DialogTitle, DialogContent, DialogActions, Button
 } from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
 import TableTemplate from '../../../components/TableTemplate';
-import { GreenButton, ActionIconButtonPrimary, ActionIconButtonError } from '../../../components/buttonStyles';
+import { GreenButton, ActionIconButtonPrimary, ActionIconButtonError, ActionIconButtonSuccess } from '../../../components/buttonStyles';
 import Popup from '../../../components/Popup';
 import CustomLoader from '../../../components/CustomLoader';
 
@@ -32,18 +35,30 @@ const ShowSubjects = () => {
     }
 
     const [showPopup, setShowPopup] = useState(false);
-    const [message, setMessage] = useState("");
+    const [message] = useState("");
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [subjectToDelete, setSubjectToDelete] = useState(null);
+    const [actionLoading, setActionLoading] = useState(false);
 
     const deleteHandler = (deleteID, address) => {
-        console.log(deleteID);
-        console.log(address);
-        setMessage("Sorry the delete function has been disabled for now.")
-        setShowPopup(true)
+        setSubjectToDelete({ id: deleteID, address });
+        setDeleteDialogOpen(true);
+    };
 
-        // dispatch(deleteUser(deleteID, address))
-        //     .then(() => {
-        //         dispatch(getSubjectList(currentUser._id, "AllSubjects"));
-        //     })
+    const confirmDelete = () => {
+        if (!subjectToDelete) return;
+        setActionLoading(true);
+        dispatch(deleteUser(subjectToDelete.id, subjectToDelete.address))
+            .then(() => {
+                dispatch(getSubjectList(currentUser._id, "AllSubjects"));
+                setActionLoading(false);
+                setDeleteDialogOpen(false);
+                setSubjectToDelete(null);
+            })
+            .catch(() => {
+                setActionLoading(false);
+                setDeleteDialogOpen(false);
+            });
     }
 
     const subjectColumns = [
@@ -75,6 +90,12 @@ const ShowSubjects = () => {
                         onClick={() => navigate(`/Admin/subjects/subject/${row.sclassID}/${row.id}`)}>
                         <VisibilityOutlinedIcon />
                     </ActionIconButtonPrimary>
+                </Tooltip>
+                <Tooltip title="Edit" arrow>
+                    <ActionIconButtonSuccess
+                        onClick={() => navigate(`/Admin/subjects/edit/${row.id}`)}>
+                        <EditIcon />
+                    </ActionIconButtonSuccess>
                 </Tooltip>
                 <Tooltip title="Delete" arrow>
                     <ActionIconButtonError
@@ -148,6 +169,20 @@ const ShowSubjects = () => {
             }
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
 
+            <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        Are you sure you want to delete this subject? This action cannot be undone.
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDeleteDialogOpen(false)} disabled={actionLoading}>Cancel</Button>
+                    <Button onClick={confirmDelete} color="error" variant="contained" disabled={actionLoading}>
+                        {actionLoading ? "Deleting..." : "Delete"}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 };

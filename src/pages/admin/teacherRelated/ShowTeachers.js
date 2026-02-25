@@ -163,7 +163,7 @@ const ShowTeachers = () => {
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
                     Teachers
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexDirection: { xs: 'column', sm: 'row' }, width: { xs: '100%', md: 'auto' } }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, flexWrap: 'wrap' }}>
                     <TextField
                         placeholder="Search teachers..."
                         variant="outlined"
@@ -184,7 +184,7 @@ const ShowTeachers = () => {
                                 backgroundColor: 'var(--bg-paper)',
                             }
                         }}
-                        sx={{ width: { xs: '100%', md: '260px' } }}
+                        sx={{ width: { xs: '100%', sm: '260px' } }}
                     />
                     <Tooltip title="Add Teacher">
                         <IconButton
@@ -272,9 +272,6 @@ const ShowTeachers = () => {
                                                         color={alloc.type === 'Primary' ? 'success' : 'warning'}
                                                         variant="outlined"
                                                     />
-                                                    {alloc.isClassIncharge && (
-                                                        <Chip label="In-charge" size="small" color="info" />
-                                                    )}
                                                 </Box>
                                             </TableCell>
                                         </TableRow>
