@@ -80,3 +80,20 @@ export const promoteStudentsAPI = (studentIds, targetClassId, clearRecords, targ
         dispatch(getError(error));
     }
 }
+
+export const retireStudentsAPI = (studentIds) => async (dispatch) => {
+    dispatch(getRequest());
+
+    try {
+        const result = await axios.put(`${process.env.REACT_APP_BASE_URL}/Students/Retire`, { studentIds }, {
+            headers: { 'Content-Type': 'application/json' },
+        });
+        if (result.data.message && result.data.message !== "Students retired successfully") {
+            dispatch(getFailed(result.data.message));
+        } else {
+            dispatch(stuffDone());
+        }
+    } catch (error) {
+        dispatch(getError(error));
+    }
+}

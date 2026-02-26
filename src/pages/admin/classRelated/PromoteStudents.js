@@ -31,7 +31,7 @@ import {
     DialogActions
 } from '@mui/material';
 import { getAllSclasses, getClassStudents } from '../../../redux/sclassRelated/sclassHandle';
-import { promoteStudentsAPI } from '../../../redux/studentRelated/studentHandle';
+import { promoteStudentsAPI, retireStudentsAPI } from '../../../redux/studentRelated/studentHandle';
 import { underStudentControl } from '../../../redux/studentRelated/studentSlice';
 import Popup from '../../../components/Popup';
 import CustomLoader from '../../../components/CustomLoader';
@@ -53,6 +53,7 @@ const PromoteStudents = () => {
     const [targetSessionYear, setTargetSessionYear] = useState(`${new Date().getFullYear()}-${new Date().getFullYear() + 1}`);
     const [selectedStudents, setSelectedStudents] = useState([]);
     const [openConfirm, setOpenConfirm] = useState(false);
+    const [openConfirmRetire, setOpenConfirmRetire] = useState(false);
 
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState('');
@@ -85,7 +86,7 @@ const PromoteStudents = () => {
         if (statestatus === "added") {
             setPopupSeverity('success');
             setShowPopup(true);
-            setMessage("Students promoted successfully!");
+            setMessage("Action completed successfully!");
             dispatch(underStudentControl());
             // Reset state
             setFromClass('');
@@ -139,10 +140,20 @@ const PromoteStudents = () => {
         }
         if (fromClass === toClass) {
             setShowPopup(true);
-            setMessage("Source and Target class cannot be the same.");
+            setMessage("Source and Target class cannot be the same for promotion.");
             return;
         }
         setOpenConfirm(true);
+    };
+
+    const submitRetireHandler = (event) => {
+        event.preventDefault();
+        if (selectedStudents.length === 0) {
+            setShowPopup(true);
+            setMessage("Please select at least one student to retire.");
+            return;
+        }
+        setOpenConfirmRetire(true);
     };
 
     const handleConfirmPromote = () => {
@@ -152,6 +163,15 @@ const PromoteStudents = () => {
 
     const handleCloseConfirm = () => {
         setOpenConfirm(false);
+    };
+
+    const handleConfirmRetire = () => {
+        setOpenConfirmRetire(false);
+        dispatch(retireStudentsAPI(selectedStudents));
+    };
+
+    const handleCloseConfirmRetire = () => {
+        setOpenConfirmRetire(false);
     };
 
     return (
@@ -313,7 +333,17 @@ const PromoteStudents = () => {
                         </Box>
                     )}
 
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4, gap: 2 }}>
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            type="button"
+                            onClick={submitRetireHandler}
+                            disabled={studentLoading || !fromClass || (sclassStudents && sclassStudents.length === 0)}
+                            sx={{ minWidth: 200, py: 1.5, borderRadius: 2, fontWeight: 'bold' }}
+                        >
+                            Retire Selected Students
+                        </Button>
                         <Button
                             variant="contained"
                             color="primary"
@@ -354,6 +384,31 @@ const PromoteStudents = () => {
                     </Button>
                     <Button onClick={handleConfirmPromote} color="error" autoFocus variant="contained">
                         Confirm Promote
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog
+                open={openConfirmRetire}
+                onClose={handleCloseConfirmRetire}
+                aria-labelledby="alert-dialog-title-retire"
+                aria-describedby="alert-dialog-description-retire"
+            >
+                <DialogTitle id="alert-dialog-title-retire">
+                    {"Confirm Retirement"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description-retire">
+                        Are you sure you want to retire {selectedStudents.length} student(s)?
+                        They will be removed from active classes and their records will be saved as retired.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseConfirmRetire} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleConfirmRetire} color="error" autoFocus variant="contained">
+                        Confirm Retire
                     </Button>
                 </DialogActions>
             </Dialog>

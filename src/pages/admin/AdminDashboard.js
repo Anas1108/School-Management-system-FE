@@ -33,6 +33,7 @@ import ShowStudents from './studentRelated/ShowStudents';
 import StudentExamMarks from './studentRelated/StudentExamMarks';
 import ViewStudent from './studentRelated/ViewStudent';
 import StudentLastBalance from './studentRelated/StudentLastBalance';
+import RetiredStudents from './studentRelated/RetiredStudents';
 
 import AddNotice from './noticeRelated/AddNotice';
 import ShowNotices from './noticeRelated/ShowNotices';
@@ -199,6 +200,7 @@ const AdminDashboard = () => {
                             <Route path="/Admin/students/student/:id" element={<ViewStudent />} />
                             <Route path="/Admin/students/student/marks/:id" element={<StudentExamMarks situation="Student" />} />
                             <Route path="/Admin/students/student/lastbalance/:id" element={<StudentLastBalance />} />
+                            <Route path="/Admin/students/retired" element={<RetiredStudents />} />
 
                             {/* Family */}
                             <Route path="/Admin/families" element={<ShowFamilies />} />
