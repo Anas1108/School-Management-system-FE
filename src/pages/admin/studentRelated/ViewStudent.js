@@ -4,7 +4,7 @@ import { getUserDetails } from '../../../redux/userRelated/userHandle';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import { useNavigate, useParams } from 'react-router-dom'
 import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
-import { Box, Button, IconButton, Table, TableBody, TableHead, Typography, Tab, Paper, BottomNavigation, BottomNavigationAction, Container, Grid, Avatar, Dialog, DialogTitle, DialogContent, TextField, MenuItem, DialogActions, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
+import { Box, Button, IconButton, Table, TableBody, TableHead, Typography, Tab, Paper, BottomNavigation, BottomNavigationAction, Container, Grid, Avatar, Dialog, DialogTitle, DialogContent, TextField, MenuItem, DialogActions, ToggleButton, ToggleButtonGroup, Tooltip, Chip } from '@mui/material';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
@@ -454,14 +454,17 @@ const ViewStudent = () => {
                                 {name.charAt(0)}
                             </Avatar>
                             <Box>
-                                <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>
+                                <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
                                     {name}
+                                    {userDetails?.status === 'Retired' && (
+                                        <Chip label="Retired" color="error" size="small" sx={{ ml: 1, fontWeight: 'bold' }} />
+                                    )}
                                 </Typography>
                                 <Typography variant="body1" color="textSecondary">
                                     Roll: {rollNum}
                                 </Typography>
                                 <Typography variant="body2" color="primary">
-                                    Class: {sclassName?.sclassName}
+                                    {userDetails?.status === 'Retired' ? 'Last Class:' : 'Class:'} {sclassName?.sclassName}
                                 </Typography>
                             </Box>
                         </Box>
