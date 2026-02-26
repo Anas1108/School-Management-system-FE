@@ -35,6 +35,7 @@ import { promoteStudentsAPI } from '../../../redux/studentRelated/studentHandle'
 import { underStudentControl } from '../../../redux/studentRelated/studentSlice';
 import Popup from '../../../components/Popup';
 import CustomLoader from '../../../components/CustomLoader';
+import ActionLoader from '../../../components/ActionLoader';
 import { TrendingUp, CompareArrows } from '@mui/icons-material';
 
 const PromoteStudents = () => {
@@ -326,6 +327,8 @@ const PromoteStudents = () => {
                     </Box>
                 </form>
             </Paper>
+
+            <ActionLoader open={studentLoading} message="Promoting students, please wait..." />
 
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} severity={popupSeverity} />
 

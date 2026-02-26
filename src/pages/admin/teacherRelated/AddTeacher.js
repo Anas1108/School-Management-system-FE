@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getSubjectDetails } from '../../../redux/sclassRelated/sclassHandle';
 import Popup from '../../../components/Popup';
+import ActionLoader from '../../../components/ActionLoader';
 import { registerUser, updateUser } from '../../../redux/userRelated/userHandle';
 import { underControl } from '../../../redux/userRelated/userSlice';
 import { getTeacherDetails } from '../../../redux/teacherRelated/teacherHandle';
@@ -274,6 +275,9 @@ const AddTeacher = ({ situation }) => {
           </Box>
         </form>
       </StyledPaper>
+
+      <ActionLoader open={loader} message="Processing teacher registration, please wait..." />
+
       <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} severity={severity} />
     </Container>
   )

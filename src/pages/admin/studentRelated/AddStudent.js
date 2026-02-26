@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerUser, updateUser, getUserDetails } from '../../../redux/userRelated/userHandle';
 import Popup from '../../../components/Popup';
+import ActionLoader from '../../../components/ActionLoader';
 import { underControl } from '../../../redux/userRelated/userSlice';
 import { getAllSclasses } from '../../../redux/sclassRelated/sclassHandle';
 import { CircularProgress, Container, Paper, Typography, TextField, MenuItem, Button, Box, Grid, Stepper, Step, StepLabel, Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText, ListItemButton, Divider } from '@mui/material';
@@ -626,6 +627,8 @@ const AddStudent = ({ situation }) => {
                     )}
                 </DialogContent>
             </Dialog>
+
+            <ActionLoader open={loader} message="Processing student registration, please wait..." />
 
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} severity={severity} />
         </Container>
