@@ -3,27 +3,30 @@ import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
-    Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, CircularProgress,
-    Checkbox, IconButton, Tooltip, Alert, Container
+    Box, Typography, CircularProgress, Container, IconButton, Tooltip, TextField, InputAdornment
 } from '@mui/material';
-import { NoAccounts, Delete as DeleteIcon, VisibilityOutlined as VisibilityOutlinedIcon, ArrowBack as ArrowBackIcon } from '@mui/icons-material';
+import { NoAccounts, Delete as DeleteIcon, VisibilityOutlined as VisibilityOutlinedIcon, ArrowBack as ArrowBackIcon, Search as SearchIcon } from '@mui/icons-material';
 import { ActionIconButtonError, ActionIconButtonPrimary } from '../../../components/buttonStyles';
 import ConfirmationModal from '../../../components/ConfirmationModal';
 import Popup from '../../../components/Popup';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
+import TableTemplate from '../../../components/TableTemplate';
 
 const RetiredStudents = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { currentUser } = useSelector(state => state.user);
+    
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    const [selectedIds, setSelectedIds] = useState([]);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [totalStudents, setTotalStudents] = useState(0);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [submittedSearchTerm, setSubmittedSearchTerm] = useState("");
 
     // Modal States
     const [confirmOpen, setConfirmOpen] = useState(false);
-    const [deleteType, setDeleteType] = useState(null); // 'single' or 'multi'
     const [deleteTargetId, setDeleteTargetId] = useState(null);
 
     const [showPopup, setShowPopup] = useState(false);
@@ -33,17 +36,24 @@ const RetiredStudents = () => {
     const fetchRetiredStudents = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/Students/${currentUser._id}?status=Retired`);
-            if (Array.isArray(res.data)) {
-                setStudents(res.data);
-            } else if (res.data && res.data.students) {
+            const url = `${process.env.REACT_APP_BASE_URL}/Students/${currentUser._id}?status=Retired&page=${page + 1}&limit=${rowsPerPage}&search=${submittedSearchTerm}`;
+            const res = await axios.get(url);
+            
+            if (res.data && res.data.students) {
                 setStudents(res.data.students);
+                setTotalStudents(res.data.total || 0);
+            } else if (Array.isArray(res.data)) {
+                // Fallback for non-paginated response, though should not happen if backend is correct
+                setStudents(res.data);
+                setTotalStudents(res.data.length);
             } else {
                 setStudents([]);
+                setTotalStudents(0);
             }
         } catch (err) {
             console.error(err);
             setStudents([]);
+            setTotalStudents(0);
         } finally {
             setLoading(false);
         }
@@ -52,78 +62,87 @@ const RetiredStudents = () => {
     useEffect(() => {
         fetchRetiredStudents();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentUser._id]);
-
-    const handleSelectAll = (event) => {
-        if (event.target.checked) {
-            setSelectedIds(students.map((student) => student._id));
-        } else {
-            setSelectedIds([]);
-        }
-    };
-
-    const handleSelectOne = (event, id) => {
-        const selectedIndex = selectedIds.indexOf(id);
-        let newSelected = [];
-
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selectedIds, id);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selectedIds.slice(1));
-        } else if (selectedIndex === selectedIds.length - 1) {
-            newSelected = newSelected.concat(selectedIds.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selectedIds.slice(0, selectedIndex),
-                selectedIds.slice(selectedIndex + 1),
-            );
-        }
-        setSelectedIds(newSelected);
-    };
-
-    const isSelected = (id) => selectedIds.includes(id);
+    }, [currentUser._id, page, rowsPerPage, submittedSearchTerm]);
 
     const handleSingleDeleteClick = (id) => {
         setDeleteTargetId(id);
-        setDeleteType('single');
-        setConfirmOpen(true);
-    };
-
-    const handleMultiDeleteClick = () => {
-        setDeleteType('multi');
         setConfirmOpen(true);
     };
 
     const handleCloseConfirm = () => {
         setConfirmOpen(false);
         setDeleteTargetId(null);
-        setDeleteType(null);
     };
 
     const handleConfirmDelete = async () => {
         try {
-            if (deleteType === 'single') {
-                await dispatch(deleteUser(deleteTargetId, "Student"));
-                setMessage("Student Deleted Successfully");
-            } else if (deleteType === 'multi') {
-                // Bulk delete simulated by multiple single dispatch calls, matching Complain mechanism
-                for (const id of selectedIds) {
-                    await dispatch(deleteUser(id, "Student"));
-                }
-                setMessage(`${selectedIds.length} Students Deleted Successfully`);
-                setSelectedIds([]);
-            }
+            await dispatch(deleteUser(deleteTargetId, "Student"));
+            setMessage("Retired Student Deleted Successfully");
             setSeverity('success');
             setShowPopup(true);
+            
+            // If deleting last item on page, go to previous page if it exists
+            if (students.length === 1 && page > 0) {
+                setPage(page - 1);
+            } else {
+                fetchRetiredStudents();
+            }
         } catch (err) {
             console.error(err);
             setMessage("Error occurred while deleting");
             setSeverity('error');
             setShowPopup(true);
         } finally {
-            fetchRetiredStudents();
             handleCloseConfirm();
         }
+    };
+
+    const studentColumns = [
+        { id: 'name', label: 'Name', minWidth: 170 },
+        { id: 'rollNum', label: 'Roll Number', minWidth: 100 },
+        { id: 'sclassName', label: 'Last Class', minWidth: 170 },
+        { id: 'retirementDate', label: 'Retirement Date', minWidth: 170 },
+    ];
+
+    const studentRows = students.map((student) => {
+        return {
+            name: student.name,
+            rollNum: student.rollNum,
+            sclassName: student.sclassName?.sclassName || 'N/A',
+            retirementDate: student.retirementDate ? new Date(student.retirementDate).toLocaleDateString() : 'N/A',
+            id: student._id,
+        };
+    });
+
+    const StudentButtonHaver = ({ row }) => {
+        return (
+            <>
+                <Tooltip title="View Details" arrow>
+                    <ActionIconButtonPrimary onClick={() => navigate(`/Admin/students/student/${row.id}`)}>
+                        <VisibilityOutlinedIcon />
+                    </ActionIconButtonPrimary>
+                </Tooltip>
+                <Tooltip title="Delete Permanently" arrow>
+                    <ActionIconButtonError onClick={() => handleSingleDeleteClick(row.id)}>
+                        <DeleteIcon />
+                    </ActionIconButtonError>
+                </Tooltip>
+            </>
+        );
+    };
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    const handleSearchSubmit = () => {
+        setPage(0);
+        setSubmittedSearchTerm(searchTerm);
     };
 
     return (
@@ -136,6 +155,32 @@ const RetiredStudents = () => {
                     </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, flexWrap: 'wrap' }}>
+                    <TextField
+                        placeholder="Search retired students..."
+                        variant="outlined"
+                        size="small"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                handleSearchSubmit();
+                            }
+                        }}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={handleSearchSubmit}>
+                                        <SearchIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                            style: {
+                                borderRadius: 'var(--border-radius-md)',
+                                backgroundColor: 'var(--bg-paper)',
+                            }
+                        }}
+                        sx={{ width: { xs: '100%', sm: '260px' } }}
+                    />
                     <Tooltip title="Back to Students">
                         <IconButton
                             onClick={() => navigate("/Admin/students")}
@@ -148,108 +193,44 @@ const RetiredStudents = () => {
                             <ArrowBackIcon />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title="Delete Selected">
-                        <span>
-                            <IconButton
-                                onClick={handleMultiDeleteClick}
-                                disabled={selectedIds.length === 0}
-                                color="error"
-                                sx={{ border: '1px solid', borderColor: selectedIds.length > 0 ? 'error.main' : 'grey.300', borderRadius: 'var(--border-radius-md)' }}
-                            >
-                                <DeleteIcon />
-                            </IconButton>
-                        </span>
-                    </Tooltip>
                 </Box>
             </Box>
-            <Box sx={{
-                borderRadius: 'var(--border-radius-lg)',
-                overflow: 'hidden',
-                border: '1px solid var(--border-color)',
-                background: 'var(--bg-paper)',
-            }}>
-                {loading ? (
-                    <Box display="flex" justifyContent="center" sx={{ p: 4 }}>
-                        <CircularProgress />
-                    </Box>
-                ) : students.length > 0 ? (
-                    <TableContainer sx={{ maxHeight: '75vh', overflowX: 'auto' }}>
-                        <Table>
-                            <TableHead>
-                                <TableRow sx={{ backgroundColor: 'primary.light' }}>
-                                    <TableCell padding="checkbox">
-                                        <Checkbox
-                                            color="primary"
-                                            indeterminate={selectedIds.length > 0 && selectedIds.length < students.length}
-                                            checked={students.length > 0 && selectedIds.length === students.length}
-                                            onChange={handleSelectAll}
-                                        />
-                                    </TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }}>Roll Number</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }}>Last Class</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }}>Retirement Date</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} align="center">Actions</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {students.map((student) => {
-                                    const isItemSelected = isSelected(student._id);
-                                    return (
-                                        <TableRow
-                                            key={student._id}
-                                            hover
-                                            role="checkbox"
-                                            aria-checked={isItemSelected}
-                                            selected={isItemSelected}
-                                        >
-                                            <TableCell padding="checkbox">
-                                                <Checkbox
-                                                    color="primary"
-                                                    checked={isItemSelected}
-                                                    onChange={(e) => handleSelectOne(e, student._id)}
-                                                />
-                                            </TableCell>
-                                            <TableCell>{student.name}</TableCell>
-                                            <TableCell>{student.rollNum}</TableCell>
-                                            <TableCell>{student.sclassName?.sclassName || 'N/A'}</TableCell>
-                                            <TableCell>{student.retirementDate ? new Date(student.retirementDate).toLocaleDateString() : 'N/A'}</TableCell>
-                                            <TableCell align="center">
-                                                <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-                                                    <Tooltip title="View Details" arrow>
-                                                        <ActionIconButtonPrimary onClick={() => navigate(`/Admin/students/student/${student._id}`)}>
-                                                            <VisibilityOutlinedIcon />
-                                                        </ActionIconButtonPrimary>
-                                                    </Tooltip>
-                                                    <Tooltip title="Delete Permanently" arrow>
-                                                        <ActionIconButtonError onClick={() => handleSingleDeleteClick(student._id)}>
-                                                            <DeleteIcon />
-                                                        </ActionIconButtonError>
-                                                    </Tooltip>
-                                                </Box>
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                ) : (
-                    <Box sx={{ p: 4, textAlign: 'center' }}>
-                        <Typography variant="h6" color="textSecondary">No retired students found.</Typography>
-                    </Box>
-                )}
-            </Box>
+            
+            {loading ? (
+                <Box display="flex" justifyContent="center" sx={{ p: 4 }}>
+                    <CircularProgress />
+                </Box>
+            ) : submittedSearchTerm && students.length === 0 ? (
+                <Box sx={{ p: 4, textAlign: 'center', borderRadius: 'var(--border-radius-lg)', border: '1px solid var(--border-color)', background: 'var(--bg-paper)' }}>
+                    <Typography variant="h6" color="text.secondary">
+                        No retired students found matching "{submittedSearchTerm}"
+                    </Typography>
+                </Box>
+            ) : (
+                <Box sx={{
+                    borderRadius: 'var(--border-radius-lg)',
+                    overflow: 'hidden',
+                    background: 'transparent',
+                }}>
+                    <TableTemplate
+                        buttonHaver={StudentButtonHaver}
+                        columns={studentColumns}
+                        rows={studentRows}
+                        count={totalStudents}
+                        page={page}
+                        rowsPerPage={rowsPerPage}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                </Box>
+            )}
 
             <ConfirmationModal
                 open={confirmOpen}
                 handleClose={handleCloseConfirm}
                 handleConfirm={handleConfirmDelete}
                 title="Confirm Deletion"
-                message={deleteType === 'multi'
-                    ? `Are you sure you want to permanently delete ${selectedIds.length} retired student(s)? This will also delete their invoices, family links, and exam records. This action cannot be undone.`
-                    : "Are you sure you want to permanently delete this retired student? This will also delete their invoices, family links, and exam records. This action cannot be undone."
-                }
+                message="Are you sure you want to permanently delete this retired student? This will also delete their invoices, family links, and exam records. This action cannot be undone."
                 confirmLabel="Delete Permanently"
             />
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} severity={severity} />
@@ -258,3 +239,4 @@ const RetiredStudents = () => {
 };
 
 export default RetiredStudents;
+
