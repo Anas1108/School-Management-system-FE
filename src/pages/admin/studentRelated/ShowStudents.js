@@ -36,8 +36,10 @@ const ShowStudents = () => {
     const [message, setMessage] = useState("");
     const [severity, setSeverity] = useState("success");
     const [searchTerm, setSearchTerm] = useState("");
+    const [submittedSearchTerm, setSubmittedSearchTerm] = useState("");
 
     useEffect(() => {
+        setSubmittedSearchTerm(searchTerm);
         dispatch(getAllStudents(currentUser._id, page + 1, rowsPerPage, searchTerm));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUser._id, dispatch, page, rowsPerPage]); // Trigger fetch on pagination only. Search is manual.
@@ -164,6 +166,7 @@ const ShowStudents = () => {
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                                 setPage(0);
+                                setSubmittedSearchTerm(searchTerm);
                                 dispatch(getAllStudents(currentUser._id, 1, rowsPerPage, searchTerm));
                             }
                         }}
@@ -172,6 +175,7 @@ const ShowStudents = () => {
                                 <InputAdornment position="end">
                                     <IconButton onClick={() => {
                                         setPage(0);
+                                        setSubmittedSearchTerm(searchTerm);
                                         dispatch(getAllStudents(currentUser._id, 1, rowsPerPage, searchTerm));
                                     }}>
                                         <SearchIcon />
@@ -205,11 +209,19 @@ const ShowStudents = () => {
                 :
                 <>
                     {response ?
-                        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
-                            <GreenButton variant="contained" onClick={() => navigate("/Admin/addstudents")}>
-                                Add Students
-                            </GreenButton>
-                        </Box>
+                        submittedSearchTerm ? (
+                            <Box sx={{ mt: 4, textAlign: 'center' }}>
+                                <Typography variant="h6" color="text.secondary">
+                                    No students found matching "{submittedSearchTerm}"
+                                </Typography>
+                            </Box>
+                        ) : (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+                                <GreenButton variant="contained" onClick={() => navigate("/Admin/addstudents")}>
+                                    Add Students
+                                </GreenButton>
+                            </Box>
+                        )
                         :
                         <>
                             {Array.isArray(studentsList) && studentsList.length > 0 &&

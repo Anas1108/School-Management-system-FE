@@ -244,6 +244,8 @@ const ViewStudent = () => {
         const [openAssignModal, setOpenAssignModal] = useState(false);
         const [discountMode, setDiscountMode] = useState('preset'); // 'preset' or 'custom'
         const [newDiscount, setNewDiscount] = useState({ discountGroup: '', customName: '', type: 'Percentage', value: 0 });
+        const [confirmDiscountOpen, setConfirmDiscountOpen] = useState(false);
+        const [discountToDelete, setDiscountToDelete] = useState(null);
 
         useEffect(() => {
             const fetchGroups = async () => {
@@ -277,16 +279,28 @@ const ViewStudent = () => {
             }
         };
 
-        const handleRemoveDiscount = async (id) => {
-            if (!window.confirm("Remove this discount?")) return;
+        const handleRemoveDiscount = (id) => {
+            setDiscountToDelete(id);
+            setConfirmDiscountOpen(true);
+        };
+
+        const confirmRemoveDiscountHandler = async () => {
+            if (!discountToDelete) return;
             try {
-                await axios.delete(`${process.env.REACT_APP_BASE_URL}/StudentDiscountRemove/${id}`);
+                await axios.delete(`${process.env.REACT_APP_BASE_URL}/StudentDiscountRemove/${discountToDelete}`);
                 setFetchDiscountsTrigger(prev => prev + 1);
                 setMessage("Discount Removed");
                 setSeverity("success");
                 setShowPopup(true);
+                setConfirmDiscountOpen(false);
+                setDiscountToDelete(null);
             } catch (err) {
                 console.error(err);
+                setMessage("Failed to remove discount");
+                setSeverity("error");
+                setShowPopup(true);
+                setConfirmDiscountOpen(false);
+                setDiscountToDelete(null);
             }
         };
 
@@ -414,6 +428,15 @@ const ViewStudent = () => {
                         <Button variant="contained" onClick={handleAssignDiscount}>Assign</Button>
                     </DialogActions>
                 </Dialog>
+
+                <ConfirmationModal
+                    open={confirmDiscountOpen}
+                    handleClose={() => { setConfirmDiscountOpen(false); setDiscountToDelete(null); }}
+                    handleConfirm={confirmRemoveDiscountHandler}
+                    title="Remove Discount?"
+                    message="Are you sure you want to remove this discount from the student?"
+                    confirmLabel="Remove"
+                />
             </>
         )
     }

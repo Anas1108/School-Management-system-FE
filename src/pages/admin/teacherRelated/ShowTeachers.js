@@ -206,11 +206,19 @@ const ShowTeachers = () => {
                 :
                 <>
                     {response ?
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-                            <GreenButton variant="contained" onClick={() => navigate("/Admin/teachers/add")}>
-                                Add Teacher
-                            </GreenButton>
-                        </Box>
+                        query ? (
+                            <Box sx={{ mt: 4, textAlign: 'center' }}>
+                                <Typography variant="h6" color="text.secondary">
+                                    No teachers found matching "{query}"
+                                </Typography>
+                            </Box>
+                        ) : (
+                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+                                <GreenButton variant="contained" onClick={() => navigate("/Admin/teachers/add")}>
+                                    Add Teacher
+                                </GreenButton>
+                            </Box>
+                        )
                         :
                         <TableTemplate
                             buttonHaver={TeacherButtonHaver}

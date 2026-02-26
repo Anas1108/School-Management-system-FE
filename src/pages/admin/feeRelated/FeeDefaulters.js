@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
     Container, Box, Typography, Button, TextField, MenuItem, Table, TableBody, TableCell,
-    TableContainer, TableHead, TableRow, IconButton, Tooltip
+    TableContainer, TableHead, TableRow, IconButton, Tooltip, InputAdornment
 } from '@mui/material';
 
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -23,6 +23,7 @@ const FeeDefaulters = () => {
     const [selectedClass, setSelectedClass] = useState('');
     const [invoices, setInvoices] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     // History Modal State
     const [historyOpen, setHistoryOpen] = useState(false);
@@ -57,7 +58,10 @@ const FeeDefaulters = () => {
         }
     };
 
-    const filteredInvoices = invoices;
+    const filteredInvoices = invoices.filter(invoice =>
+        invoice.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (invoice.rollNum && invoice.rollNum.toString().includes(searchTerm))
+    );
 
     return (
         <Container maxWidth={false} sx={{ mt: 0, mb: 2 }}>
@@ -83,24 +87,41 @@ const FeeDefaulters = () => {
                 <Typography variant="body1" color="text.secondary">
                     Total Defaulters: <strong>{filteredInvoices.length}</strong>
                 </Typography>
-                <TextField
-                    select
-                    label="Select Class"
-                    value={selectedClass}
-                    onChange={(e) => {
-                        setSelectedClass(e.target.value);
-                        fetchInvoices(e.target.value);
-                    }}
-                    size="small"
-                    sx={{ minWidth: 200, width: { xs: '100%', sm: 'auto' } }}
-                    InputProps={{ style: { borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--bg-paper)' } }}
-                >
-                    {classes.map((option) => (
-                        <MenuItem key={option._id} value={option._id}>
-                            {option.sclassName}
-                        </MenuItem>
-                    ))}
-                </TextField>
+                <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' }, width: { xs: '100%', sm: 'auto' } }}>
+                    <TextField
+                        placeholder="Search student or roll..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        size="small"
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon />
+                                </InputAdornment>
+                            ),
+                            style: { borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--bg-paper)' }
+                        }}
+                        sx={{ minWidth: 200, width: { xs: '100%', sm: 'auto' } }}
+                    />
+                    <TextField
+                        select
+                        label="Select Class"
+                        value={selectedClass}
+                        onChange={(e) => {
+                            setSelectedClass(e.target.value);
+                            fetchInvoices(e.target.value);
+                        }}
+                        size="small"
+                        sx={{ minWidth: 200, width: { xs: '100%', sm: 'auto' } }}
+                        InputProps={{ style: { borderRadius: 'var(--border-radius-md)', backgroundColor: 'var(--bg-paper)' } }}
+                    >
+                        {classes.map((option) => (
+                            <MenuItem key={option._id} value={option._id}>
+                                {option.sclassName}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                </Box>
             </Box>
 
             {loading ? (
