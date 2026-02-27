@@ -16,7 +16,7 @@ const RetiredStudents = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { currentUser } = useSelector(state => state.user);
-    
+
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(0);
@@ -28,6 +28,8 @@ const RetiredStudents = () => {
     // Modal States
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [deleteTargetId, setDeleteTargetId] = useState(null);
+    const [pendingDues, setPendingDues] = useState(0);
+    const [isCheckingDues, setIsCheckingDues] = useState(false);
 
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState('');
@@ -38,7 +40,7 @@ const RetiredStudents = () => {
         try {
             const url = `${process.env.REACT_APP_BASE_URL}/Students/${currentUser._id}?status=Retired&page=${page + 1}&limit=${rowsPerPage}&search=${submittedSearchTerm}`;
             const res = await axios.get(url);
-            
+
             if (res.data && res.data.students) {
                 setStudents(res.data.students);
                 setTotalStudents(res.data.total || 0);
@@ -64,14 +66,31 @@ const RetiredStudents = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUser._id, page, rowsPerPage, submittedSearchTerm]);
 
-    const handleSingleDeleteClick = (id) => {
+    const handleSingleDeleteClick = async (id) => {
         setDeleteTargetId(id);
-        setConfirmOpen(true);
+        setIsCheckingDues(true);
+        setPendingDues(0);
+
+        try {
+            const url = `${process.env.REACT_APP_BASE_URL}/FeeHistory/${id}`;
+            const res = await axios.get(url);
+            if (res.data && res.data.totalDue > 0) {
+                setPendingDues(res.data.totalDue);
+            }
+        } catch (error) {
+            console.error("Error checking dues:", error);
+            // Non-blocking error, allow deletion but maybe show a generic warning
+            // or we just default to 0 dues (which we did).
+        } finally {
+            setIsCheckingDues(false);
+            setConfirmOpen(true);
+        }
     };
 
     const handleCloseConfirm = () => {
         setConfirmOpen(false);
         setDeleteTargetId(null);
+        setPendingDues(0);
     };
 
     const handleConfirmDelete = async () => {
@@ -80,7 +99,7 @@ const RetiredStudents = () => {
             setMessage("Retired Student Deleted Successfully");
             setSeverity('success');
             setShowPopup(true);
-            
+
             // If deleting last item on page, go to previous page if it exists
             if (students.length === 1 && page > 0) {
                 setPage(page - 1);
@@ -123,9 +142,11 @@ const RetiredStudents = () => {
                     </ActionIconButtonPrimary>
                 </Tooltip>
                 <Tooltip title="Delete Permanently" arrow>
-                    <ActionIconButtonError onClick={() => handleSingleDeleteClick(row.id)}>
-                        <DeleteIcon />
-                    </ActionIconButtonError>
+                    <Box component="span">
+                        <ActionIconButtonError onClick={() => handleSingleDeleteClick(row.id)} disabled={isCheckingDues && deleteTargetId === row.id}>
+                            {isCheckingDues && deleteTargetId === row.id ? <CircularProgress size={24} color="inherit" /> : <DeleteIcon />}
+                        </ActionIconButtonError>
+                    </Box>
                 </Tooltip>
             </>
         );
@@ -195,7 +216,7 @@ const RetiredStudents = () => {
                     </Tooltip>
                 </Box>
             </Box>
-            
+
             {loading ? (
                 <Box display="flex" justifyContent="center" sx={{ p: 4 }}>
                     <CircularProgress />
@@ -229,8 +250,12 @@ const RetiredStudents = () => {
                 open={confirmOpen}
                 handleClose={handleCloseConfirm}
                 handleConfirm={handleConfirmDelete}
-                title="Confirm Deletion"
-                message="Are you sure you want to permanently delete this retired student? This will also delete their invoices, family links, and exam records. This action cannot be undone."
+                title={pendingDues > 0 ? "Warning: Pending Dues" : "Confirm Deletion"}
+                message={
+                    pendingDues > 0
+                        ? `WARNING: This student has pending dues of PKR ${pendingDues}. Are you sure you want to permanently delete this retired student? This will also delete their invoices, family links, and exam records. This action cannot be undone.`
+                        : "Are you sure you want to permanently delete this retired student? This will also delete their invoices, family links, and exam records. This action cannot be undone."
+                }
                 confirmLabel="Delete Permanently"
             />
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} severity={severity} />

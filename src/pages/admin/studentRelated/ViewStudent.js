@@ -308,7 +308,14 @@ const ViewStudent = () => {
             <>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                     <Typography variant="h6" fontWeight="bold">Active Discounts</Typography>
-                    <Button variant="contained" onClick={() => setOpenAssignModal(true)} sx={{ borderRadius: 2, textTransform: 'none', boxShadow: 'none' }}>Assign Discount</Button>
+                    <Button
+                        variant="contained"
+                        onClick={() => setOpenAssignModal(true)}
+                        disabled={userDetails?.status === 'Retired'}
+                        sx={{ borderRadius: 2, textTransform: 'none', boxShadow: 'none' }}
+                    >
+                        Assign Discount
+                    </Button>
                 </Box>
 
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
