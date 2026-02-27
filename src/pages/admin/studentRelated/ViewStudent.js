@@ -8,7 +8,7 @@ import { Box, Button, IconButton, Table, TableBody, TableHead, Typography, Tab, 
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { Delete as DeleteIcon, ArrowBack as ArrowBackIcon, Edit as EditIcon } from '@mui/icons-material';
+import { Delete as DeleteIcon, ArrowBack as ArrowBackIcon, Edit as EditIcon, History as HistoryIcon } from '@mui/icons-material';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 
 import CustomBarChart from '../../../components/CustomBarChart'
@@ -22,6 +22,7 @@ import Popup from '../../../components/Popup';
 import styled from 'styled-components';
 import ConfirmationModal from '../../../components/ConfirmationModal';
 import CustomLoader from '../../../components/CustomLoader';
+import StudentFeeHistoryModal from '../../../components/StudentFeeHistoryModal';
 import axios from 'axios';
 
 const ViewStudent = () => {
@@ -59,6 +60,9 @@ const ViewStudent = () => {
 
     // Confirmation Modal State
     const [confirmOpen, setConfirmOpen] = useState(false);
+
+    // Fee History Modal State
+    const [historyOpen, setHistoryOpen] = useState(false);
 
 
 
@@ -491,6 +495,11 @@ const ViewStudent = () => {
                                     <AccountBalanceIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
+                            <Tooltip title="Fee History">
+                                <IconButton size="small" onClick={() => setHistoryOpen(true)} sx={{ bgcolor: 'info.main', color: 'white', '&:hover': { bgcolor: 'info.dark' }, borderRadius: 'var(--border-radius-md)' }}>
+                                    <HistoryIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
                             <Tooltip title="Delete">
                                 <IconButton size="small" color="error" onClick={deleteHandler} sx={{ border: '1px solid', borderColor: 'error.main', borderRadius: 'var(--border-radius-md)' }}>
                                     <DeleteIcon fontSize="small" />
@@ -530,6 +539,11 @@ const ViewStudent = () => {
                 title="Delete Student?"
                 message="Are you sure you want to delete this student? This action cannot be undone."
                 confirmLabel="Delete"
+            />
+            <StudentFeeHistoryModal
+                open={historyOpen}
+                handleClose={() => setHistoryOpen(false)}
+                studentId={studentID}
             />
         </Container>
     )

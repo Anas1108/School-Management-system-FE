@@ -5,10 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import {
     Box, Typography, CircularProgress, Container, IconButton, Tooltip, TextField, InputAdornment
 } from '@mui/material';
-import { NoAccounts, Delete as DeleteIcon, VisibilityOutlined as VisibilityOutlinedIcon, ArrowBack as ArrowBackIcon, Search as SearchIcon } from '@mui/icons-material';
+import { NoAccounts, Delete as DeleteIcon, VisibilityOutlined as VisibilityOutlinedIcon, ArrowBack as ArrowBackIcon, Search as SearchIcon, History as HistoryIcon } from '@mui/icons-material';
 import { ActionIconButtonError, ActionIconButtonPrimary } from '../../../components/buttonStyles';
 import ConfirmationModal from '../../../components/ConfirmationModal';
 import Popup from '../../../components/Popup';
+import StudentFeeHistoryModal from '../../../components/StudentFeeHistoryModal';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import TableTemplate from '../../../components/TableTemplate';
 
@@ -30,6 +31,10 @@ const RetiredStudents = () => {
     const [deleteTargetId, setDeleteTargetId] = useState(null);
     const [pendingDues, setPendingDues] = useState(0);
     const [isCheckingDues, setIsCheckingDues] = useState(false);
+
+    // Fee History Modal State
+    const [historyOpen, setHistoryOpen] = useState(false);
+    const [historyStudentId, setHistoryStudentId] = useState(null);
 
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState('');
@@ -139,6 +144,11 @@ const RetiredStudents = () => {
                 <Tooltip title="View Details" arrow>
                     <ActionIconButtonPrimary onClick={() => navigate(`/Admin/students/student/${row.id}`)}>
                         <VisibilityOutlinedIcon />
+                    </ActionIconButtonPrimary>
+                </Tooltip>
+                <Tooltip title="Fee History" arrow>
+                    <ActionIconButtonPrimary onClick={() => { setHistoryStudentId(row.id); setHistoryOpen(true); }}>
+                        <HistoryIcon />
                     </ActionIconButtonPrimary>
                 </Tooltip>
                 <Tooltip title="Delete Permanently" arrow>
@@ -257,6 +267,11 @@ const RetiredStudents = () => {
                         : "Are you sure you want to permanently delete this retired student? This will also delete their invoices, family links, and exam records. This action cannot be undone."
                 }
                 confirmLabel="Delete Permanently"
+            />
+            <StudentFeeHistoryModal
+                open={historyOpen}
+                handleClose={() => setHistoryOpen(false)}
+                studentId={historyStudentId}
             />
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} severity={severity} />
         </Container>
