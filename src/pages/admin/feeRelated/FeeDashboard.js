@@ -208,6 +208,8 @@ const FeeDashboard = () => {
         } catch (error) {
             console.error(error);
             setModalData({ open: true, title: 'Error', message: "Payment Failed", type: 'error' });
+        } finally {
+            setActionLoading(false);
         }
     };
 
