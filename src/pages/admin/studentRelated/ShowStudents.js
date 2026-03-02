@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
-import { getAllStudents } from '../../../redux/studentRelated/studentHandle';
+import { getAllStudents, retireStudentsAPI } from '../../../redux/studentRelated/studentHandle';
 import { removeStudent } from '../../../redux/studentRelated/studentSlice';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import {
@@ -19,6 +19,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import AddIcon from '@mui/icons-material/Add';
 import HistoryIcon from '@mui/icons-material/History';
+import NoAccountsIcon from '@mui/icons-material/NoAccounts';
+import PersonOffOutlinedIcon from '@mui/icons-material/PersonOffOutlined';
 import Popup from '../../../components/Popup';
 import StudentFeeHistoryModal from '../../../components/StudentFeeHistoryModal';
 import ConfirmationModal from '../../../components/ConfirmationModal';
@@ -36,8 +38,10 @@ const ShowStudents = () => {
     const [message, setMessage] = useState("");
     const [severity, setSeverity] = useState("success");
     const [searchTerm, setSearchTerm] = useState("");
+    const [submittedSearchTerm, setSubmittedSearchTerm] = useState("");
 
     useEffect(() => {
+        setSubmittedSearchTerm(searchTerm);
         dispatch(getAllStudents(currentUser._id, page + 1, rowsPerPage, searchTerm));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUser._id, dispatch, page, rowsPerPage]); // Trigger fetch on pagination only. Search is manual.
@@ -57,6 +61,10 @@ const ShowStudents = () => {
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [deleteData, setDeleteData] = useState(null);
 
+    // Retire Modal State
+    const [confirmRetireOpen, setConfirmRetireOpen] = useState(false);
+    const [retireData, setRetireData] = useState(null);
+
     const deleteHandler = (deleteID, address) => {
         setDeleteData({ deleteID, address });
         setConfirmOpen(true);
@@ -72,6 +80,26 @@ const ShowStudents = () => {
                     setSeverity("success");
                     setShowPopup(true);
                     setConfirmOpen(false);
+                    // Refresh data
+                    dispatch(getAllStudents(currentUser._id, page + 1, rowsPerPage, searchTerm));
+                })
+        }
+    }
+
+    const retireHandler = (retireID) => {
+        setRetireData({ retireID });
+        setConfirmRetireOpen(true);
+    }
+
+    const confirmRetireHandler = () => {
+        if (retireData) {
+            const { retireID } = retireData;
+            dispatch(retireStudentsAPI([retireID]))
+                .then(() => {
+                    setMessage("Student Retired Successfully");
+                    setSeverity("success");
+                    setShowPopup(true);
+                    setConfirmRetireOpen(false);
                     // Refresh data
                     dispatch(getAllStudents(currentUser._id, page + 1, rowsPerPage, searchTerm));
                 })
@@ -129,6 +157,12 @@ const ShowStudents = () => {
                         <HistoryIcon />
                     </ActionIconButtonPrimary>
                 </Tooltip>
+                <Tooltip title="Retire Student" arrow>
+                    <ActionIconButtonError
+                        onClick={() => retireHandler(row.id)}>
+                        <PersonOffOutlinedIcon />
+                    </ActionIconButtonError>
+                </Tooltip>
                 <Tooltip title="Delete" arrow>
                     <ActionIconButtonError
                         onClick={() => deleteHandler(row.id, "Student")}>
@@ -164,6 +198,7 @@ const ShowStudents = () => {
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                                 setPage(0);
+                                setSubmittedSearchTerm(searchTerm);
                                 dispatch(getAllStudents(currentUser._id, 1, rowsPerPage, searchTerm));
                             }
                         }}
@@ -172,6 +207,7 @@ const ShowStudents = () => {
                                 <InputAdornment position="end">
                                     <IconButton onClick={() => {
                                         setPage(0);
+                                        setSubmittedSearchTerm(searchTerm);
                                         dispatch(getAllStudents(currentUser._id, 1, rowsPerPage, searchTerm));
                                     }}>
                                         <SearchIcon />
@@ -185,6 +221,18 @@ const ShowStudents = () => {
                         }}
                         sx={{ width: { xs: '100%', sm: '260px' } }}
                     />
+                    <Tooltip title="View Retired Students">
+                        <IconButton
+                            onClick={() => navigate("/Admin/students/retired")}
+                            sx={{
+                                bgcolor: 'var(--color-primary-500)', color: 'white',
+                                '&:hover': { bgcolor: 'var(--color-primary-600)' },
+                                borderRadius: 'var(--border-radius-md)'
+                            }}
+                        >
+                            <NoAccountsIcon />
+                        </IconButton>
+                    </Tooltip>
                     <Tooltip title="Add Student">
                         <IconButton
                             onClick={() => navigate("/Admin/addstudents")}
@@ -205,11 +253,19 @@ const ShowStudents = () => {
                 :
                 <>
                     {response ?
-                        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
-                            <GreenButton variant="contained" onClick={() => navigate("/Admin/addstudents")}>
-                                Add Students
-                            </GreenButton>
-                        </Box>
+                        submittedSearchTerm ? (
+                            <Box sx={{ mt: 4, textAlign: 'center' }}>
+                                <Typography variant="h6" color="text.secondary">
+                                    No students found matching "{submittedSearchTerm}"
+                                </Typography>
+                            </Box>
+                        ) : (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+                                <GreenButton variant="contained" onClick={() => navigate("/Admin/addstudents")}>
+                                    Add Students
+                                </GreenButton>
+                            </Box>
+                        )
                         :
                         <>
                             {Array.isArray(studentsList) && studentsList.length > 0 &&
@@ -242,6 +298,14 @@ const ShowStudents = () => {
                 title="Delete Student?"
                 message="Are you sure you want to delete this student? This action cannot be undone."
                 confirmLabel="Delete"
+            />
+            <ConfirmationModal
+                open={confirmRetireOpen}
+                handleClose={() => setConfirmRetireOpen(false)}
+                handleConfirm={confirmRetireHandler}
+                title="Retire Student?"
+                message="Are you sure you want to retire this student? They will be removed from active classes and their status will change to retired."
+                confirmLabel="Retire"
             />
         </Container>
     );

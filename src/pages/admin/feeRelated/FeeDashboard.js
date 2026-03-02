@@ -18,6 +18,8 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import CustomModal from '../../../components/CustomModal';
 import CustomLoader from '../../../components/CustomLoader';
+import ActionLoader from '../../../components/ActionLoader';
+
 
 const formatPKR = (amount) => {
     return new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR', minimumFractionDigits: 0 }).format(amount);
@@ -41,6 +43,10 @@ const FeeDashboard = () => {
     // Modal State
     const [modalData, setModalData] = useState({ open: false, title: '', message: '', type: 'info' });
     const [genModalOpen, setGenModalOpen] = useState(false);
+
+    // Action Loader
+    const [actionLoading, setActionLoading] = useState(false);
+    const [actionMessage, setActionMessage] = useState('');
 
     // Payment Dialog State
     const [payDialogOpen, setPayDialogOpen] = useState(false);
@@ -80,6 +86,8 @@ const FeeDashboard = () => {
             setModalData({ open: true, title: 'Warning', message: 'Please select a class', type: 'warning' });
             return;
         }
+        setActionMessage("Generating invoices, please wait...");
+        setActionLoading(true);
         try {
             const data = { ...generationData, adminID: currentUser._id };
             const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/FeeInvoiceGenerate`, data);
@@ -94,6 +102,8 @@ const FeeDashboard = () => {
             } else {
                 setModalData({ open: true, title: 'Error', message: "Error generating invoices", type: 'error' });
             }
+        } finally {
+            setActionLoading(false);
         }
     };
 
@@ -185,6 +195,8 @@ const FeeDashboard = () => {
 
     const submitPayment = async () => {
         if (!selectedInvoice) return;
+        setActionMessage("Processing payment, please wait...");
+        setActionLoading(true);
         try {
             await axios.put(`${process.env.REACT_APP_BASE_URL}/FeeInvoicePay/${selectedInvoice._id}`, {
                 amount: paymentAmount,
@@ -196,6 +208,8 @@ const FeeDashboard = () => {
         } catch (error) {
             console.error(error);
             setModalData({ open: true, title: 'Error', message: "Payment Failed", type: 'error' });
+        } finally {
+            setActionLoading(false);
         }
     };
 
@@ -412,7 +426,7 @@ const FeeDashboard = () => {
                         </DialogContent>
                         <DialogActions sx={{ p: 3 }}>
                             <Button onClick={() => setGenModalOpen(false)} color="inherit">Cancel</Button>
-                            <Button variant="contained" onClick={handleGenerate} startIcon={<MonetizationOnIcon />}>
+                            <Button variant="contained" onClick={handleGenerate} startIcon={<MonetizationOnIcon />} disabled={actionLoading}>
                                 Generate Now
                             </Button>
                         </DialogActions>
@@ -439,7 +453,6 @@ const FeeDashboard = () => {
                         ))}
                     </Menu>
 
-                    {/* Payment Dialog */}
                     <Dialog open={payDialogOpen} onClose={() => setPayDialogOpen(false)}>
                         <DialogTitle sx={{ fontWeight: 'bold' }}>Record Payment</DialogTitle>
                         <DialogContent>
@@ -465,9 +478,10 @@ const FeeDashboard = () => {
                         </DialogContent>
                         <DialogActions sx={{ p: 3 }}>
                             <Button onClick={() => setPayDialogOpen(false)} color="inherit">Cancel</Button>
-                            <Button onClick={submitPayment} variant="contained">Submit Payment</Button>
+                            <Button onClick={submitPayment} variant="contained" disabled={actionLoading}>Submit Payment</Button>
                         </DialogActions>
                     </Dialog>
+                    <ActionLoader open={actionLoading} message={actionMessage} />
                 </>
             )}
         </Container>

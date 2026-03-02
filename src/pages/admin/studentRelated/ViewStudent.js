@@ -4,11 +4,11 @@ import { getUserDetails } from '../../../redux/userRelated/userHandle';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import { useNavigate, useParams } from 'react-router-dom'
 import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
-import { Box, Button, IconButton, Table, TableBody, TableHead, Typography, Tab, Paper, BottomNavigation, BottomNavigationAction, Container, Grid, Avatar, Dialog, DialogTitle, DialogContent, TextField, MenuItem, DialogActions, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
+import { Box, Button, IconButton, Table, TableBody, TableHead, Typography, Tab, Paper, BottomNavigation, BottomNavigationAction, Container, Grid, Avatar, Dialog, DialogTitle, DialogContent, TextField, MenuItem, DialogActions, ToggleButton, ToggleButtonGroup, Tooltip, Chip } from '@mui/material';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { Delete as DeleteIcon, ArrowBack as ArrowBackIcon, Edit as EditIcon } from '@mui/icons-material';
+import { Delete as DeleteIcon, ArrowBack as ArrowBackIcon, Edit as EditIcon, History as HistoryIcon } from '@mui/icons-material';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 
 import CustomBarChart from '../../../components/CustomBarChart'
@@ -22,6 +22,7 @@ import Popup from '../../../components/Popup';
 import styled from 'styled-components';
 import ConfirmationModal from '../../../components/ConfirmationModal';
 import CustomLoader from '../../../components/CustomLoader';
+import StudentFeeHistoryModal from '../../../components/StudentFeeHistoryModal';
 import axios from 'axios';
 
 const ViewStudent = () => {
@@ -59,6 +60,9 @@ const ViewStudent = () => {
 
     // Confirmation Modal State
     const [confirmOpen, setConfirmOpen] = useState(false);
+
+    // Fee History Modal State
+    const [historyOpen, setHistoryOpen] = useState(false);
 
 
 
@@ -244,6 +248,8 @@ const ViewStudent = () => {
         const [openAssignModal, setOpenAssignModal] = useState(false);
         const [discountMode, setDiscountMode] = useState('preset'); // 'preset' or 'custom'
         const [newDiscount, setNewDiscount] = useState({ discountGroup: '', customName: '', type: 'Percentage', value: 0 });
+        const [confirmDiscountOpen, setConfirmDiscountOpen] = useState(false);
+        const [discountToDelete, setDiscountToDelete] = useState(null);
 
         useEffect(() => {
             const fetchGroups = async () => {
@@ -277,16 +283,28 @@ const ViewStudent = () => {
             }
         };
 
-        const handleRemoveDiscount = async (id) => {
-            if (!window.confirm("Remove this discount?")) return;
+        const handleRemoveDiscount = (id) => {
+            setDiscountToDelete(id);
+            setConfirmDiscountOpen(true);
+        };
+
+        const confirmRemoveDiscountHandler = async () => {
+            if (!discountToDelete) return;
             try {
-                await axios.delete(`${process.env.REACT_APP_BASE_URL}/StudentDiscountRemove/${id}`);
+                await axios.delete(`${process.env.REACT_APP_BASE_URL}/StudentDiscountRemove/${discountToDelete}`);
                 setFetchDiscountsTrigger(prev => prev + 1);
                 setMessage("Discount Removed");
                 setSeverity("success");
                 setShowPopup(true);
+                setConfirmDiscountOpen(false);
+                setDiscountToDelete(null);
             } catch (err) {
                 console.error(err);
+                setMessage("Failed to remove discount");
+                setSeverity("error");
+                setShowPopup(true);
+                setConfirmDiscountOpen(false);
+                setDiscountToDelete(null);
             }
         };
 
@@ -294,7 +312,14 @@ const ViewStudent = () => {
             <>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                     <Typography variant="h6" fontWeight="bold">Active Discounts</Typography>
-                    <Button variant="contained" onClick={() => setOpenAssignModal(true)} sx={{ borderRadius: 2, textTransform: 'none', boxShadow: 'none' }}>Assign Discount</Button>
+                    <Button
+                        variant="contained"
+                        onClick={() => setOpenAssignModal(true)}
+                        disabled={userDetails?.status === 'Retired'}
+                        sx={{ borderRadius: 2, textTransform: 'none', boxShadow: 'none' }}
+                    >
+                        Assign Discount
+                    </Button>
                 </Box>
 
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -414,6 +439,15 @@ const ViewStudent = () => {
                         <Button variant="contained" onClick={handleAssignDiscount}>Assign</Button>
                     </DialogActions>
                 </Dialog>
+
+                <ConfirmationModal
+                    open={confirmDiscountOpen}
+                    handleClose={() => { setConfirmDiscountOpen(false); setDiscountToDelete(null); }}
+                    handleConfirm={confirmRemoveDiscountHandler}
+                    title="Remove Discount?"
+                    message="Are you sure you want to remove this discount from the student?"
+                    confirmLabel="Remove"
+                />
             </>
         )
     }
@@ -431,14 +465,17 @@ const ViewStudent = () => {
                                 {name.charAt(0)}
                             </Avatar>
                             <Box>
-                                <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>
+                                <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
                                     {name}
+                                    {userDetails?.status === 'Retired' && (
+                                        <Chip label="Retired" color="error" size="small" sx={{ ml: 1, fontWeight: 'bold' }} />
+                                    )}
                                 </Typography>
                                 <Typography variant="body1" color="textSecondary">
                                     Roll: {rollNum}
                                 </Typography>
                                 <Typography variant="body2" color="primary">
-                                    Class: {sclassName?.sclassName}
+                                    {userDetails?.status === 'Retired' ? 'Last Class:' : 'Class:'} {sclassName?.sclassName}
                                 </Typography>
                             </Box>
                         </Box>
@@ -456,6 +493,11 @@ const ViewStudent = () => {
                             <Tooltip title="Last Balance">
                                 <IconButton size="small" onClick={() => navigate("/Admin/students/student/lastbalance/" + studentID)} sx={{ bgcolor: 'success.main', color: 'white', '&:hover': { bgcolor: 'success.dark' }, borderRadius: 'var(--border-radius-md)' }}>
                                     <AccountBalanceIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Fee History">
+                                <IconButton size="small" onClick={() => setHistoryOpen(true)} sx={{ bgcolor: 'info.main', color: 'white', '&:hover': { bgcolor: 'info.dark' }, borderRadius: 'var(--border-radius-md)' }}>
+                                    <HistoryIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title="Delete">
@@ -497,6 +539,11 @@ const ViewStudent = () => {
                 title="Delete Student?"
                 message="Are you sure you want to delete this student? This action cannot be undone."
                 confirmLabel="Delete"
+            />
+            <StudentFeeHistoryModal
+                open={historyOpen}
+                handleClose={() => setHistoryOpen(false)}
+                studentId={studentID}
             />
         </Container>
     )

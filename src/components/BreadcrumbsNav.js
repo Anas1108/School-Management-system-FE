@@ -157,6 +157,11 @@ const ROUTE_PATTERNS = [
     },
 
     {
+        pattern: /^\/Admin\/students\/retired$/i,
+        crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Students', idx: 2, customTo: '/Admin/students' }, { label: 'Retired Students', idx: null }]
+    },
+
+    {
         pattern: /^\/Admin\/students$/i,
         crumbs: [{ label: 'Admin', idx: 1 }, { label: 'Students', idx: null }]
     },
