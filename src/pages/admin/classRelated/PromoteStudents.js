@@ -175,20 +175,20 @@ const PromoteStudents = () => {
     };
 
     return (
-        <Box sx={{ p: 4 }}>
-            <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
-                <TrendingUp color="primary" sx={{ fontSize: 40 }} />
-                <Typography variant="h4" fontWeight="600" color="primary.main">
+        <Box sx={{ p: { xs: 2, md: 4 } }}>
+            <Box sx={{ mb: { xs: 2, md: 4 }, display: 'flex', alignItems: 'center', gap: 2, flexDirection: { xs: 'column', sm: 'row' }, textAlign: { xs: 'center', sm: 'left' } }}>
+                <TrendingUp color="primary" sx={{ fontSize: { xs: 32, md: 40 } }} />
+                <Typography variant="h4" fontWeight="600" color="primary.main" sx={{ fontSize: { xs: '1.75rem', md: '2.125rem' } }}>
                     Promote Students
                 </Typography>
             </Box>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 4, textAlign: { xs: 'center', sm: 'left' } }}>
                 Select a class to promote students from, choose the target class, and decide whether to reset their academic records (exams) for the new session.
             </Typography>
 
-            <Paper elevation={3} sx={{ p: 4, borderRadius: 3, mb: 4 }}>
+            <Paper elevation={3} sx={{ p: { xs: 2, md: 4 }, borderRadius: 3, mb: 4 }}>
                 <form onSubmit={submitHandler}>
-                    <Stack direction={{ xs: 'column', md: 'row' }} spacing={4} alignItems="center" sx={{ mb: 4 }}>
+                    <Stack direction={{ xs: 'column', md: 'row' }} spacing={{ xs: 2, md: 4 }} alignItems="center" sx={{ mb: 4 }}>
                         <TextField
                             fullWidth
                             label="Target Academic Session"
@@ -199,7 +199,7 @@ const PromoteStudents = () => {
                         />
                     </Stack>
 
-                    <Stack direction={{ xs: 'column', md: 'row' }} spacing={4} alignItems="center" sx={{ mb: 4 }}>
+                    <Stack direction={{ xs: 'column', md: 'row' }} spacing={{ xs: 2, md: 4 }} alignItems="center" sx={{ mb: 4 }}>
                         <FormControl fullWidth>
                             <InputLabel id="from-class-label">From Class</InputLabel>
                             <Select
@@ -217,7 +217,7 @@ const PromoteStudents = () => {
                             </Select>
                         </FormControl>
 
-                        <CompareArrows color="action" sx={{ display: { xs: 'none', md: 'block' }, fontSize: 40 }} />
+                        <CompareArrows color="action" sx={{ transform: { xs: 'rotate(90deg)', md: 'none' }, fontSize: 40 }} />
 
                         <FormControl fullWidth>
                             <InputLabel id="to-class-label">To Class</InputLabel>
@@ -269,8 +269,8 @@ const PromoteStudents = () => {
                             {classLoading ? (
                                 <CustomLoader />
                             ) : sclassStudents && sclassStudents.length > 0 ? (
-                                <TableContainer component={Paper} elevation={1} sx={{ borderRadius: 2, border: '1px solid #e0e0e0', maxHeight: 400 }}>
-                                    <Table stickyHeader size="small">
+                                <TableContainer component={Paper} elevation={1} sx={{ borderRadius: 2, border: '1px solid #e0e0e0', maxHeight: 400, overflowX: 'auto' }}>
+                                    <Table stickyHeader size="small" sx={{ minWidth: { xs: 300, sm: 650 } }}>
                                         <TableHead>
                                             <TableRow sx={{ backgroundColor: 'primary.light' }}>
                                                 <TableCell padding="checkbox">
@@ -333,14 +333,14 @@ const PromoteStudents = () => {
                         </Box>
                     )}
 
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4, gap: 2 }}>
+                    <Box sx={{ display: 'flex', flexDirection: { xs: 'column-reverse', sm: 'row' }, justifyContent: 'flex-end', mt: 4, gap: 2 }}>
                         <Button
                             variant="outlined"
                             color="error"
                             type="button"
                             onClick={submitRetireHandler}
                             disabled={studentLoading || !fromClass || (sclassStudents && sclassStudents.length === 0)}
-                            sx={{ minWidth: 200, py: 1.5, borderRadius: 2, fontWeight: 'bold' }}
+                            sx={{ minWidth: { xs: '100%', sm: 200 }, py: 1.5, borderRadius: 2, fontWeight: 'bold' }}
                         >
                             Retire Selected Students
                         </Button>
@@ -349,7 +349,7 @@ const PromoteStudents = () => {
                             color="primary"
                             type="submit"
                             disabled={studentLoading || !fromClass || !toClass || (sclassStudents && sclassStudents.length === 0)}
-                            sx={{ minWidth: 200, py: 1.5, borderRadius: 2, fontWeight: 'bold' }}
+                            sx={{ minWidth: { xs: '100%', sm: 200 }, py: 1.5, borderRadius: 2, fontWeight: 'bold' }}
                             startIcon={<TrendingUp />}
                         >
                             {studentLoading ? <CircularProgress size={24} color="inherit" /> : 'Promote Selected Students'}
