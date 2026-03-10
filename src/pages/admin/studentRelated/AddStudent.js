@@ -233,13 +233,13 @@ const AddStudent = ({ situation }) => {
         }
         else if (activeStep === 1) {
             // Step 1 Validation
-            if (!studentDetails.studentBForm || studentDetails.studentBForm.length !== 15) {
+            if (studentDetails.studentBForm && studentDetails.studentBForm.length !== 15) {
                 setMessage("Student B-Form must be 13 digits (XXXXX-XXXXXXX-X)");
                 setSeverity("error");
                 setShowPopup(true);
                 return;
             }
-            if (!studentDetails.name || !studentDetails.dateOfBirth || !studentDetails.gender || !studentDetails.religion) {
+            if (!studentDetails.name || !studentDetails.gender || !studentDetails.religion) {
                 setMessage("Please fill all required Student fields");
                 setSeverity("error");
                 setShowPopup(true);
@@ -455,23 +455,21 @@ const AddStudent = ({ situation }) => {
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     fullWidth
-                                    label="B-Form (XXXXX-XXXXXXX-X)"
+                                    label="B-Form (Optional) (XXXXX-XXXXXXX-X)"
                                     name="studentBForm"
                                     value={studentDetails.studentBForm}
                                     onChange={handleStudentChange}
-                                    required
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     fullWidth
-                                    label="Date of Birth"
+                                    label="Date of Birth (Optional)"
                                     type="date"
                                     name="dateOfBirth"
                                     value={studentDetails.dateOfBirth}
                                     onChange={handleStudentChange}
                                     InputLabelProps={{ shrink: true }}
-                                    required
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
