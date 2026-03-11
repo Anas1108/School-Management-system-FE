@@ -148,7 +148,8 @@ const FeeStructure = () => {
             setModalData({ open: true, title: 'Success', message: "Fee Structure Saved", type: 'success' });
         } catch (error) {
             console.error(error);
-            setModalData({ open: true, title: 'Error', message: "Failed to save", type: 'error' });
+            const errorMsg = error.response?.data?.message || "Failed to save";
+            setModalData({ open: true, title: 'Error', message: errorMsg, type: 'error' });
         }
     }
 
